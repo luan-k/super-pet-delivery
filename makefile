@@ -18,4 +18,7 @@ migratedown:
 sqlc_win:
 	docker run --rm -v "D:\Work\WK\super-pet-delivery:/src" -w /src kjconroy/sqlc generate
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc
+test:
+	go test -v -cover -short ./...
+
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc test
