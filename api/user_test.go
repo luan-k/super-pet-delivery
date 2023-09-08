@@ -17,8 +17,11 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
+// TestCreateUserAPI tests the CreateUser API endpoint.
 func TestCreateUserAPI(t *testing.T) {
+	// Generate a random user for testing.
 	user := randomUser()
+	// Create a request body with user data.
 	requestUser := createUserRequest{
 		Username: user.Username,
 		FullName: user.FullName,
@@ -78,19 +81,24 @@ func TestCreateUserAPI(t *testing.T) {
 			server := NewServer(store)
 			recorder := httptest.NewRecorder()
 
+			// Marshal the request body into JSON.
 			requestBody, err := json.Marshal(tc.requestUser)
 			require.NoError(t, err)
 
+			// Create an HTTP request with the JSON body.
 			request, err := http.NewRequest(http.MethodPost, "/users", bytes.NewReader(requestBody))
 			require.NoError(t, err)
 
+			// Serve the request and check the response.
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(t, recorder)
 		})
 	}
 }
 
+// TestGetUserAPI tests the GetUser API endpoint.
 func TestGetUserAPI(t *testing.T) {
+	// Generate a random user for testing.
 	user := randomUser()
 
 	testCases := []struct {
@@ -157,9 +165,12 @@ func TestGetUserAPI(t *testing.T) {
 			server := NewServer(store)
 			recorder := httptest.NewRecorder()
 
+			// Create an HTTP request with the user ID.
 			url := fmt.Sprintf("/users/%d", tc.userID)
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
+
+			// Serve the request and check the response.
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(t, recorder)
 		})
@@ -167,6 +178,7 @@ func TestGetUserAPI(t *testing.T) {
 	}
 }
 
+// TestListUserAPI tests the ListUsers API endpoint.
 func TestListUserAPI(t *testing.T) {
 	n := 5
 	users := make([]db.User, n)
@@ -183,7 +195,7 @@ func TestListUserAPI(t *testing.T) {
 		name          string
 		query         Query
 		buildStubs    func(store *mockdb.MockStore)
-		checkResponse func(recoder *httptest.ResponseRecorder)
+		checkResponse func(recorder *httptest.ResponseRecorder)
 	}{
 		{
 			name: "OK",
@@ -239,7 +251,7 @@ func TestListUserAPI(t *testing.T) {
 			},
 		},
 		{
-			name: "InvalidPageID",
+			name: "InvalidPageSize",
 			query: Query{
 				pageID:   1,
 				pageSize: 100000,
@@ -272,18 +284,20 @@ func TestListUserAPI(t *testing.T) {
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
 
-			// Add query parameters to request URL
+			// Add query parameters to request URL.
 			q := request.URL.Query()
 			q.Add("page_id", fmt.Sprintf("%d", tc.query.pageID))
 			q.Add("page_size", fmt.Sprintf("%d", tc.query.pageSize))
 			request.URL.RawQuery = q.Encode()
 
+			// Serve the request and check the response.
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(recorder)
 		})
 	}
 }
 
+// randomUser generates a random user for testing.
 func randomUser() db.User {
 	return db.User{
 		ID:       util.RandomInt(1, 1000),
@@ -293,6 +307,7 @@ func randomUser() db.User {
 	}
 }
 
+// requireBodyMatchUser checks if the response body matches the expected user.
 func requireBodyMatchUser(t *testing.T, body *bytes.Buffer, user db.User) {
 	data, err := io.ReadAll(body)
 	require.NoError(t, err)
@@ -302,6 +317,8 @@ func requireBodyMatchUser(t *testing.T, body *bytes.Buffer, user db.User) {
 	require.NoError(t, err)
 	require.Equal(t, user, gotUser)
 }
+
+// requireBodyMatchUsers checks if the response body matches the expected list of users.
 func requireBodyMatchUsers(t *testing.T, body *bytes.Buffer, users []db.User) {
 	data, err := io.ReadAll(body)
 	require.NoError(t, err)
