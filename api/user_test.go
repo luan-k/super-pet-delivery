@@ -297,6 +297,139 @@ func TestListUserAPI(t *testing.T) {
 	}
 }
 
+func TestUpdateUserAPI(t *testing.T) {
+	// Generate a random user for testing.
+	user := randomUser()
+	// Create a request body with user data.
+	updateUser := updateUserRequest{
+		Username: "new_username",
+		FullName: "New Full Name",
+		Email:    "new_email@example.com",
+	}
+
+	testCases := []struct {
+		name          string
+		userID        int64
+		requestUser   updateUserRequest
+		buildStubs    func(store *mockdb.MockStore)
+		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
+	}{
+		{
+			name:        "OK",
+			userID:      user.ID,
+			requestUser: updateUser,
+			buildStubs: func(store *mockdb.MockStore) {
+				// Define expectations for the UpdateUser function in your mock store.
+				arg := db.UpdateUserParams{
+					ID:       user.ID,
+					Username: updateUser.Username,
+					FullName: updateUser.FullName,
+					Email:    updateUser.Email,
+				}
+				store.EXPECT().GetUser(gomock.Any(), gomock.Eq(user.ID)).Times(1).Return(user, nil)
+				store.EXPECT().UpdateUser(gomock.Any(), gomock.Eq(arg)).Times(1).Return(user, nil)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusOK, recorder.Code)
+				requireBodyMatchUser(t, recorder.Body, user)
+			},
+		},
+	}
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			store := mockdb.NewMockStore(ctrl)
+			tc.buildStubs(store)
+
+			server := NewServer(store)
+			recorder := httptest.NewRecorder()
+
+			// Marshal the request body into JSON.
+			requestBody, err := json.Marshal(tc.requestUser)
+			require.NoError(t, err)
+
+			// Create an HTTP request with the JSON body.
+			url := fmt.Sprintf("/users/%d", tc.userID)
+			request, err := http.NewRequest(http.MethodPut, url, bytes.NewReader(requestBody))
+			require.NoError(t, err)
+
+			// Serve the request and check the response.
+			server.router.ServeHTTP(recorder, request)
+			tc.checkResponse(t, recorder)
+		})
+	}
+}
+
+func TestDeleteUserAPI(t *testing.T) {
+	// Generate a random user for testing.
+	user := randomUser()
+
+	testCases := []struct {
+		name          string
+		userID        int64
+		request       deleteUserRequest
+		buildStubs    func(store *mockdb.MockStore)
+		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
+	}{
+		{
+			name:   "OK",
+			userID: user.ID,
+			request: deleteUserRequest{
+				UserID: 0, // No new user ID provided.
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				// Expect GetUser to return the user.
+				store.EXPECT().GetUser(gomock.Any(), gomock.Eq(user.ID)).Times(1).Return(user, nil)
+				// Stub the ListProductsByUser method to return an empty list (no associated products).
+				store.EXPECT().ListProductsByUser(gomock.Any(), gomock.Eq(user.ID)).Times(1).Return([]db.Product{}, nil)
+				// Expect DeleteUser to delete the user.
+				store.EXPECT().DeleteUser(gomock.Any(), gomock.Eq(user.ID)).Times(1).Return(nil)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusOK, recorder.Code)
+				// Verify the response message.
+				responseBody, err := io.ReadAll(recorder.Body)
+				require.NoError(t, err)
+				// Updated expected response format to match the actual response.
+				require.Equal(t, `"User deleted successfully"`, string(responseBody))
+			},
+		},
+	}
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			store := mockdb.NewMockStore(ctrl)
+			tc.buildStubs(store)
+
+			server := NewServer(store)
+			recorder := httptest.NewRecorder()
+
+			// Marshal the request body into JSON.
+			requestBody, err := json.Marshal(tc.request)
+			require.NoError(t, err)
+
+			// Create an HTTP request with the JSON body.
+			url := fmt.Sprintf("/users/%d", tc.userID)
+			request, err := http.NewRequest(http.MethodDelete, url, bytes.NewReader(requestBody))
+			require.NoError(t, err)
+
+			// Serve the request and check the response.
+			server.router.ServeHTTP(recorder, request)
+			tc.checkResponse(t, recorder)
+		})
+	}
+}
+
 // randomUser generates a random user for testing.
 func randomUser() db.User {
 	return db.User{
