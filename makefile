@@ -12,8 +12,15 @@ dropdb:
 migrateup:
 	migrate -path db/migration -database "$(DB_URL)" -verbose up
 
+migrateup1:
+	migrate -path db/migration -database "$(DB_URL)" -verbose up 1
+
 migratedown:
 	migrate -path db/migration -database "$(DB_URL)" -verbose down
+
+migratedown1:
+	migrate -path db/migration -database "$(DB_URL)" -verbose down 1
+
 
 sqlc_win:
 	docker run --rm -v "D:\Work\WK\super-pet-delivery:/src" -w /src kjconroy/sqlc generate
@@ -27,4 +34,4 @@ server:
 mock:
 	mockgen --package mockdb --destination db/mock/store.go super-pet-delivery/db/sqlc Store
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock migrateup1 migratedown1
