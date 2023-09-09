@@ -37,6 +37,12 @@ func NewServer(store db.Store) *Server {
 	router.PUT("/products/:id", server.updateProduct)
 	router.DELETE("/products/:id", server.deleteProduct)
 
+	router.POST("/categories", server.createCategory)
+	router.GET("/categories/:id", server.getCategory)
+	router.GET("/categories", server.listCategory)
+	router.PUT("/categories/:id", server.updateCategory)
+	router.DELETE("/categories/:id", server.deleteCategory)
+
 	server.router = router
 	return server
 }

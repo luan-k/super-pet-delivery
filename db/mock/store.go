@@ -35,6 +35,21 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
+// AssociateProductWithCategory mocks base method.
+func (m *MockStore) AssociateProductWithCategory(arg0 context.Context, arg1 db.AssociateProductWithCategoryParams) (db.ProductCategory, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AssociateProductWithCategory", arg0, arg1)
+	ret0, _ := ret[0].(db.ProductCategory)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AssociateProductWithCategory indicates an expected call of AssociateProductWithCategory.
+func (mr *MockStoreMockRecorder) AssociateProductWithCategory(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssociateProductWithCategory", reflect.TypeOf((*MockStore)(nil).AssociateProductWithCategory), arg0, arg1)
+}
+
 // CreateCategory mocks base method.
 func (m *MockStore) CreateCategory(arg0 context.Context, arg1 db.CreateCategoryParams) (db.Category, error) {
 	m.ctrl.T.Helper()
@@ -210,6 +225,21 @@ func (m *MockStore) ListProducts(arg0 context.Context, arg1 db.ListProductsParam
 func (mr *MockStoreMockRecorder) ListProducts(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListProducts", reflect.TypeOf((*MockStore)(nil).ListProducts), arg0, arg1)
+}
+
+// ListProductsByCategory mocks base method.
+func (m *MockStore) ListProductsByCategory(arg0 context.Context, arg1 db.ListProductsByCategoryParams) ([]db.Product, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListProductsByCategory", arg0, arg1)
+	ret0, _ := ret[0].([]db.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListProductsByCategory indicates an expected call of ListProductsByCategory.
+func (mr *MockStoreMockRecorder) ListProductsByCategory(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListProductsByCategory", reflect.TypeOf((*MockStore)(nil).ListProductsByCategory), arg0, arg1)
 }
 
 // ListProductsByUser mocks base method.
