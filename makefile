@@ -9,6 +9,9 @@ createdb:
 dropdb:
 	winpty docker exec -it postgres-product-db dropdb product-db
 
+new_migrate:
+	migrate create -ext sql -dir db/migration -seq migration_name
+
 migrateup:
 	migrate -path db/migration -database "$(DB_URL)" -verbose up
 

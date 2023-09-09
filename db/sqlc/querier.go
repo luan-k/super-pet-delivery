@@ -9,15 +9,22 @@ import (
 )
 
 type Querier interface {
+	AssociateProductWithCategory(ctx context.Context, arg AssociateProductWithCategoryParams) (ProductCategory, error)
+	CreateCategory(ctx context.Context, arg CreateCategoryParams) (Category, error)
 	CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	DeleteCategory(ctx context.Context, id int64) error
 	DeleteProduct(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
+	GetCategory(ctx context.Context, id int64) (Category, error)
 	GetProduct(ctx context.Context, id int64) (Product, error)
 	GetUser(ctx context.Context, id int64) (User, error)
+	ListCategories(ctx context.Context, arg ListCategoriesParams) ([]Category, error)
+	ListCategoriesByProduct(ctx context.Context, productID int64) ([]Category, error)
 	ListProducts(ctx context.Context, arg ListProductsParams) ([]Product, error)
 	ListProductsByUser(ctx context.Context, userID int64) ([]Product, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
+	UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Category, error)
 	UpdateProduct(ctx context.Context, arg UpdateProductParams) (Product, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }

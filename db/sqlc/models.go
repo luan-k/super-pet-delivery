@@ -6,11 +6,22 @@ package db
 
 import ()
 
+type Category struct {
+	ID          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
 type Product struct {
 	ID          int64  `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	UserID      int64  `json:"user_id"`
+}
+
+type ProductCategory struct {
+	ProductID  int64 `json:"product_id"`
+	CategoryID int64 `json:"category_id"`
 }
 
 type User struct {
