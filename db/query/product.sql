@@ -22,6 +22,15 @@ ORDER BY id
 LIMIT $1
 OFFSET $2;
 
+-- name: ListProductsByCategory :many
+SELECT p.*
+FROM products p
+JOIN product_categories pc ON p.id = pc.product_id
+WHERE pc.category_id = $1
+ORDER BY p.id
+LIMIT $2
+OFFSET $3;
+
 -- name: UpdateProduct :one
 UPDATE  products 
 SET 

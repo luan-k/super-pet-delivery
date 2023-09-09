@@ -79,6 +79,47 @@ func TestListProductsByUser(t *testing.T) {
 
 }
 
+func TestListProductsByCategory(t *testing.T) {
+	product1 := createRandomProduct(t)
+	product2 := createRandomProduct(t)
+	product3 := createRandomProduct(t)
+	category := createRandomCategory(t)
+
+	params1 := AssociateProductWithCategoryParams{
+		ProductID:  product1.ID,
+		CategoryID: category.ID,
+	}
+	params2 := AssociateProductWithCategoryParams{
+		ProductID:  product2.ID,
+		CategoryID: category.ID,
+	}
+	params3 := AssociateProductWithCategoryParams{
+		ProductID:  product3.ID,
+		CategoryID: category.ID,
+	}
+
+	associatedCat, err := testQueries.AssociateProductWithCategory(context.Background(), params1)
+	require.NoError(t, err)
+	require.NotEmpty(t, associatedCat)
+	associatedCat2, err2 := testQueries.AssociateProductWithCategory(context.Background(), params2)
+	require.NoError(t, err2)
+	require.NotEmpty(t, associatedCat2)
+	associatedCat3, err3 := testQueries.AssociateProductWithCategory(context.Background(), params3)
+	require.NoError(t, err3)
+	require.NotEmpty(t, associatedCat3)
+
+	paramsList := ListProductsByCategoryParams{
+		CategoryID: category.ID,
+		Limit:      3,
+		Offset:     0,
+	}
+
+	products, err := testQueries.ListProductsByCategory(context.Background(), paramsList)
+	require.NoError(t, err)
+	require.Len(t, products, 3)
+
+}
+
 func TestUpdateProduct(t *testing.T) {
 	product1 := createRandomProduct(t)
 	product2 := createRandomProduct(t)
