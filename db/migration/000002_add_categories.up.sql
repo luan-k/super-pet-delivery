@@ -6,7 +6,8 @@ CREATE TABLE "categories" (
 
 CREATE TABLE "product_categories" (
   "product_id" bigint NOT NULL,
-  "category_id" bigint NOT NULL
+  "category_id" bigint NOT NULL,
+  CONSTRAINT unique_product_category UNIQUE (product_id, category_id)
 );
 
 ALTER TABLE "product_categories" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id");

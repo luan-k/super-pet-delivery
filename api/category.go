@@ -192,3 +192,34 @@ func (server *Server) associateCategoryWithProduct(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, category)
 }
+
+type disassociateCategoryWithProductRequest struct {
+	CategoryID int64 `uri:"category_id" binding:"required,min=1"`
+	ProductID  int64 `uri:"product_id" binding:"required,min=1"`
+}
+
+func (server *Server) disassociateCategoryWithProduct(ctx *gin.Context) {
+	var req disassociateCategoryWithProductRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	arg := db.DisassociateProductFromCategoryParams{
+		CategoryID: req.CategoryID,
+		ProductID:  req.ProductID,
+	}
+
+	category, err := server.store.DisassociateProductFromCategory(ctx, arg)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, category)
+}
