@@ -21,6 +21,11 @@ INSERT INTO product_categories (product_id, category_id)
 VALUES ($1, $2)
 RETURNING *;
 
+-- name: DisassociateProductFromCategory :one
+DELETE FROM product_categories
+WHERE product_id = $1 AND category_id = $2
+RETURNING *;
+
 -- name: ListCategoriesByProduct :many
 SELECT c.*
 FROM categories c

@@ -161,3 +161,34 @@ func (server *Server) deleteCategory(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, "Category deleted successfully")
 }
+
+type associateCategoryWithProductRequest struct {
+	CategoryID int64 `uri:"category_id" binding:"required,min=1"`
+	ProductID  int64 `uri:"product_id" binding:"required,min=1"`
+}
+
+func (server *Server) associateCategoryWithProduct(ctx *gin.Context) {
+	var req associateCategoryWithProductRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	arg := db.AssociateProductWithCategoryParams{
+		CategoryID: req.CategoryID,
+		ProductID:  req.ProductID,
+	}
+
+	category, err := server.store.AssociateProductWithCategory(ctx, arg)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, category)
+}

@@ -58,6 +58,24 @@ func (q *Queries) DeleteCategory(ctx context.Context, id int64) error {
 	return err
 }
 
+const disassociateProductFromCategory = `-- name: DisassociateProductFromCategory :one
+DELETE FROM product_categories
+WHERE product_id = $1 AND category_id = $2
+RETURNING product_id, category_id
+`
+
+type DisassociateProductFromCategoryParams struct {
+	ProductID  int64 `json:"product_id"`
+	CategoryID int64 `json:"category_id"`
+}
+
+func (q *Queries) DisassociateProductFromCategory(ctx context.Context, arg DisassociateProductFromCategoryParams) (ProductCategory, error) {
+	row := q.db.QueryRowContext(ctx, disassociateProductFromCategory, arg.ProductID, arg.CategoryID)
+	var i ProductCategory
+	err := row.Scan(&i.ProductID, &i.CategoryID)
+	return i, err
+}
+
 const getCategory = `-- name: GetCategory :one
 SELECT id, name, description FROM categories 
 WHERE id = $1 LIMIT 1

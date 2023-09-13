@@ -120,6 +120,27 @@ func TestListProductsByCategory(t *testing.T) {
 
 }
 
+func TestDisassociateProductFromCategory(t *testing.T) {
+	product1 := createRandomProduct(t)
+	category := createRandomCategory(t)
+
+	params1 := AssociateProductWithCategoryParams{
+		ProductID:  product1.ID,
+		CategoryID: category.ID,
+	}
+	associatedCat, err := testQueries.AssociateProductWithCategory(context.Background(), params1)
+	require.NoError(t, err)
+	require.NotEmpty(t, associatedCat)
+
+	paramsDisassociate := DisassociateProductFromCategoryParams{
+		ProductID:  product1.ID,
+		CategoryID: category.ID,
+	}
+	disassociateCat, err := testQueries.DisassociateProductFromCategory(context.Background(), paramsDisassociate)
+	require.NoError(t, err)
+	require.NotEmpty(t, disassociateCat)
+}
+
 func TestUpdateProduct(t *testing.T) {
 	product1 := createRandomProduct(t)
 	product2 := createRandomProduct(t)

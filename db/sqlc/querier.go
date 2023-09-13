@@ -16,6 +16,7 @@ type Querier interface {
 	DeleteCategory(ctx context.Context, id int64) error
 	DeleteProduct(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
+	DisassociateProductFromCategory(ctx context.Context, arg DisassociateProductFromCategoryParams) (ProductCategory, error)
 	GetCategory(ctx context.Context, id int64) (Category, error)
 	GetProduct(ctx context.Context, id int64) (Product, error)
 	GetUser(ctx context.Context, id int64) (User, error)
