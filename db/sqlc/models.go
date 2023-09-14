@@ -12,6 +12,19 @@ type Category struct {
 	Description string `json:"description"`
 }
 
+type Client struct {
+	ID                  int64  `json:"id"`
+	FullName            string `json:"full_name"`
+	PhoneWhatsapp       string `json:"phone_whatsapp"`
+	PhoneLine           string `json:"phone_line"`
+	PetName             string `json:"pet_name"`
+	PetBreed            string `json:"pet_breed"`
+	AddressStreet       string `json:"address_street"`
+	AddressNumber       string `json:"address_number"`
+	AddressNeighborhood string `json:"address_neighborhood"`
+	AddressReference    string `json:"address_reference"`
+}
+
 type Product struct {
 	ID          int64  `json:"id"`
 	Name        string `json:"name"`
