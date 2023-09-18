@@ -4,7 +4,9 @@
 
 package db
 
-import ()
+import (
+	"time"
+)
 
 type Category struct {
 	ID          int64  `json:"id"`
@@ -35,6 +37,17 @@ type Product struct {
 type ProductCategory struct {
 	ProductID  int64 `json:"product_id"`
 	CategoryID int64 `json:"category_id"`
+}
+
+type Sale struct {
+	ID             int64     `json:"id"`
+	ClientID       int64     `json:"client_id"`
+	Product        string    `json:"product"`
+	Price          int64     `json:"price"`
+	Observation    string    `json:"observation"`
+	CreatedAt      time.Time `json:"created_at"`
+	ChangedAt      time.Time `json:"changed_at"`
+	PdfGeneratedAt time.Time `json:"pdf_generated_at"`
 }
 
 type User struct {

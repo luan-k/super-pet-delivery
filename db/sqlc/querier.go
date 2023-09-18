@@ -13,15 +13,18 @@ type Querier interface {
 	CreateCategory(ctx context.Context, arg CreateCategoryParams) (Category, error)
 	CreateClient(ctx context.Context, arg CreateClientParams) (Client, error)
 	CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error)
+	CreateSale(ctx context.Context, arg CreateSaleParams) (Sale, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteCategory(ctx context.Context, id int64) error
 	DeleteClient(ctx context.Context, id int64) error
 	DeleteProduct(ctx context.Context, id int64) error
+	DeleteSale(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
 	DisassociateProductFromCategory(ctx context.Context, arg DisassociateProductFromCategoryParams) (ProductCategory, error)
 	GetCategory(ctx context.Context, id int64) (Category, error)
 	GetClient(ctx context.Context, id int64) (Client, error)
 	GetProduct(ctx context.Context, id int64) (Product, error)
+	GetSale(ctx context.Context, id int64) (Sale, error)
 	GetUser(ctx context.Context, id int64) (User, error)
 	ListCategories(ctx context.Context, arg ListCategoriesParams) ([]Category, error)
 	ListCategoriesByProduct(ctx context.Context, productID int64) ([]Category, error)
@@ -29,10 +32,12 @@ type Querier interface {
 	ListProducts(ctx context.Context, arg ListProductsParams) ([]Product, error)
 	ListProductsByCategory(ctx context.Context, arg ListProductsByCategoryParams) ([]Product, error)
 	ListProductsByUser(ctx context.Context, userID int64) ([]Product, error)
+	ListSales(ctx context.Context, arg ListSalesParams) ([]Sale, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
 	UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Category, error)
 	UpdateClient(ctx context.Context, arg UpdateClientParams) (Client, error)
 	UpdateProduct(ctx context.Context, arg UpdateProductParams) (Product, error)
+	UpdateSale(ctx context.Context, arg UpdateSaleParams) (Sale, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 
