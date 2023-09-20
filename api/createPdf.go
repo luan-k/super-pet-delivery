@@ -255,7 +255,7 @@ func convertHTMLToPDF(filePath, imgPath, pdfPath string) error {
 
 	// Check if the request was successful
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("Failed to convert HTML to PDF: HTTP status code %d", resp.StatusCode)
+		return fmt.Errorf("api request failed with status code: %d", resp.StatusCode)
 	}
 
 	// Create the PDF file
