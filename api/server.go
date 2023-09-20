@@ -58,6 +58,8 @@ func NewServer(store db.Store) *Server {
 	router.PUT("/sales/:id", server.updateSale)
 	router.DELETE("/sales/:id", server.deleteSale)
 
+	router.POST("/pdf/:id", server.createPdf)
+
 	server.router = router
 	return server
 }
