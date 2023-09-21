@@ -13,26 +13,36 @@ const createUser = `-- name: CreateUser :one
 INSERT INTO users (
     username,
     full_name,
-    email
+    email,
+    hashed_password
 ) VALUES (
-    $1, $2, $3
-) RETURNING id, username, full_name, email
+    $1, $2, $3, $4
+) RETURNING id, username, full_name, email, hashed_password, password_changed_at, created_at
 `
 
 type CreateUserParams struct {
-	Username string `json:"username"`
-	FullName string `json:"full_name"`
-	Email    string `json:"email"`
+	Username       string `json:"username"`
+	FullName       string `json:"full_name"`
+	Email          string `json:"email"`
+	HashedPassword string `json:"hashed_password"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser, arg.Username, arg.FullName, arg.Email)
+	row := q.db.QueryRowContext(ctx, createUser,
+		arg.Username,
+		arg.FullName,
+		arg.Email,
+		arg.HashedPassword,
+	)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
 		&i.FullName,
 		&i.Email,
+		&i.HashedPassword,
+		&i.PasswordChangedAt,
+		&i.CreatedAt,
 	)
 	return i, err
 }
@@ -48,7 +58,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, username, full_name, email FROM users
+SELECT id, username, full_name, email, hashed_password, password_changed_at, created_at FROM users
 WHERE id = $1 LIMIT 1
 `
 
@@ -60,12 +70,15 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 		&i.Username,
 		&i.FullName,
 		&i.Email,
+		&i.HashedPassword,
+		&i.PasswordChangedAt,
+		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, username, full_name, email FROM users
+SELECT id, username, full_name, email, hashed_password, password_changed_at, created_at FROM users
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -90,6 +103,9 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 			&i.Username,
 			&i.FullName,
 			&i.Email,
+			&i.HashedPassword,
+			&i.PasswordChangedAt,
+			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -111,7 +127,7 @@ SET
     full_name = COALESCE($3, full_name),
     email = COALESCE($4, email)
 WHERE id = $1
-RETURNING id, username, full_name, email
+RETURNING id, username, full_name, email, hashed_password, password_changed_at, created_at
 `
 
 type UpdateUserParams struct {
@@ -134,6 +150,9 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Username,
 		&i.FullName,
 		&i.Email,
+		&i.HashedPassword,
+		&i.PasswordChangedAt,
+		&i.CreatedAt,
 	)
 	return i, err
 }
