@@ -6,14 +6,27 @@ import (
 	"net/http"
 	"strconv"
 	db "super-pet-delivery/db/sqlc"
+	"super-pet-delivery/util"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type createUserRequest struct {
 	Username string `json:"username" binding:"required"`
-	FullName string `json:"full_name" binding:"required"`
+	FullName string `json:"full_name"`
 	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required,min=6"`
+}
+
+// we use this so the hashed password isnt sent back to the client
+type createUserResponse struct {
+	ID                int64     `json:"id"`
+	Username          string    `json:"username"`
+	FullName          string    `json:"full_name"`
+	Email             string    `json:"email"`
+	PasswordChangedAt time.Time `json:"password_changed_at"`
+	CreatedAt         time.Time `json:"created_at"`
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
@@ -23,10 +36,17 @@ func (server *Server) createUser(ctx *gin.Context) {
 		return
 	}
 
+	hashedPassword, err := util.HashPassword(req.Password)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
 	arg := db.CreateUserParams{
-		Username: req.Username,
-		FullName: req.FullName,
-		Email:    req.Email,
+		Username:       req.Username,
+		FullName:       req.FullName,
+		Email:          req.Email,
+		HashedPassword: hashedPassword,
 	}
 
 	user, err := server.store.CreateUser(ctx, arg)
@@ -36,7 +56,16 @@ func (server *Server) createUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, user)
+	rsp := createUserResponse{
+		ID:                user.ID,
+		Username:          user.Username,
+		FullName:          user.FullName,
+		Email:             user.Email,
+		PasswordChangedAt: user.PasswordChangedAt,
+		CreatedAt:         user.CreatedAt,
+	}
+
+	ctx.JSON(http.StatusOK, rsp)
 }
 
 type getUserRequest struct {
