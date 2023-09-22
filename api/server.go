@@ -1,27 +1,40 @@
 package api
 
 import (
+	"fmt"
 	db "super-pet-delivery/db/sqlc"
+	"super-pet-delivery/token"
+	"super-pet-delivery/util"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 // Server serves HTTP requests for our api.
 type Server struct {
-	store  db.Store
-	router *gin.Engine
+	config     util.Config
+	store      db.Store
+	tokenMaker token.Maker
+	router     *gin.Engine
 }
 
 // NewServer creates a new HTTP server and set up routing.
-func NewServer(store db.Store) *Server {
-	server := &Server{store: store}
+func NewServer(config util.Config, store db.Store) (*Server, error) {
+	tokenMaker, err := token.NewPasetoMaker(config.TokenSymmetricKey)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create token maker: %w", err)
+	}
+
+	server := &Server{
+		config:     config,
+		store:      store,
+		tokenMaker: tokenMaker,
+	}
 	router := gin.Default()
 
 	// Use the CORS middleware
-	config := cors.DefaultConfig()
+	/* config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:3000"} // Add the origins you want to allow
-	router.Use(cors.New(config))
+	router.Use(cors.New(config)) */
 
 	router.POST("/users", server.createUser)
 	router.GET("/users/:id", server.getUser)
@@ -61,7 +74,7 @@ func NewServer(store db.Store) *Server {
 	router.POST("/pdf/:id", server.createPdf)
 
 	server.router = router
-	return server
+	return server, nil
 }
 
 // Start runs the HTTP server on a specific address.
