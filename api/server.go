@@ -40,47 +40,47 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 }
 
 func (server *Server) setupRouter() {
-
 	router := gin.Default()
+	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 
 	router.POST("/users/login", server.loginUser)
 
-	router.POST("/users", server.createUser)
+	authRoutes.POST("/users", server.createUser)
 	router.GET("/users/:id", server.getUser)
 	router.GET("/users", server.listUser)
-	router.PUT("/users/:id", server.updateUser)
-	router.DELETE("/users/:id", server.deleteUser)
+	authRoutes.PUT("/users/:id", server.updateUser)
+	authRoutes.DELETE("/users/:id", server.deleteUser)
 
-	router.POST("/products", server.createProduct)
+	authRoutes.POST("/products", server.createProduct)
 	router.GET("/products/:id", server.getProduct)
 	router.GET("/products", server.listProduct)
 	// ideally would be paginated as well but for now its good enough
 	router.GET("/users/:id/products", server.listProductsByUser)
-	router.PUT("/products/:id", server.updateProduct)
-	router.DELETE("/products/:id", server.deleteProduct)
+	authRoutes.PUT("/products/:id", server.updateProduct)
+	authRoutes.DELETE("/products/:id", server.deleteProduct)
 
-	router.POST("/categories", server.createCategory)
+	authRoutes.POST("/categories", server.createCategory)
 	router.GET("/categories/:id", server.getCategory)
 	router.GET("/categories", server.listCategory)
-	router.PUT("/categories/:id", server.updateCategory)
-	router.DELETE("/categories/:id", server.deleteCategory)
+	authRoutes.PUT("/categories/:id", server.updateCategory)
+	authRoutes.DELETE("/categories/:id", server.deleteCategory)
 
-	router.POST("/link_categories/:category_id/:product_id", server.associateCategoryWithProduct)
-	router.DELETE("/link_categories/:category_id/:product_id", server.disassociateCategoryWithProduct)
+	authRoutes.POST("/link_categories/:category_id/:product_id", server.associateCategoryWithProduct)
+	authRoutes.DELETE("/link_categories/:category_id/:product_id", server.disassociateCategoryWithProduct)
 
-	router.POST("/clients", server.createClient)
+	authRoutes.POST("/clients", server.createClient)
 	router.GET("/clients/:id", server.getClient)
 	router.GET("/clients", server.listClient)
-	router.PUT("/clients/:id", server.updateClient)
-	router.DELETE("/clients/:id", server.deleteClient)
+	authRoutes.PUT("/clients/:id", server.updateClient)
+	authRoutes.DELETE("/clients/:id", server.deleteClient)
 
-	router.POST("/sales", server.createSale)
+	authRoutes.POST("/sales", server.createSale)
 	router.GET("/sales/:id", server.getSale)
 	router.GET("/sales", server.listSale)
-	router.PUT("/sales/:id", server.updateSale)
-	router.DELETE("/sales/:id", server.deleteSale)
+	authRoutes.PUT("/sales/:id", server.updateSale)
+	authRoutes.DELETE("/sales/:id", server.deleteSale)
 
-	router.POST("/pdf/:id", server.createPdf)
+	authRoutes.POST("/pdf/:id", server.createPdf)
 
 	server.router = router
 }

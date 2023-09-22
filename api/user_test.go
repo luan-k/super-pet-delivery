@@ -11,8 +11,10 @@ import (
 	"reflect"
 	mockdb "super-pet-delivery/db/mock"
 	db "super-pet-delivery/db/sqlc"
+	"super-pet-delivery/token"
 	"super-pet-delivery/util"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
@@ -53,6 +55,7 @@ func TestCreateUserAPI(t *testing.T) {
 	testCases := []struct {
 		name          string
 		body          gin.H
+		setupAuth     func(t *testing.T, request *http.Request, tokenMkaer token.Maker)
 		buildStubs    func(store *mockdb.MockStore)
 		checkResponse func(recoder *httptest.ResponseRecorder)
 	}{
@@ -63,6 +66,9 @@ func TestCreateUserAPI(t *testing.T) {
 				"password":  password,
 				"full_name": user.FullName,
 				"email":     user.Email,
+			},
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				arg := db.CreateUserParams{
@@ -88,6 +94,9 @@ func TestCreateUserAPI(t *testing.T) {
 				"full_name": user.FullName,
 				"email":     user.Email,
 			},
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
 					CreateUser(gomock.Any(), gomock.Any()).
@@ -106,6 +115,9 @@ func TestCreateUserAPI(t *testing.T) {
 				"password":  "123",
 				"full_name": user.FullName,
 				"email":     user.Email,
+			},
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -139,6 +151,7 @@ func TestCreateUserAPI(t *testing.T) {
 			request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
 			require.NoError(t, err)
 
+			tc.setupAuth(t, request, server.tokenMaker)
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(recorder)
 		})

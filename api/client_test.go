@@ -10,8 +10,10 @@ import (
 	"net/http/httptest"
 	mockdb "super-pet-delivery/db/mock"
 	db "super-pet-delivery/db/sqlc"
+	"super-pet-delivery/token"
 	"super-pet-delivery/util"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -36,12 +38,16 @@ func TestCreateClientAPI(t *testing.T) {
 	testCases := []struct {
 		name          string
 		requestClient createClientRequest
+		setupAuth     func(t *testing.T, request *http.Request, tokenMkaer token.Maker)
 		buildStubs    func(store *mockdb.MockStore)
 		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
 	}{
 		{
 			name:          "OK",
 			requestClient: requestClient,
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, "username", time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				// Define expectations for the CreateClient function in your mock store.
 				store.EXPECT().CreateClient(gomock.Any(), gomock.Any()).Times(1).Return(client, nil)
@@ -54,6 +60,9 @@ func TestCreateClientAPI(t *testing.T) {
 		{
 			name:          "BadRequest",
 			requestClient: createClientRequest{}, // Sending an empty request should trigger a bad request.
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, "username", time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().CreateClient(gomock.Any(), gomock.Any()).Times(0) // Expect CreateClient not to be called.
 			},
@@ -64,6 +73,9 @@ func TestCreateClientAPI(t *testing.T) {
 		{
 			name:          "InternalServerError",
 			requestClient: requestClient,
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, "username", time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().CreateClient(gomock.Any(), gomock.Any()).Times(1).Return(db.Client{}, sql.ErrConnDone)
 			},
@@ -95,6 +107,7 @@ func TestCreateClientAPI(t *testing.T) {
 			require.NoError(t, err)
 
 			// Serve the request and check the response.
+			tc.setupAuth(t, request, server.tokenMaker)
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(t, recorder)
 		})

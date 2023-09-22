@@ -10,8 +10,10 @@ import (
 	"strings"
 	mockdb "super-pet-delivery/db/mock"
 	db "super-pet-delivery/db/sqlc"
+	"super-pet-delivery/token"
 	"super-pet-delivery/util"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -31,12 +33,16 @@ func TestCreateProductAPI(t *testing.T) {
 	testCases := []struct {
 		name           string
 		requestProduct createProductRequest
+		setupAuth      func(t *testing.T, request *http.Request, tokenMkaer token.Maker)
 		buildStubs     func(store *mockdb.MockStore)
 		checkResponse  func(t *testing.T, recorder *httptest.ResponseRecorder)
 	}{
 		{
 			name:           "OK",
 			requestProduct: requestProduct,
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, "username", time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				// Define expectations for the CreateProduct function in your mock store.
 				store.EXPECT().CreateProduct(gomock.Any(), gomock.Any()).Times(1).Return(product, nil)
@@ -70,6 +76,7 @@ func TestCreateProductAPI(t *testing.T) {
 			require.NoError(t, err)
 
 			// Serve the request and check the response
+			tc.setupAuth(t, request, server.tokenMaker)
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(t, recorder)
 		})
@@ -164,6 +171,7 @@ func TestUpdateProductAPI(t *testing.T) {
 		name          string
 		productID     int64
 		requestBody   interface{}
+		setupAuth     func(t *testing.T, request *http.Request, tokenMkaer token.Maker)
 		buildStubs    func(store *mockdb.MockStore)
 		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
 	}{
@@ -171,6 +179,9 @@ func TestUpdateProductAPI(t *testing.T) {
 			name:        "OK",
 			productID:   product.ID,
 			requestBody: updateRequest,
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, "username", time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				// Define expectations for the GetProduct and UpdateProduct functions in your mock store.
 				store.EXPECT().GetProduct(gomock.Any(), product.ID).Times(1).Return(product, nil)
@@ -209,6 +220,7 @@ func TestUpdateProductAPI(t *testing.T) {
 			require.NoError(t, err)
 
 			// Serve the request and check the response.
+			tc.setupAuth(t, request, server.tokenMaker)
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(t, recorder)
 		})
@@ -222,12 +234,16 @@ func TestDeleteProductAPI_OK(t *testing.T) {
 	testCases := []struct {
 		name          string
 		productID     int64
+		setupAuth     func(t *testing.T, request *http.Request, tokenMkaer token.Maker)
 		buildStubs    func(store *mockdb.MockStore)
 		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
 	}{
 		{
 			name:      "OK",
 			productID: product.ID,
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, "username", time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				// Define expectations for the DeleteProduct function in your mock store.
 				store.EXPECT().DeleteProduct(gomock.Any(), product.ID).Times(1).Return(nil)
@@ -260,6 +276,7 @@ func TestDeleteProductAPI_OK(t *testing.T) {
 			require.NoError(t, err)
 
 			// Serve the request and check the response.
+			tc.setupAuth(t, request, server.tokenMaker)
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(t, recorder)
 		})

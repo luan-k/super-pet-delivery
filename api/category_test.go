@@ -10,8 +10,10 @@ import (
 	"strings"
 	mockdb "super-pet-delivery/db/mock"
 	db "super-pet-delivery/db/sqlc"
+	"super-pet-delivery/token"
 	"super-pet-delivery/util"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
@@ -30,12 +32,16 @@ func TestCreateCategoryAPI(t *testing.T) {
 	testCases := []struct {
 		name            string
 		requestCategory createCategoryRequest
+		setupAuth       func(t *testing.T, request *http.Request, tokenMkaer token.Maker)
 		buildStubs      func(store *mockdb.MockStore)
 		checkResponse   func(t *testing.T, recorder *httptest.ResponseRecorder)
 	}{
 		{
 			name:            "OK",
 			requestCategory: requestCategory,
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, "username", time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				// Define expectations for the CreateCategory function in your mock store.
 				store.EXPECT().CreateCategory(gomock.Any(), gomock.Any()).Times(1).Return(category, nil)
@@ -69,6 +75,7 @@ func TestCreateCategoryAPI(t *testing.T) {
 			require.NoError(t, err)
 
 			// Serve the request and check the response
+			tc.setupAuth(t, request, server.tokenMaker)
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(t, recorder)
 		})
@@ -103,12 +110,16 @@ func TestGetCategoryAPI(t *testing.T) {
 	testCases := []struct {
 		name          string
 		categoryID    int64
+		setupAuth     func(t *testing.T, request *http.Request, tokenMkaer token.Maker)
 		buildStubs    func(store *mockdb.MockStore)
 		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
 	}{
 		{
 			name:       "OK",
 			categoryID: category.ID, // Assuming that "randomCategory" generates a valid category with an ID.
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, "username", time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				// Define expectations for the GetCategory function in your mock store.
 				store.EXPECT().GetCategory(gomock.Any(), category.ID).Times(1).Return(category, nil)
@@ -141,6 +152,7 @@ func TestGetCategoryAPI(t *testing.T) {
 			require.NoError(t, err)
 
 			// Serve the request and check the response
+			tc.setupAuth(t, request, server.tokenMaker)
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(t, recorder)
 		})
@@ -161,6 +173,7 @@ func TestUpdateCategoryAPI(t *testing.T) {
 		name          string
 		categoryID    int64
 		requestBody   interface{}
+		setupAuth     func(t *testing.T, request *http.Request, tokenMkaer token.Maker)
 		buildStubs    func(store *mockdb.MockStore)
 		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
 	}{
@@ -168,6 +181,9 @@ func TestUpdateCategoryAPI(t *testing.T) {
 			name:        "OK",
 			categoryID:  category.ID,
 			requestBody: updateRequest,
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, "username", time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				// Define expectations for the GetCategory and UpdateCategory functions in your mock store.
 				store.EXPECT().GetCategory(gomock.Any(), category.ID).Times(1).Return(category, nil)
@@ -206,6 +222,7 @@ func TestUpdateCategoryAPI(t *testing.T) {
 			require.NoError(t, err)
 
 			// Serve the request and check the response.
+			tc.setupAuth(t, request, server.tokenMaker)
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(t, recorder)
 		})
@@ -219,12 +236,16 @@ func TestDeleteCategoryAPI_OK(t *testing.T) {
 	testCases := []struct {
 		name          string
 		categoryID    int64
+		setupAuth     func(t *testing.T, request *http.Request, tokenMkaer token.Maker)
 		buildStubs    func(store *mockdb.MockStore)
 		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
 	}{
 		{
 			name:       "OK",
 			categoryID: category.ID,
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, "username", time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				// Define expectations for the DeleteCategory function in your mock store.
 				store.EXPECT().DeleteCategory(gomock.Any(), category.ID).Times(1).Return(nil)
@@ -257,6 +278,7 @@ func TestDeleteCategoryAPI_OK(t *testing.T) {
 			require.NoError(t, err)
 
 			// Serve the request and check the response.
+			tc.setupAuth(t, request, server.tokenMaker)
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(t, recorder)
 		})
