@@ -26,6 +26,7 @@ type Querier interface {
 	GetProduct(ctx context.Context, id int64) (Product, error)
 	GetSale(ctx context.Context, id int64) (Sale, error)
 	GetUser(ctx context.Context, id int64) (User, error)
+	GetUserByUsername(ctx context.Context, username string) (User, error)
 	ListCategories(ctx context.Context, arg ListCategoriesParams) ([]Category, error)
 	ListCategoriesByProduct(ctx context.Context, productID int64) ([]Category, error)
 	ListClients(ctx context.Context, arg ListClientsParams) ([]Client, error)

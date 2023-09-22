@@ -29,12 +29,21 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 		store:      store,
 		tokenMaker: tokenMaker,
 	}
-	router := gin.Default()
 
 	// Use the CORS middleware
 	/* config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:3000"} // Add the origins you want to allow
 	router.Use(cors.New(config)) */
+
+	server.setupRouter()
+	return server, nil
+}
+
+func (server *Server) setupRouter() {
+
+	router := gin.Default()
+
+	router.POST("/users/login", server.loginUser)
 
 	router.POST("/users", server.createUser)
 	router.GET("/users/:id", server.getUser)
@@ -74,7 +83,6 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	router.POST("/pdf/:id", server.createPdf)
 
 	server.router = router
-	return server, nil
 }
 
 // Start runs the HTTP server on a specific address.
