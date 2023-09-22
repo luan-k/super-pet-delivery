@@ -6,6 +6,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
@@ -14,6 +16,7 @@ type Querier interface {
 	CreateClient(ctx context.Context, arg CreateClientParams) (Client, error)
 	CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error)
 	CreateSale(ctx context.Context, arg CreateSaleParams) (Sale, error)
+	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteCategory(ctx context.Context, id int64) error
 	DeleteClient(ctx context.Context, id int64) error
@@ -25,6 +28,7 @@ type Querier interface {
 	GetClient(ctx context.Context, id int64) (Client, error)
 	GetProduct(ctx context.Context, id int64) (Product, error)
 	GetSale(ctx context.Context, id int64) (Sale, error)
+	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetUser(ctx context.Context, id int64) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
 	ListCategories(ctx context.Context, arg ListCategoriesParams) ([]Category, error)
