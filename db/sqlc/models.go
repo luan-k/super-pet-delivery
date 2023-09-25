@@ -29,6 +29,14 @@ type Client struct {
 	AddressReference    string `json:"address_reference"`
 }
 
+type Image struct {
+	ID          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Alt         string `json:"alt"`
+	Path        string `json:"path"`
+}
+
 type Product struct {
 	ID          int64    `json:"id"`
 	Name        string   `json:"name"`
@@ -41,6 +49,11 @@ type Product struct {
 type ProductCategory struct {
 	ProductID  int64 `json:"product_id"`
 	CategoryID int64 `json:"category_id"`
+}
+
+type ProductImage struct {
+	ProductID int64 `json:"product_id"`
+	ImageID   int64 `json:"image_id"`
 }
 
 type Sale struct {
