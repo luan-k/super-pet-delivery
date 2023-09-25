@@ -28,7 +28,9 @@ UPDATE users
 SET 
     username = COALESCE($2, username),
     full_name = COALESCE($3, full_name),
-    email = COALESCE($4, email)
+    email = COALESCE($4, email),
+    hashed_password = COALESCE($5, hashed_password),
+    password_changed_at = COALESCE($6, password_changed_at)
 WHERE id = $1
 RETURNING *;
 

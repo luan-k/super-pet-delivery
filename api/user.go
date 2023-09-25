@@ -125,9 +125,10 @@ func (server *Server) listUser(ctx *gin.Context) {
 }
 
 type updateUserRequest struct {
-	Username string `json:"username"`
-	FullName string `json:"full_name"`
-	Email    string `json:"email"`
+	Username       string `json:"username"`
+	FullName       string `json:"full_name"`
+	Email          string `json:"email"`
+	HashedPassword string `json:"hashed_password"`
 }
 
 func (server *Server) updateUser(ctx *gin.Context) {
@@ -163,12 +164,24 @@ func (server *Server) updateUser(ctx *gin.Context) {
 	if req.Email != "" {
 		existingUser.Email = req.Email
 	}
+	if req.HashedPassword != "" {
+		hashedPassword, err := util.HashPassword(req.HashedPassword)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+		existingUser.HashedPassword = hashedPassword
+		// Set the PasswordChangedAt field to the current time
+		existingUser.PasswordChangedAt = time.Now()
+	}
 
 	arg := db.UpdateUserParams{
-		ID:       userID,
-		Username: existingUser.Username,
-		FullName: existingUser.FullName,
-		Email:    existingUser.Email,
+		ID:                userID,
+		Username:          existingUser.Username,
+		FullName:          existingUser.FullName,
+		Email:             existingUser.Email,
+		HashedPassword:    existingUser.HashedPassword,
+		PasswordChangedAt: existingUser.PasswordChangedAt, // how do I put current time here
 	}
 
 	// Perform the update operation with the modified user data

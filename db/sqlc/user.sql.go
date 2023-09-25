@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -146,16 +147,20 @@ UPDATE users
 SET 
     username = COALESCE($2, username),
     full_name = COALESCE($3, full_name),
-    email = COALESCE($4, email)
+    email = COALESCE($4, email),
+    hashed_password = COALESCE($5, hashed_password),
+    password_changed_at = COALESCE($6, password_changed_at)
 WHERE id = $1
 RETURNING id, username, full_name, email, hashed_password, password_changed_at, created_at
 `
 
 type UpdateUserParams struct {
-	ID       int64  `json:"id"`
-	Username string `json:"username"`
-	FullName string `json:"full_name"`
-	Email    string `json:"email"`
+	ID                int64     `json:"id"`
+	Username          string    `json:"username"`
+	FullName          string    `json:"full_name"`
+	Email             string    `json:"email"`
+	HashedPassword    string    `json:"hashed_password"`
+	PasswordChangedAt time.Time `json:"password_changed_at"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -164,6 +169,8 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Username,
 		arg.FullName,
 		arg.Email,
+		arg.HashedPassword,
+		arg.PasswordChangedAt,
 	)
 	var i User
 	err := row.Scan(
