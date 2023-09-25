@@ -30,10 +30,12 @@ type Client struct {
 }
 
 type Product struct {
-	ID          int64  `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	UserID      int64  `json:"user_id"`
+	ID          int64    `json:"id"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	UserID      int64    `json:"user_id"`
+	Price       string   `json:"price"`
+	Images      []string `json:"images"`
 }
 
 type ProductCategory struct {

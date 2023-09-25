@@ -12,9 +12,11 @@ import (
 )
 
 type createProductRequest struct {
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description" validate:"required"`
-	UserID      int64  `json:"user_id" validate:"required"`
+	Name        string   `json:"name" validate:"required"`
+	Description string   `json:"description" validate:"required"`
+	UserID      int64    `json:"user_id" validate:"required"`
+	Price       string   `json:"price"`
+	Images      []string `json:"images"`
 }
 
 func (server *Server) createProduct(ctx *gin.Context) {
@@ -24,10 +26,21 @@ func (server *Server) createProduct(ctx *gin.Context) {
 		return
 	}
 
+	productPrice := ""
+	productImages := []string{}
+	if req.Price != "" {
+		productPrice = req.Price
+	}
+	if len(req.Images) > 0 {
+		productImages = req.Images
+	}
+
 	arg := db.CreateProductParams{
 		Name:        req.Name,
 		Description: req.Description,
 		UserID:      req.UserID,
+		Price:       productPrice,
+		Images:      productImages,
 	}
 
 	product, err := server.store.CreateProduct(ctx, arg)
@@ -112,9 +125,11 @@ func (server *Server) listProductsByUser(ctx *gin.Context) {
 }
 
 type updateProductRequest struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	UserID      int64  `json:"user_id"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	UserID      int64    `json:"user_id"`
+	Price       string   `json:"price"`
+	Images      []string `json:"images"`
 }
 
 func (server *Server) updateProduct(ctx *gin.Context) {
@@ -150,12 +165,20 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 	if req.UserID != 0 {
 		existingProduct.UserID = req.UserID
 	}
+	if req.Price != "" {
+		existingProduct.Price = req.Price
+	}
+	if len(req.Images) > 0 {
+		existingProduct.Images = req.Images
+	}
 
 	arg := db.UpdateProductParams{
 		ID:          productID,
 		Name:        existingProduct.Name,
 		Description: existingProduct.Description,
 		UserID:      existingProduct.UserID,
+		Price:       existingProduct.Price,
+		Images:      existingProduct.Images,
 	}
 
 	// Perform the update operation with the modified product data

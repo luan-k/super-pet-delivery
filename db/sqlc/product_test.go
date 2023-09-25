@@ -15,6 +15,8 @@ func createRandomProduct(t *testing.T) Product {
 		Name:        util.RandomFullName(),
 		Description: util.RandomDescription(),
 		UserID:      user.ID,
+		Price:       "",
+		Images:      []string{},
 	}
 
 	product, err := testQueries.CreateProduct(context.Background(), arg)
@@ -153,6 +155,8 @@ func TestUpdateProduct(t *testing.T) {
 		Name:        util.RandomFullName(),
 		Description: product1.Description,
 		UserID:      product1.UserID,
+		Price:       product1.Price,
+		Images:      product1.Images,
 	}
 	// update description
 	arg2 := UpdateProductParams{
@@ -160,6 +164,8 @@ func TestUpdateProduct(t *testing.T) {
 		Name:        product2.Name,
 		Description: util.RandomDescription(),
 		UserID:      product2.UserID,
+		Price:       product2.Price,
+		Images:      product2.Images,
 	}
 	// update userID
 	arg3 := UpdateProductParams{
@@ -167,6 +173,8 @@ func TestUpdateProduct(t *testing.T) {
 		Name:        product3.Name,
 		Description: product3.Description,
 		UserID:      user.ID,
+		Price:       product3.Price,
+		Images:      product3.Images,
 	}
 
 	// testing update name

@@ -12,7 +12,9 @@ CREATE TABLE "products" (
   "id" BIGSERIAL PRIMARY KEY,
   "name" varchar NOT NULL,
   "description" varchar NOT NULL,
-  "user_id" bigint NOT NULL
+  "user_id" bigint NOT NULL,
+  "price" varchar NOT NULL DEFAULT '',
+  "images" varchar[] NOT NULL DEFAULT '{}'
 );
 
 ALTER TABLE "products" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");

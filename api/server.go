@@ -46,9 +46,10 @@ func (server *Server) setupRouter() {
 	router.POST("/users/login", server.loginUser)
 	router.POST("/tokens/renew_access", server.renewAccessToken)
 
-	authRoutes.POST("/users", server.createUser)
-	router.GET("/users/:id", server.getUser)
-	router.GET("/users", server.listUser)
+	// TODO: add users to authroutes middleware and make a scipt of the first admim like wp??
+	router.POST("/users", server.createUser)
+	authRoutes.GET("/users/:id", server.getUser)
+	authRoutes.GET("/users", server.listUser)
 	authRoutes.PUT("/users/:id", server.updateUser)
 	authRoutes.DELETE("/users/:id", server.deleteUser)
 
@@ -70,14 +71,14 @@ func (server *Server) setupRouter() {
 	authRoutes.DELETE("/link_categories/:category_id/:product_id", server.disassociateCategoryWithProduct)
 
 	authRoutes.POST("/clients", server.createClient)
-	router.GET("/clients/:id", server.getClient)
-	router.GET("/clients", server.listClient)
+	authRoutes.GET("/clients/:id", server.getClient)
+	authRoutes.GET("/clients", server.listClient)
 	authRoutes.PUT("/clients/:id", server.updateClient)
 	authRoutes.DELETE("/clients/:id", server.deleteClient)
 
 	authRoutes.POST("/sales", server.createSale)
-	router.GET("/sales/:id", server.getSale)
-	router.GET("/sales", server.listSale)
+	authRoutes.GET("/sales/:id", server.getSale)
+	authRoutes.GET("/sales", server.listSale)
 	authRoutes.PUT("/sales/:id", server.updateSale)
 	authRoutes.DELETE("/sales/:id", server.deleteSale)
 
