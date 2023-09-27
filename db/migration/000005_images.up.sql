@@ -3,7 +3,7 @@ CREATE TABLE "images" (
   "name" varchar NOT NULL,
   "description" varchar NOT NULL,
   "alt" varchar NOT NULL,
-  "path" varchar NOT NULL
+  "image_path" varchar NOT NULL
 );
 
 CREATE TABLE "product_images" (

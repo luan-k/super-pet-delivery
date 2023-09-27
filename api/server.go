@@ -84,6 +84,16 @@ func (server *Server) setupRouter() {
 
 	authRoutes.POST("/pdf/:id", server.createPdf)
 
+	authRoutes.POST("/images", server.createImage)
+	router.GET("/images/:id", server.getImage)
+	router.GET("/media/:year/:month/:filename", server.getImagePath)
+	/*router.GET("/images", server.listImage)
+	authRoutes.PUT("/images/:id", server.updateImage)
+	authRoutes.DELETE("/images/:id", server.deleteImage)
+
+	authRoutes.POST("/link_images/:image_id/:product_id", server.associateImageWithProduct)
+	authRoutes.DELETE("/link_images/:image_id/:product_id", server.disassociateImageWithProduct) */
+
 	server.router = router
 }
 

@@ -34,7 +34,7 @@ type Image struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Alt         string `json:"alt"`
-	Path        string `json:"path"`
+	ImagePath   string `json:"image_path"`
 }
 
 type Product struct {

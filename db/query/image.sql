@@ -1,9 +1,11 @@
 -- name: CreateImage :one
 INSERT INTO images (
     name,
-    description
+    description,
+    alt,
+    image_path
 ) VALUES (
-    $1, $2
+    $1, $2, $3, $4
 ) RETURNING *;
 
 -- name: GetImage :one
@@ -38,7 +40,8 @@ ORDER BY c.id;
 UPDATE images 
 SET 
     name = COALESCE($2, name),
-    description = COALESCE($3, description)
+    description = COALESCE($3, description),
+    alt = COALESCE($4, alt)
 WHERE id = $1
 RETURNING *;
 
