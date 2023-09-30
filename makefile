@@ -34,7 +34,13 @@ test:
 server:
 	go run main.go
 
+devserver:
+	gin -i run main.go
+
+compose:
+	docker compose -f docker-compose.dev.yml up
+
 mock:
 	mockgen --package mockdb --destination db/mock/store.go super-pet-delivery/db/sqlc Store
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock migrateup1 migratedown1
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock migrateup1 migratedown1 devserver compose

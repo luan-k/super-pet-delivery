@@ -2,13 +2,13 @@ package api
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"strconv"
+	db "super-pet-delivery/db/sqlc"
 	"text/template"
 	"time"
 
@@ -16,12 +16,12 @@ import (
 )
 
 type Sale struct {
-	ID          int64  `json:"id"`
-	ClientID    int64  `json:"client_id"`
-	Product     string `json:"product"`
-	Price       int    `json:"price"`
-	Observation string `json:"observation"`
-	CreatedAt   string `json:"created_at"`
+	ID          int64     `json:"id"`
+	ClientID    int64     `json:"client_id"`
+	Product     string    `json:"product"`
+	Price       int64     `json:"price"`
+	Observation string    `json:"observation"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 type Client struct {
@@ -37,61 +37,25 @@ type Client struct {
 	AddressReference    string `json:"address_reference"`
 }
 
-func fetchSaleData(saleID int64) (*Sale, error) {
-	// Define the API URL with the sale ID
-	apiURL := fmt.Sprintf("http://localhost:8080/sales/%d", saleID)
-
-	// Make an HTTP GET request to fetch sale data
-	response, err := http.Get(apiURL)
-	if err != nil {
-		return nil, err
-	}
-	defer response.Body.Close()
-
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("API request failed with status code: %d", response.StatusCode)
-	}
-
-	// Parse the JSON response
-	var sale Sale
-	data, err := io.ReadAll(response.Body)
+func (server *Server) fetchSaleData(saleID int64, ctx *gin.Context) (*db.Sale, error) {
+	// Use your custom store method to fetch sale data
+	sale, err := server.store.GetSale(ctx, saleID)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := json.Unmarshal(data, &sale); err != nil {
-		return nil, err
-	}
-
+	// Return a pointer to the sale data
 	return &sale, nil
 }
 
-func fetchClientData(clientID int64) (*Client, error) {
-	// Define the API URL with the client ID
-	apiURL := fmt.Sprintf("http://localhost:8080/clients/%d", clientID)
-
-	// Make an HTTP GET request to fetch client data
-	response, err := http.Get(apiURL)
-	if err != nil {
-		return nil, err
-	}
-	defer response.Body.Close()
-
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("API request failed with status code: %d", response.StatusCode)
-	}
-
-	// Parse the JSON response
-	var client Client
-	data, err := io.ReadAll(response.Body)
+func (server *Server) fetchClientData(clientID int64, ctx *gin.Context) (*db.Client, error) {
+	// Use your custom store method to fetch client data
+	client, err := server.store.GetClient(ctx, clientID)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := json.Unmarshal(data, &client); err != nil {
-		return nil, err
-	}
-
+	// Return a pointer to the client data
 	return &client, nil
 }
 
@@ -105,14 +69,14 @@ func (server *Server) createPdf(ctx *gin.Context) {
 	}
 
 	// Fetch sale data from the API
-	sale, err := fetchSaleData(saleID)
+	sale, err := server.fetchSaleData(saleID, ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch sale data"})
 		return
 	}
 
 	// Fetch client data using the client_id from the sale response
-	client, err := fetchClientData(sale.ClientID)
+	client, err := server.fetchClientData(sale.ClientID, ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch client data"})
 		return
@@ -167,12 +131,34 @@ func (server *Server) createPdf(ctx *gin.Context) {
 		return
 	}
 
+	rspSale := &Sale{
+		ID:          sale.ID,
+		ClientID:    sale.ClientID,
+		Product:     sale.Product,
+		Price:       sale.Price,
+		Observation: sale.Observation,
+		CreatedAt:   sale.CreatedAt,
+	}
+	rspClient := &Client{
+		ID:                  client.ID,
+		FullName:            client.FullName,
+		PhoneWhatsApp:       client.PhoneWhatsapp,
+		PhoneLine:           client.PhoneLine,
+		PetName:             client.PetName,
+		PetBreed:            client.PetBreed,
+		AddressStreet:       client.AddressStreet,
+		AddressNumber:       client.AddressNumber,
+		AddressNeighborhood: client.AddressNeighborhood,
+		AddressReference:    client.AddressReference,
+	}
+
+	// Now you can use the converted sale and client in your struct literal
 	data := struct {
 		Sale   *Sale
 		Client *Client
 	}{
-		Sale:   sale,
-		Client: client,
+		Sale:   rspSale,
+		Client: rspClient,
 	}
 
 	err = tmpl.Execute(file, data)
@@ -237,7 +223,7 @@ func convertHTMLToPDF(filePath, imgPath, pdfPath string) error {
 	writer.Close()
 
 	// Create a POST request to Gotenberg
-	req, err := http.NewRequest("POST", "http://localhost:3000/forms/chromium/convert/html", &requestBody)
+	req, err := http.NewRequest("POST", "http://gotenberg:3000/forms/chromium/convert/html", &requestBody)
 	if err != nil {
 		return err
 	}
@@ -275,7 +261,7 @@ func convertHTMLToPDF(filePath, imgPath, pdfPath string) error {
 }
 
 /* curl \
---request POST 'http://localhost:3000/forms/chromium/convert/html' \
+--request POST 'http://pdf-generator:3000/forms/chromium/convert/html' \
 --form 'files=@"api/pdf/index.html"' \
 --form 'files=@"api/pdf/img.png"' \
 -o test.pdf */
