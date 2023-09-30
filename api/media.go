@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	db "super-pet-delivery/db/sqlc"
 	"time"
@@ -145,86 +146,91 @@ func (server *Server) getImagePath(ctx *gin.Context) {
 	ctx.File(filePath)
 }
 
-/*
-type listCategoryRequest struct {
+type listImageRequest struct {
 	PageID   int32 `form:"page_id" binding:"required,min=1"`
 	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
 }
 
-func (server *Server) listCategory(ctx *gin.Context) {
-	var req listCategoryRequest
+func (server *Server) listImage(ctx *gin.Context) {
+	var req listImageRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	arg := db.ListCategoriesParams{
+	arg := db.ListImagesParams{
 		Limit:  req.PageSize,
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
 
-	categories, err := server.store.ListCategories(ctx, arg)
+	images, err := server.store.ListImages(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, categories)
+	ctx.JSON(http.StatusOK, images)
 }
 
-type updateCategoryRequest struct {
+type updateImageRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	Alt         string `json:"alt"`
 }
 
-func (server *Server) updateCategory(ctx *gin.Context) {
-	var req updateCategoryRequest
+func (server *Server) updateImage(ctx *gin.Context) {
+	var req updateImageRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	categoryID, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
-	fmt.Println(categoryID)
+	imageID, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	fmt.Println(imageID)
 	if err != nil {
 		fmt.Println("error in parsing id")
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	// Fetch the existing category data from db
-	existingCategory, err := server.store.GetCategory(ctx, categoryID)
+	// Fetch the existing image data from db
+	existingImage, err := server.store.GetImage(ctx, imageID)
 	if err != nil {
-		fmt.Println("error in getting category")
+		fmt.Println("error in getting image")
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
 	// Update only the fields that are provided in the request
 	if req.Name != "" {
-		existingCategory.Name = req.Name
+		existingImage.Name = req.Name
 	}
 	if req.Description != "" {
-		existingCategory.Description = req.Description
+		existingImage.Description = req.Description
+	}
+	if req.Alt != "" {
+		existingImage.Alt = req.Alt
 	}
 
-	arg := db.UpdateCategoryParams{
-		ID:          categoryID,
-		Name:        existingCategory.Name,
-		Description: existingCategory.Description,
+	arg := db.UpdateImageParams{
+		ID:          imageID,
+		Name:        existingImage.Name,
+		Description: existingImage.Description,
+		Alt:         existingImage.Alt,
 	}
 
-	// Perform the update operation with the modified category data
-	category, err := server.store.UpdateCategory(ctx, arg)
+	// Perform the update operation with the modified image data
+	image, err := server.store.UpdateImage(ctx, arg)
 	if err != nil {
-		fmt.Println("error in updating category")
+		fmt.Println("error in updating image")
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, category)
+	ctx.JSON(http.StatusOK, image)
 }
 
+/*
 type deleteCategoryRequest struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
