@@ -89,10 +89,10 @@ func (server *Server) setupRouter() {
 	router.GET("/media/:year/:month/:filename", server.getImagePath)
 	router.GET("/images", server.listImage)
 	authRoutes.PUT("/images/:id", server.updateImage)
-	/*authRoutes.DELETE("/images/:id", server.deleteImage)
+	authRoutes.DELETE("/images/:id", server.deleteImage)
 
 	authRoutes.POST("/link_images/:image_id/:product_id", server.associateImageWithProduct)
-	authRoutes.DELETE("/link_images/:image_id/:product_id", server.disassociateImageWithProduct) */
+	authRoutes.DELETE("/link_images/:image_id/:product_id", server.disassociateImageWithProduct)
 
 	server.router = router
 }

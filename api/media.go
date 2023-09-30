@@ -230,77 +230,70 @@ func (server *Server) updateImage(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, image)
 }
 
-/*
-type deleteCategoryRequest struct {
+type deleteImageRequest struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
 
-func (server *Server) deleteCategory(ctx *gin.Context) {
-	var req deleteCategoryRequest
+func (server *Server) deleteImage(ctx *gin.Context) {
+	var req deleteImageRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	// delete existing category
-	err := server.store.DeleteCategory(ctx, req.ID)
+	// Get the image information from the database, including the file path
+	image, err := server.store.GetImage(ctx, req.ID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, "Category deleted successfully")
-}
+	// Construct the absolute file path
+	filePath := "." + image.ImagePath
 
-type associateCategoryWithProductRequest struct {
-	CategoryID int64 `uri:"category_id" binding:"required,min=1"`
-	ProductID  int64 `uri:"product_id" binding:"required,min=1"`
-}
-
-func (server *Server) associateCategoryWithProduct(ctx *gin.Context) {
-	var req associateCategoryWithProductRequest
-	if err := ctx.ShouldBindUri(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+	fmt.Printf("Constructed file path: %s\n", filePath)
+	// Check if the file exists
+	_, err = os.Stat(filePath)
+	if os.IsNotExist(err) {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Image not found"})
 		return
 	}
 
-	arg := db.AssociateProductWithCategoryParams{
-		CategoryID: req.CategoryID,
-		ProductID:  req.ProductID,
-	}
-
-	category, err := server.store.AssociateProductWithCategory(ctx, arg)
+	// Delete the image file
+	err = os.Remove(filePath)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
-			return
-		}
-
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, category)
+	// Delete the image record from the database
+	err = server.store.DeleteImage(ctx, req.ID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, "Image deleted successfully")
 }
 
-type disassociateCategoryWithProductRequest struct {
-	CategoryID int64 `uri:"category_id" binding:"required,min=1"`
-	ProductID  int64 `uri:"product_id" binding:"required,min=1"`
+type associateImageWithProductRequest struct {
+	ImageID   int64 `uri:"image_id" binding:"required,min=1"`
+	ProductID int64 `uri:"product_id" binding:"required,min=1"`
 }
 
-func (server *Server) disassociateCategoryWithProduct(ctx *gin.Context) {
-	var req disassociateCategoryWithProductRequest
+func (server *Server) associateImageWithProduct(ctx *gin.Context) {
+	var req associateImageWithProductRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	arg := db.DisassociateProductFromCategoryParams{
-		CategoryID: req.CategoryID,
-		ProductID:  req.ProductID,
+	arg := db.AssociateProductWithImageParams{
+		ImageID:   req.ImageID,
+		ProductID: req.ProductID,
 	}
 
-	category, err := server.store.DisassociateProductFromCategory(ctx, arg)
+	image, err := server.store.AssociateProductWithImage(ctx, arg)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
@@ -311,6 +304,36 @@ func (server *Server) disassociateCategoryWithProduct(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, category)
+	ctx.JSON(http.StatusOK, image)
 }
-*/
+
+type disassociateImageWithProductRequest struct {
+	ImageID   int64 `uri:"image_id" binding:"required,min=1"`
+	ProductID int64 `uri:"product_id" binding:"required,min=1"`
+}
+
+func (server *Server) disassociateImageWithProduct(ctx *gin.Context) {
+	var req disassociateImageWithProductRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	arg := db.DisassociateProductFromImageParams{
+		ImageID:   req.ImageID,
+		ProductID: req.ProductID,
+	}
+
+	image, err := server.store.DisassociateProductFromImage(ctx, arg)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, image)
+}
