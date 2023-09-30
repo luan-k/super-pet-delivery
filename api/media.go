@@ -129,7 +129,8 @@ func (server *Server) getImagePath(ctx *gin.Context) {
 	}
 
 	// Construct the absolute file path based on the parameters
-	filePath := fmt.Sprintf("./images/%d/%d/%s", req.Year, req.Month, req.Filename)
+	monthStr := fmt.Sprintf("%02d", req.Month) // Format with zero-padding
+	filePath := fmt.Sprintf("./images/%d/%s/%s", req.Year, monthStr, req.Filename)
 
 	fmt.Printf("Constructed file path: %s\n", filePath)
 
