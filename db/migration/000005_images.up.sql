@@ -8,7 +8,8 @@ CREATE TABLE "images" (
 
 CREATE TABLE "product_images" (
   "product_id" bigint NOT NULL,
-  "image_id" bigint NOT NULL
+  "image_id" bigint NOT NULL,
+  CONSTRAINT unique_product_image UNIQUE (product_id, image_id)
 );
 
 ALTER TABLE "product_images" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id");
