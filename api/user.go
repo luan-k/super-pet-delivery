@@ -18,6 +18,7 @@ type createUserRequest struct {
 	FullName string `json:"full_name"`
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required,min=6"`
+	Role     string `json:"role" binding:"required,oneof=User Administrator"`
 }
 
 // we use this so the hashed password isnt sent back to the client
@@ -28,6 +29,7 @@ type userResponse struct {
 	Email             string    `json:"email"`
 	PasswordChangedAt time.Time `json:"password_changed_at"`
 	CreatedAt         time.Time `json:"created_at"`
+	Role              string    `json:"role"`
 }
 
 func newUserResponse(user db.User) userResponse {
@@ -38,6 +40,7 @@ func newUserResponse(user db.User) userResponse {
 		Email:             user.Email,
 		PasswordChangedAt: user.PasswordChangedAt,
 		CreatedAt:         user.CreatedAt,
+		Role:              user.Role,
 	}
 }
 
@@ -59,6 +62,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 		FullName:       req.FullName,
 		Email:          req.Email,
 		HashedPassword: hashedPassword,
+		Role:           req.Role,
 	}
 
 	user, err := server.store.CreateUser(ctx, arg)
@@ -129,6 +133,7 @@ type updateUserRequest struct {
 	FullName       string `json:"full_name"`
 	Email          string `json:"email"`
 	HashedPassword string `json:"hashed_password"`
+	Role           string `json:"role" binding:"oneof=User Administrator"`
 }
 
 func (server *Server) updateUser(ctx *gin.Context) {
@@ -174,6 +179,9 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		// Set the PasswordChangedAt field to the current time
 		existingUser.PasswordChangedAt = time.Now()
 	}
+	if req.Role != "" {
+		existingUser.Role = req.Role
+	}
 
 	arg := db.UpdateUserParams{
 		ID:                userID,
@@ -181,7 +189,8 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		FullName:          existingUser.FullName,
 		Email:             existingUser.Email,
 		HashedPassword:    existingUser.HashedPassword,
-		PasswordChangedAt: existingUser.PasswordChangedAt, // how do I put current time here
+		PasswordChangedAt: existingUser.PasswordChangedAt,
+		Role:              existingUser.Role,
 	}
 
 	// Perform the update operation with the modified user data

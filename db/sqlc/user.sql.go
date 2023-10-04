@@ -15,10 +15,11 @@ INSERT INTO users (
     username,
     full_name,
     email,
-    hashed_password
+    hashed_password,
+    role
 ) VALUES (
-    $1, $2, $3, $4
-) RETURNING id, username, full_name, email, hashed_password, password_changed_at, created_at
+    $1, $2, $3, $4, $5
+) RETURNING id, username, full_name, email, hashed_password, password_changed_at, created_at, role
 `
 
 type CreateUserParams struct {
@@ -26,6 +27,7 @@ type CreateUserParams struct {
 	FullName       string `json:"full_name"`
 	Email          string `json:"email"`
 	HashedPassword string `json:"hashed_password"`
+	Role           string `json:"role"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -34,6 +36,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.FullName,
 		arg.Email,
 		arg.HashedPassword,
+		arg.Role,
 	)
 	var i User
 	err := row.Scan(
@@ -44,6 +47,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.HashedPassword,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
+		&i.Role,
 	)
 	return i, err
 }
@@ -59,7 +63,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, username, full_name, email, hashed_password, password_changed_at, created_at FROM users
+SELECT id, username, full_name, email, hashed_password, password_changed_at, created_at, role FROM users
 WHERE id = $1 LIMIT 1
 `
 
@@ -74,12 +78,13 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 		&i.HashedPassword,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
+		&i.Role,
 	)
 	return i, err
 }
 
 const getUserByUsername = `-- name: GetUserByUsername :one
-SELECT id, username, full_name, email, hashed_password, password_changed_at, created_at FROM users
+SELECT id, username, full_name, email, hashed_password, password_changed_at, created_at, role FROM users
 WHERE username = $1
 LIMIT 1
 `
@@ -95,12 +100,13 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 		&i.HashedPassword,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
+		&i.Role,
 	)
 	return i, err
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, username, full_name, email, hashed_password, password_changed_at, created_at FROM users
+SELECT id, username, full_name, email, hashed_password, password_changed_at, created_at, role FROM users
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -128,6 +134,7 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 			&i.HashedPassword,
 			&i.PasswordChangedAt,
 			&i.CreatedAt,
+			&i.Role,
 		); err != nil {
 			return nil, err
 		}
@@ -149,9 +156,10 @@ SET
     full_name = COALESCE($3, full_name),
     email = COALESCE($4, email),
     hashed_password = COALESCE($5, hashed_password),
-    password_changed_at = COALESCE($6, password_changed_at)
+    password_changed_at = COALESCE($6, password_changed_at),
+    role = COALESCE($7, role)
 WHERE id = $1
-RETURNING id, username, full_name, email, hashed_password, password_changed_at, created_at
+RETURNING id, username, full_name, email, hashed_password, password_changed_at, created_at, role
 `
 
 type UpdateUserParams struct {
@@ -161,6 +169,7 @@ type UpdateUserParams struct {
 	Email             string    `json:"email"`
 	HashedPassword    string    `json:"hashed_password"`
 	PasswordChangedAt time.Time `json:"password_changed_at"`
+	Role              string    `json:"role"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -171,6 +180,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Email,
 		arg.HashedPassword,
 		arg.PasswordChangedAt,
+		arg.Role,
 	)
 	var i User
 	err := row.Scan(
@@ -181,6 +191,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.HashedPassword,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
+		&i.Role,
 	)
 	return i, err
 }
