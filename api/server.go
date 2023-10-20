@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"log"
 	db "super-pet-delivery/db/sqlc"
 	"super-pet-delivery/token"
 	"super-pet-delivery/util"
@@ -35,6 +36,11 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	config.AllowOrigins = []string{"http://localhost:3000"} // Add the origins you want to allow
 	router.Use(cors.New(config)) */
 
+	// Create the initial user
+	err = server.createInitialUser(store)
+	if err != nil {
+		log.Fatal("cannot create initial user:", err)
+	}
 	server.setupRouter()
 	return server, nil
 }
@@ -47,7 +53,7 @@ func (server *Server) setupRouter() {
 	router.POST("/tokens/renew_access", server.renewAccessToken)
 
 	// TODO: add users to authroutes middleware and make a scipt of the first admim like wp??
-	router.POST("/users", server.createUser)
+	authRoutes.POST("/users", server.createUser)
 	authRoutes.GET("/users/:id", server.getUser)
 	authRoutes.GET("/users", server.listUser)
 	authRoutes.PUT("/users/:id", server.updateUser)
