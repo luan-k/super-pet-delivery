@@ -45,12 +45,15 @@ type Querier interface {
 	ListProductsByCategory(ctx context.Context, arg ListProductsByCategoryParams) ([]Product, error)
 	ListProductsByUser(ctx context.Context, userID int64) ([]Product, error)
 	ListSales(ctx context.Context, arg ListSalesParams) ([]Sale, error)
+	ListSessionsByUsername(ctx context.Context, username string) ([]Session, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
 	UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Category, error)
 	UpdateClient(ctx context.Context, arg UpdateClientParams) (Client, error)
 	UpdateImage(ctx context.Context, arg UpdateImageParams) (Image, error)
 	UpdateProduct(ctx context.Context, arg UpdateProductParams) (Product, error)
 	UpdateSale(ctx context.Context, arg UpdateSaleParams) (Sale, error)
+	UpdateSession(ctx context.Context, arg UpdateSessionParams) (Session, error)
+	UpdateSessionsUsername(ctx context.Context, arg UpdateSessionsUsernameParams) ([]Session, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 

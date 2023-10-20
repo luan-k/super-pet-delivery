@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	db "super-pet-delivery/db/sqlc"
+	"super-pet-delivery/token"
 	"super-pet-delivery/util"
 	"time"
 
@@ -45,6 +46,14 @@ func newUserResponse(user db.User) userResponse {
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	currentLoggedInUser, _ := server.store.GetUserByUsername(ctx, authPayload.Username)
+
+	if currentLoggedInUser.Role == "User" {
+		ctx.JSON(http.StatusUnauthorized, "You are not authorized to create users, only admins have that privilege")
+		return
+	}
+
 	var req createUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -88,6 +97,14 @@ func (server *Server) getUser(ctx *gin.Context) {
 		return
 	}
 
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	currentLoggedInUser, _ := server.store.GetUserByUsername(ctx, authPayload.Username)
+
+	if currentLoggedInUser.Role == "User" && currentLoggedInUser.ID != req.ID {
+		ctx.JSON(http.StatusUnauthorized, "You are only authorized to look at your own info in depth")
+		return
+	}
+
 	user, err := server.store.GetUser(ctx, req.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -99,7 +116,9 @@ func (server *Server) getUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, user)
+	rsp := newUserResponse(user)
+
+	ctx.JSON(http.StatusOK, rsp)
 }
 
 type listUserRequest struct {
@@ -108,6 +127,14 @@ type listUserRequest struct {
 }
 
 func (server *Server) listUser(ctx *gin.Context) {
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	currentLoggedInUser, _ := server.store.GetUserByUsername(ctx, authPayload.Username)
+
+	if currentLoggedInUser.Role == "User" {
+		ctx.JSON(http.StatusUnauthorized, "You are not authorized list users, only admins have that privilege")
+		return
+	}
+
 	var req listUserRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -129,11 +156,10 @@ func (server *Server) listUser(ctx *gin.Context) {
 }
 
 type updateUserRequest struct {
-	Username       string `json:"username"`
 	FullName       string `json:"full_name"`
 	Email          string `json:"email"`
 	HashedPassword string `json:"hashed_password"`
-	Role           string `json:"role" binding:"oneof=User Administrator"`
+	Role           string `json:"role"`
 }
 
 func (server *Server) updateUser(ctx *gin.Context) {
@@ -151,6 +177,14 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		return
 	}
 
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	currentLoggedInUser, _ := server.store.GetUserByUsername(ctx, authPayload.Username)
+
+	if currentLoggedInUser.Role == "User" && currentLoggedInUser.ID != userID {
+		ctx.JSON(http.StatusUnauthorized, "You are only authorized to edit your profile")
+		return
+	}
+
 	// Fetch the existing user data from db
 	existingUser, err := server.store.GetUser(ctx, userID)
 	if err != nil {
@@ -159,10 +193,6 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		return
 	}
 
-	// Update only the fields that are provided in the request
-	if req.Username != "" {
-		existingUser.Username = req.Username
-	}
 	if req.FullName != "" {
 		existingUser.FullName = req.FullName
 	}
@@ -180,6 +210,10 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		existingUser.PasswordChangedAt = time.Now()
 	}
 	if req.Role != "" {
+		if currentLoggedInUser.Role == "User" {
+			ctx.JSON(http.StatusUnauthorized, "You are not authorized to update your role")
+			return
+		}
 		existingUser.Role = req.Role
 	}
 
@@ -209,6 +243,14 @@ type deleteUserRequest struct {
 }
 
 func (server *Server) deleteUser(ctx *gin.Context) {
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	currentLoggedInUser, _ := server.store.GetUserByUsername(ctx, authPayload.Username)
+
+	if currentLoggedInUser.Role == "User" {
+		ctx.JSON(http.StatusUnauthorized, "You are not authorized delete users, only admins have that privilege")
+		return
+	}
+
 	var req deleteUserRequest
 	fmt.Printf("request: before jsonthing %v\n", req)
 	if err := ctx.ShouldBind(&req); err != nil {
