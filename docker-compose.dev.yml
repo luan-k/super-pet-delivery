@@ -21,6 +21,7 @@ services:
     restart: always
     volumes:
       - ./api:/app/app/api
+      - ./util:/app/app/util
   gotenberg:
     container_name: pdf-generator
     image: gotenberg/gotenberg:7

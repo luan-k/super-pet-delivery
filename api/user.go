@@ -60,6 +60,12 @@ func (server *Server) createUser(ctx *gin.Context) {
 		return
 	}
 
+	// Check if the username contains spaces
+	if util.ContainsSpaces(req.Username) {
+		ctx.JSON(http.StatusBadRequest, "Username cannot contain spaces")
+		return
+	}
+
 	hashedPassword, err := util.HashPassword(req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
