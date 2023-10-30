@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	db "super-pet-delivery/db/sqlc"
 	"super-pet-delivery/token"
 	"super-pet-delivery/util"
@@ -321,8 +322,8 @@ func (server *Server) deleteUser(ctx *gin.Context) {
 }
 
 type loginUserRequest struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required,min=6"`
+	Identifier string `json:"identifier" binding:"required"`
+	Password   string `json:"password" binding:"required,min=6"`
 }
 
 type loginUserResponse struct {
@@ -336,12 +337,20 @@ type loginUserResponse struct {
 
 func (server *Server) loginUser(ctx *gin.Context) {
 	var req loginUserRequest
+	var user db.User
+	var err error
+
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	user, err := server.store.GetUserByUsername(ctx, req.Username)
+	if strings.Contains(req.Identifier, "@") {
+		user, err = server.store.GetUserByEmail(ctx, req.Identifier)
+	} else {
+		user, err = server.store.GetUserByUsername(ctx, req.Identifier)
+	}
+
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
