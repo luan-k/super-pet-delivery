@@ -25,3 +25,18 @@ services:
   gotenberg:
     container_name: pdf-generator
     image: gotenberg/gotenberg:7
+  front:
+    container_name: front
+    build:
+      context: .
+      dockerfile: front/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api:8080
+      - NODE_ENV=development
+    restart: always
+    volumes:
+      - ./front:/app
+      - /app/node_modules
+      - /app/.next
