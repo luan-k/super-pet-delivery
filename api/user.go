@@ -148,6 +148,10 @@ func (server *Server) listUser(ctx *gin.Context) {
 		return
 	}
 
+	headers := ctx.Request.Header
+
+	fmt.Println(headers)
+
 	arg := db.ListUsersParams{
 		Limit:  req.PageSize,
 		Offset: (req.PageID - 1) * req.PageSize,

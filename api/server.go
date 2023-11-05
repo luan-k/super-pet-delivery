@@ -7,6 +7,8 @@ import (
 	"super-pet-delivery/token"
 	"super-pet-delivery/util"
 
+	"github.com/gin-contrib/cors"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -49,10 +51,15 @@ func (server *Server) setupRouter() {
 	router := gin.Default()
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:3000"}
+	config.AllowHeaders = []string{"Authorization"}
+	router.Use(cors.New(config))
+	authRoutes.Use(cors.New(config))
+
 	router.POST("/users/login", server.loginUser)
 	router.POST("/tokens/renew_access", server.renewAccessToken)
 
-	// TODO: add users to authroutes middleware and make a scipt of the first admim like wp??
 	authRoutes.POST("/users", server.createUser)
 	authRoutes.GET("/users/:id", server.getUser)
 	authRoutes.GET("/users", server.listUser)
