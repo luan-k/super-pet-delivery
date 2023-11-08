@@ -31,6 +31,10 @@ func (server *Server) renewAccessToken(ctx *gin.Context) {
 		return
 	}
 
+	fmt.Printf(refreshPayload.Username, " <---- refresh payload username ||   ")
+	fmt.Printf(refreshPayload.ID.String(), " <---- refresh payload ID || ")
+	fmt.Printf(refreshPayload.ID.URN(), " <---- refresh payload ID || ")
+
 	session, err := server.store.GetSession(ctx, refreshPayload.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -78,4 +82,58 @@ func (server *Server) renewAccessToken(ctx *gin.Context) {
 		AccessTokenExpiresAt: accessPayload.ExpiredAt,
 	}
 	ctx.JSON(http.StatusOK, rsp)
+}
+
+func (server *Server) RenewAccessTokenHeader(ctx *gin.Context) (string, error) {
+	refreshToken, err := ctx.Cookie("refresh_token")
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, "refresh token not found in cookies")
+		return "", err
+	}
+
+	refreshPayload, err := server.tokenMaker.VerifyToken(refreshToken)
+	if err != nil {
+		return "", err
+	}
+
+	session, err := server.store.GetSession(ctx, refreshPayload.ID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			fmt.Println("--- Error no rows ---")
+			return "", err
+		}
+		fmt.Println("--- Some Other error ---")
+		return "", err
+	}
+
+	if session.IsBlocked {
+		return "", fmt.Errorf("blocked session")
+	}
+
+	if session.Username != refreshPayload.Username {
+		return "", fmt.Errorf("incorrect session user")
+	}
+
+	if session.RefreshToken != refreshToken {
+		return "", fmt.Errorf("incorrect session token")
+	}
+
+	if time.Now().After(session.ExpiresAt) {
+		return "", fmt.Errorf("expired session")
+	}
+
+	accessToken, _, err := server.tokenMaker.CreateToken(
+		refreshPayload.Username,
+		server.config.AccessTokenDuration,
+	)
+	if err != nil {
+		return "", err
+	}
+
+	// Set the access token as a cookie
+	ctx.SetCookie("access_token", accessToken, int(server.config.AccessTokenDuration.Seconds()), "/", "", false, false)
+	fmt.Print("the acess token is set inside")
+
+	// Return the JSON response
+	return accessToken, nil
 }

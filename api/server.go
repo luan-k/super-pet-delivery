@@ -33,11 +33,6 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 		tokenMaker: tokenMaker,
 	}
 
-	// Use the CORS middleware
-	/* config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000"} // Add the origins you want to allow
-	router.Use(cors.New(config)) */
-
 	// Create the initial user
 	err = server.createInitialUser(store)
 	if err != nil {
@@ -47,14 +42,35 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	return server, nil
 }
 
+// Add the CORSMiddleware function here
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Cookie, cookie, Cookies, cookies, accept, origin, Cache-Control, X-Requested-With, Cookie")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
+}
+
 func (server *Server) setupRouter() {
 	router := gin.Default()
-	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 
 	config := cors.DefaultConfig()
+	router.Use(CORSMiddleware())
+	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
+
 	config.AllowOrigins = []string{"http://localhost:3000"}
-	config.AllowHeaders = []string{"Authorization"}
-	router.Use(cors.New(config))
+	config.AllowHeaders = []string{"Authorization", "Cookie"}
+
+	config.AllowCredentials = true
+	//router.Use(cors.New(config))
 	authRoutes.Use(cors.New(config))
 
 	router.POST("/users/login", server.loginUser)

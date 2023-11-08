@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
+/* import Cookies from "js-cookie";
+import cookiesTest from "./cookiefunc"; */
 
 interface FormData {
   identifier: string;
@@ -35,6 +37,7 @@ function LoginForm() {
       if (typeof window !== "undefined" && localStorage) {
         const response = await fetch("http://localhost:8080/users/login", {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -47,18 +50,32 @@ function LoginForm() {
           // Set the access token in local storage
           localStorage.setItem("accessToken", data.access_token);
 
-          const refresh_token_expires_at = data.refresh_token_expires_at;
-          document.cookie = `refreshToken=${
+          const refreshTokenExpiresAt = new Date(data.refresh_token_expires_at);
+          const refreshTokenMaxAge =
+            (refreshTokenExpiresAt.getTime() - Date.now()) / 1000;
+
+          /* document.cookie = `refreshToken=${
             data.refresh_token
-          }; Secure; HttpOnly; SameSite=Strict; Path=/; Expires=${new Date(
+          }; SameSite=Strict; Path=/; HTTPOnly; Expires=${new Date(
             refresh_token_expires_at
-          ).toUTCString()}`;
+          ).toUTCString()}`; */
+
+          /* Cookies.set("refresh_token", data.refresh_token, {
+            expires: refreshTokenMaxAge, // Set the expiration time in seconds
+            path: "/",
+            domain: "localhost",
+            sameSite: "strict",
+            httpOnly: true,
+          }); */
+
+          /* cookiesTest(data.refresh_token); */
 
           // Update the access token state
           setAccessToken(data.access_token);
 
           // Log the response data
           console.log(data);
+          console.log(data.refresh_token);
         } else {
           console.error("Login failed");
         }

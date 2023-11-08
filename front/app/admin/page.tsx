@@ -1,11 +1,11 @@
-/* import UsersList from "./users"; */
+import UsersList from "./users";
 
 export default function Admin() {
   return (
     <>
-      {/* <UsersList /> */}
+      <UsersList />
       <main className='flex min-h-screen flex-col items-center justify-between p-24'>
-        <h1 className='text-lg'>Hello World</h1>
+        <h1 className='text-lg'>Fck</h1>
       </main>
     </>
   );

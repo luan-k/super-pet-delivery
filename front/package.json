@@ -9,14 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@types/cookies": "^0.7.9",
-    "@types/js-cookie": "^3.0.5",
-    "cookie": "^0.5.0",
-    "cookies": "^0.8.0",
+    "@types/js-cookie": "^3.0.6",
     "js-cookie": "^3.0.5",
     "next": "14.0.1",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "sass": "^1.69.5"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -26,7 +24,6 @@
     "eslint": "^8",
     "eslint-config-next": "14.0.1",
     "postcss": "^8",
-    "sass": "^1.69.5",
     "tailwindcss": "^3.3.0",
     "typescript": "^5"
   }

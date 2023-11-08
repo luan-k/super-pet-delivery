@@ -1,11 +1,10 @@
 # Use an official Node.js image as the base
-FROM node:20-alpine3.17 AS front
+FROM node:21-alpine3.17 AS front
 
 # Set the working directory within the container
 WORKDIR /app
 
 # this fixes the issue of the nextjs not reloading
-ENV NODE_ENV=development
 ENV CHOKIDAR_USEPOLLING=true
 ENV WATCHPACK_POLLING=true
 

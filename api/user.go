@@ -138,7 +138,7 @@ func (server *Server) listUser(ctx *gin.Context) {
 	currentLoggedInUser, _ := server.store.GetUserByUsername(ctx, authPayload.Username)
 
 	if currentLoggedInUser.Role == "User" {
-		ctx.JSON(http.StatusUnauthorized, "You are not authorized list users, only admins have that privilege")
+		ctx.JSON(http.StatusUnauthorized, "You are not authorized to list users, only admins have that privilege")
 		return
 	}
 
@@ -148,9 +148,13 @@ func (server *Server) listUser(ctx *gin.Context) {
 		return
 	}
 
-	headers := ctx.Request.Header
-
-	fmt.Println(headers)
+	newAccessToken, err := server.RenewAccessTokenHeader(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	fmt.Println(newAccessToken)
+	//ctx.SetCookie("access_token", newAccessToken, int(server.config.AccessTokenDuration.Seconds()), "/", "", false, false)
 
 	arg := db.ListUsersParams{
 		Limit:  req.PageSize,
@@ -400,6 +404,11 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
+
+	//ctx.SetCookie("access_token", accessToken, int(server.config.AccessTokenDuration.Seconds()), "/", "", false, false)
+	// Set the refresh token as an HTTP-only cookie
+	ctx.SetCookie("refresh_token", refreshToken, int(server.config.RefreshTokenDuration.Seconds()), "/", "", false, true)
+	fmt.Println("cookie successfully set")
 
 	rsp := loginUserResponse{
 		SessionID:             session.ID,
