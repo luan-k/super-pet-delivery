@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type renewAccessTokenRequest struct {
+/* type renewAccessTokenRequest struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
@@ -82,9 +82,10 @@ func (server *Server) renewAccessToken(ctx *gin.Context) {
 		AccessTokenExpiresAt: accessPayload.ExpiredAt,
 	}
 	ctx.JSON(http.StatusOK, rsp)
-}
+} */
 
 func (server *Server) RenewAccessTokenHeader(ctx *gin.Context) (string, error) {
+	// refresh token was set when logging in
 	refreshToken, err := ctx.Cookie("refresh_token")
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, "refresh token not found in cookies")

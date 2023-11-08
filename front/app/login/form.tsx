@@ -1,7 +1,5 @@
 "use client";
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
-/* import Cookies from "js-cookie";
-import cookiesTest from "./cookiefunc"; */
 
 interface FormData {
   identifier: string;
@@ -46,29 +44,6 @@ function LoginForm() {
 
         if (response.ok) {
           const data = await response.json();
-
-          // Set the access token in local storage
-          localStorage.setItem("accessToken", data.access_token);
-
-          const refreshTokenExpiresAt = new Date(data.refresh_token_expires_at);
-          const refreshTokenMaxAge =
-            (refreshTokenExpiresAt.getTime() - Date.now()) / 1000;
-
-          /* document.cookie = `refreshToken=${
-            data.refresh_token
-          }; SameSite=Strict; Path=/; HTTPOnly; Expires=${new Date(
-            refresh_token_expires_at
-          ).toUTCString()}`; */
-
-          /* Cookies.set("refresh_token", data.refresh_token, {
-            expires: refreshTokenMaxAge, // Set the expiration time in seconds
-            path: "/",
-            domain: "localhost",
-            sameSite: "strict",
-            httpOnly: true,
-          }); */
-
-          /* cookiesTest(data.refresh_token); */
 
           // Update the access token state
           setAccessToken(data.access_token);

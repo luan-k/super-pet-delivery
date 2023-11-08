@@ -405,16 +405,16 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		return
 	}
 
-	//ctx.SetCookie("access_token", accessToken, int(server.config.AccessTokenDuration.Seconds()), "/", "", false, false)
+	ctx.SetCookie("access_token", accessToken, int(server.config.AccessTokenDuration.Seconds()), "/", "", false, false)
 	// Set the refresh token as an HTTP-only cookie
 	ctx.SetCookie("refresh_token", refreshToken, int(server.config.RefreshTokenDuration.Seconds()), "/", "", false, true)
 	fmt.Println("cookie successfully set")
 
 	rsp := loginUserResponse{
-		SessionID:             session.ID,
-		AccessToken:           accessToken,
-		AccessTokenExpiresAt:  accessPayload.ExpiredAt,
-		RefreshToken:          refreshToken,
+		SessionID:            session.ID,
+		AccessToken:          accessToken,
+		AccessTokenExpiresAt: accessPayload.ExpiredAt,
+		//RefreshToken:          refreshToken,
 		RefreshTokenExpiresAt: refreshPayload.ExpiredAt,
 		User:                  newUserResponse(user),
 	}
