@@ -31,7 +31,6 @@ export default function Admin() {
         if (response.ok) {
           const data: User[] = await response.json();
           setUsers(data);
-          console.log(data);
         } else {
           console.error("Failed to fetch data");
         }
@@ -45,7 +44,7 @@ export default function Admin() {
 
   return (
     <>
-      <h1 className='text-lg'>Hello bruh</h1>
+      {/* <h1 className='text-lg'>Hello bruh</h1> */}
       <div>
         <h2>Users:</h2>
         <ul>

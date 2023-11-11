@@ -74,7 +74,7 @@ func (server *Server) setupRouter() {
 	authRoutes.Use(cors.New(config))
 
 	router.POST("/users/login", server.loginUser)
-	//router.POST("/tokens/renew_access", server.renewAccessToken)
+	authRoutes.POST("/tokens/renew_access", server.RenewAccessTokenHeader)
 
 	authRoutes.POST("/users", server.createUser)
 	authRoutes.GET("/users/:id", server.getUser)

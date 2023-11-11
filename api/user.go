@@ -148,14 +148,6 @@ func (server *Server) listUser(ctx *gin.Context) {
 		return
 	}
 
-	newAccessToken, err := server.RenewAccessTokenHeader(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-	fmt.Println(newAccessToken)
-	//ctx.SetCookie("access_token", newAccessToken, int(server.config.AccessTokenDuration.Seconds()), "/", "", false, false)
-
 	arg := db.ListUsersParams{
 		Limit:  req.PageSize,
 		Offset: (req.PageID - 1) * req.PageSize,

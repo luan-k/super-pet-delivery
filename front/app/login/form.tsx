@@ -1,4 +1,5 @@
 "use client";
+import Router, { useRouter } from "next/navigation";
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 
 interface FormData {
@@ -7,6 +8,7 @@ interface FormData {
 }
 
 function LoginForm() {
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     identifier: "",
     password: "",
@@ -47,10 +49,7 @@ function LoginForm() {
 
           // Update the access token state
           setAccessToken(data.access_token);
-
-          // Log the response data
-          console.log(data);
-          console.log(data.refresh_token);
+          router.push("/admin");
         } else {
           console.error("Login failed");
         }

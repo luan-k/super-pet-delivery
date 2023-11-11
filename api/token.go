@@ -84,57 +84,75 @@ func (server *Server) renewAccessToken(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, rsp)
 } */
 
-func (server *Server) RenewAccessTokenHeader(ctx *gin.Context) (string, error) {
+type renewAccessTokenResponse struct {
+	AccessToken          string    `json:"access_token"`
+	AccessTokenExpiresAt time.Time `json:"access_token_expires_at"`
+	Username             string    `json:"username"`
+}
+
+func (server *Server) RenewAccessTokenHeader(ctx *gin.Context) {
 	// refresh token was set when logging in
 	refreshToken, err := ctx.Cookie("refresh_token")
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, "refresh token not found in cookies")
-		return "", err
+		return
 	}
 
 	refreshPayload, err := server.tokenMaker.VerifyToken(refreshToken)
 	if err != nil {
-		return "", err
+		return
 	}
 
 	session, err := server.store.GetSession(ctx, refreshPayload.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			fmt.Println("--- Error no rows ---")
-			return "", err
+			return
 		}
 		fmt.Println("--- Some Other error ---")
-		return "", err
+		return
 	}
 
 	if session.IsBlocked {
-		return "", fmt.Errorf("blocked session")
+		ctx.JSON(http.StatusInternalServerError, "Session Blocked")
+		return
 	}
 
 	if session.Username != refreshPayload.Username {
-		return "", fmt.Errorf("incorrect session user")
+		ctx.JSON(http.StatusInternalServerError, "Wrong Username")
+		return
 	}
 
 	if session.RefreshToken != refreshToken {
-		return "", fmt.Errorf("incorrect session token")
+		ctx.JSON(http.StatusInternalServerError, "Incorrect token")
+		return
 	}
 
 	if time.Now().After(session.ExpiresAt) {
-		return "", fmt.Errorf("expired session")
+		ctx.JSON(http.StatusInternalServerError, "Session Blocked")
+		return
 	}
 
-	accessToken, _, err := server.tokenMaker.CreateToken(
+	accessToken, accessPayload, err := server.tokenMaker.CreateToken(
 		refreshPayload.Username,
 		server.config.AccessTokenDuration,
 	)
 	if err != nil {
-		return "", err
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
 	// Set the access token as a cookie
 	ctx.SetCookie("access_token", accessToken, int(server.config.AccessTokenDuration.Seconds()), "/", "", false, false)
 	fmt.Print("the acess token is set inside")
+	fmt.Print(session.Username)
+
+	rsp := renewAccessTokenResponse{
+		AccessToken:          accessToken,
+		AccessTokenExpiresAt: accessPayload.ExpiredAt,
+		Username:             session.Username,
+	}
 
 	// Return the JSON response
-	return accessToken, nil
+	ctx.JSON(http.StatusOK, rsp)
 }
