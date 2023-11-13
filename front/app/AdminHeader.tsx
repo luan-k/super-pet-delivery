@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import "./styles/admin/header.scss";
 
 export default function IsAuthenticated() {
   const router = useRouter();
@@ -41,7 +42,9 @@ export default function IsAuthenticated() {
 
   return (
     <>
-      <h1 className='text-3xl'>hello {username}</h1>
+      <div className='wkode-admin-header'>
+        <h1 className='text-3xl'>hello {username}</h1>
+      </div>
     </>
   );
 }
