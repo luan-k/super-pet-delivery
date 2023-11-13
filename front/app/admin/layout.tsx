@@ -1,7 +1,7 @@
 import IsAuthenticated from "../AdminHeader";
 import AdminSidebar from "./sidebar";
 import UsersList from "./users";
-import "../styles/admin/clientes/main.scss";
+import "../styles/admin/main.scss";
 
 export default function AdminLayout({
   children,
