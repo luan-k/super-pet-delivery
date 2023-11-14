@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import Cookies from "js-cookie";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface EditClientFormRequest {
   full_name: string;
@@ -28,6 +29,7 @@ interface ClientDetails {
 }
 
 const EditClientForm: React.FC = () => {
+  const router = useRouter();
   const pathname = usePathname();
   var urlParts = pathname.split("/");
   var currentId = urlParts.at(-1);
@@ -129,6 +131,35 @@ const EditClientForm: React.FC = () => {
         // Add further actions or redirection upon successful creation
       } else {
         console.error("Failed to edit client");
+        console.log(response.json());
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleDelete = async (e: FormEvent) => {
+    e.preventDefault();
+    const token = Cookies.get("access_token");
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/clients/${currentId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        console.log("Client Deleted successfully!");
+        router.push(`/admin/clientes/`);
+      } else {
+        console.error("Failed to delete client");
         console.log(response.json());
       }
     } catch (error) {
@@ -244,7 +275,17 @@ const EditClientForm: React.FC = () => {
         </label>
         <br />
 
-        <button type='submit'>Edit Client</button>
+        <button
+          className='text-white px-4 py-3 bg-yellow-700 mt-4'
+          type='submit'>
+          Edit Client
+        </button>
+
+        <button
+          className='text-center p-1 bg-red-500 rounded-xl hover:bg-red-600 transition-all'
+          onClick={handleDelete}>
+          Delete this client
+        </button>
       </form>
     </div>
   );

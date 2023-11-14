@@ -172,7 +172,11 @@ const CreateClient: React.FC = () => {
         </label>
         <br />
 
-        <button type='submit'>Create Client</button>
+        <button
+          className='text-white px-4 py-3 bg-green-700 mt-4'
+          type='submit'>
+          Create Client
+        </button>
       </form>
     </div>
   );
