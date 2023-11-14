@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import Link from "next/link";
 
 interface Client {
   id: number;
@@ -78,6 +79,11 @@ const ListClients: React.FC = () => {
               <br />
               <strong>Address Reference:</strong> {client.address_reference}
               <br />
+              <Link
+                href={`/admin/clientes/${client.id}`}
+                className='text-white px-4 py-3 bg-yellow-700 mt-4'>
+                Editar
+              </Link>
             </li>
           ))}
         </ul>
