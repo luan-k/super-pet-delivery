@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, ChangeEvent, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
 interface CreateClientRequest {
@@ -15,8 +16,9 @@ interface CreateClientRequest {
 }
 
 const CreateClient: React.FC = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState<CreateClientRequest>({
-    full_name: "", // Update field names to match Go structure
+    full_name: "",
     phone_whatsapp: "",
     phone_line: "",
     pet_name: "",
@@ -53,7 +55,9 @@ const CreateClient: React.FC = () => {
 
       if (response.ok) {
         console.log("Client created successfully!");
-        // Add further actions or redirection upon successful creation
+        const data = await response.json();
+        console.log(data);
+        router.push(`/admin/clientes/${data.id}`);
       } else {
         console.error("Failed to create client");
         console.log(response.json());
