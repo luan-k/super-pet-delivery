@@ -10,7 +10,7 @@ export default function Vendas() {
         Novo Venda
       </Link>
       <ListSales />
-      this is clients
+      this is vendas
     </>
   );
 }

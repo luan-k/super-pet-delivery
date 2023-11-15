@@ -22,12 +22,18 @@ const CreateSale: React.FC = () => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    // Use the unary plus (+) or Number() to convert to numbers
-    const numericValue = name === "client_id" ? +value : Number(value);
+    let newValue: string | number;
+
+    if (name === "client_id" || name === "price") {
+      // Use the unary plus (+) or Number() to convert to numbers for specific fields
+      newValue = value !== "" ? +value : 0;
+    } else {
+      newValue = value;
+    }
 
     setFormData({
       ...formData,
-      [name]: isNaN(numericValue) ? 0 : numericValue, // Handle NaN if conversion fails
+      [name]: newValue,
     });
   };
 
@@ -52,7 +58,7 @@ const CreateSale: React.FC = () => {
         console.log("Sale created successfully!");
         const data = await response.json();
         console.log(data);
-        //router.push(`/admin/vendas/${data.id}`);
+        router.push(`/admin/vendas/${data.id}`);
       } else {
         console.error("Failed to create sale");
         const data = await response.json();
