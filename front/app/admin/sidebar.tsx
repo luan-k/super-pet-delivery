@@ -26,7 +26,9 @@ export default function AdminSidebar() {
       <Link className={isActive("/admin/clientes")} href={"/admin/clientes"}>
         Clientes
       </Link>
-      {/* Add more links as needed */}
+      <Link className={isActive("/admin/vendas")} href={"/admin/vendas"}>
+        Vendas
+      </Link>
     </div>
   );
 }
