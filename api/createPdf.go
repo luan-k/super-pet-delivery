@@ -3,20 +3,20 @@ package api
 import (
 	"bytes"
 	"fmt"
+	"html/template"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
-	"strconv"
+	"strings"
 	db "super-pet-delivery/db/sqlc"
-	"text/template"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Sale struct {
-	ID          int64     `json:"id"`
+	ID          int64     `json:"sale_id"`
 	ClientID    int64     `json:"client_id"`
 	Product     string    `json:"product"`
 	Price       int64     `json:"price"`
@@ -35,6 +35,15 @@ type Client struct {
 	AddressNumber       string `json:"address_number"`
 	AddressNeighborhood string `json:"address_neighborhood"`
 	AddressReference    string `json:"address_reference"`
+}
+
+type createPdfRequest struct {
+	SaleId []int64 `json:"sale_id" validate:"required"`
+}
+
+type Report struct {
+	Sale
+	Client
 }
 
 func (server *Server) fetchSaleData(saleID int64, ctx *gin.Context) (*db.Sale, error) {
@@ -60,112 +69,135 @@ func (server *Server) fetchClientData(clientID int64, ctx *gin.Context) (*db.Cli
 }
 
 func (server *Server) createPdf(ctx *gin.Context) {
-	// Get the sale ID from the URL parameter
-	saleIDStr := ctx.Param("id")
-	saleID, err := strconv.ParseInt(saleIDStr, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid sale ID"})
+	var req createPdfRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	// Fetch sale data from the API
-	sale, err := server.fetchSaleData(saleID, ctx)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch sale data"})
-		return
+	var report []Report
+
+	//result := req.saleID[0]
+
+	for _, saleid := range req.SaleId {
+		fmt.Printf("\n sale Id: %d", saleid)
 	}
 
-	// Fetch client data using the client_id from the sale response
-	client, err := server.fetchClientData(sale.ClientID, ctx)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch client data"})
-		return
+	//report
+	for _, requestSaleId := range req.SaleId {
+		sale, err := server.fetchSaleData(requestSaleId, ctx)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch sale data"})
+			return
+		}
+
+		saleArg := Sale{
+			ID:          sale.ID,
+			ClientID:    sale.ClientID,
+			Product:     sale.Product,
+			Price:       sale.Price,
+			Observation: sale.Observation,
+		}
+
+		// Fetch client data using the client_id from the sale response
+		client, err := server.fetchClientData(sale.ClientID, ctx)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch client data"})
+			return
+		}
+
+		clientArg := Client{
+			ID:                  client.ID,
+			FullName:            client.FullName,
+			PhoneWhatsApp:       client.PhoneWhatsapp,
+			PhoneLine:           client.PhoneLine,
+			PetName:             client.PetName,
+			PetBreed:            client.PetBreed,
+			AddressStreet:       client.AddressStreet,
+			AddressNumber:       client.AddressNumber,
+			AddressNeighborhood: client.AddressNeighborhood,
+			AddressReference:    client.AddressReference,
+		}
+
+		// Create a new Report entry and assign the dereferenced Sale
+		reportEntry := Report{
+			Sale:   saleArg,   // Dereference the pointer here
+			Client: clientArg, // You need to fetch client data and assign it here
+		}
+
+		// Append the Report entry to the report slice
+		report = append(report, reportEntry)
 	}
 
-	// Define an HTML template
+	// Create a new buffer to store the HTML output
+	var htmlBuffer = new(strings.Builder)
+
+	// Define the HTML template with a loop for sections
 	htmlTemplate := `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Sale Details</title>
-    </head>
-    <body>
-        <img style="width: 210px;" src="img.png" />
-        <h1>Sale Details</h1>
-        <p>ID: {{.Sale.ID}}</p>
-        <p>Product: {{.Sale.Product}}</p>
-        <p>Price: ${{.Sale.Price}}</p>
-        <p>Observation: {{.Sale.Observation}}</p>
-        <p>Created At: {{.Sale.CreatedAt}}</p>
-        
-        <h1>Client Details</h1>
-        <p>ID: {{.Client.ID}}</p>
-        <p>Full Name: {{.Client.FullName}}</p>
-        <p>Phone (WhatsApp): {{.Client.PhoneWhatsApp}}</p>
-        <p>Phone (Line): {{.Client.PhoneLine}}</p>
-        <p>Pet Name: {{.Client.PetName}}</p>
-        <p>Pet Breed: {{.Client.PetBreed}}</p>
-        <p>Address Street: {{.Client.AddressStreet}}</p>
-        <p>Address Number: {{.Client.AddressNumber}}</p>
-        <p>Address Neighborhood: {{.Client.AddressNeighborhood}}</p>
-        <p>Address Reference: {{.Client.AddressReference}}</p>
-    </body>
-    </html>
-    `
+	    <!DOCTYPE html>
+	    <html>
+	    <head>
+	        <title>Sale Details</title>
+	    </head>
+	    <body>
+			{{range .Reports}}
+				<section>
+					<h1>Sale code: {{.Sale.ID}}</h1>
+					<img style="width: 210px;" src="img.png" />
+					<h2>Sale Details</h2>
+					<p>ID: {{.Sale.ID}}</p>
+					<p>Product: {{.Sale.Product}}</p>
+					<p>Price: ${{.Sale.Price}}</p>
+					<p>Observation: {{.Sale.Observation}}</p>
+					<p>Created At: {{.Sale.CreatedAt}}</p>
 
-	// Specify the file path where you want to save the HTML file
-	filePath := "api/pdf/index.html"
+					<h2>Client Details</h2>
+					<p>ID: {{.Client.ID}}</p>
+					<p>Full Name: {{.Client.FullName}}</p>
+					<p>Phone (WhatsApp): {{.Client.PhoneWhatsApp}}</p>
+					<p>Phone (Line): {{.Client.PhoneLine}}</p>
+					<p>Pet Name: {{.Client.PetName}}</p>
+					<p>Pet Breed: {{.Client.PetBreed}}</p>
+					<p>Address Street: {{.Client.AddressStreet}}</p>
+					<p>Address Number: {{.Client.AddressNumber}}</p>
+					<p>Address Neighborhood: {{.Client.AddressNeighborhood}}</p>
+					<p>Address Reference: {{.Client.AddressReference}}</p>
+				</section>
+			{{end}}
+	    </body>
+	    </html>
+	`
 
-	// Create the HTML file
-	file, err := os.Create(filePath)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create HTML file"})
-		return
-	}
-	defer file.Close()
-
-	// Execute the template with the sale and client data and write the result to the file
-	tmpl, err := template.New("html").Parse(htmlTemplate)
+	// Parse the HTML template
+	tmpl, err := template.New("pdf").Parse(htmlTemplate)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse HTML template"})
 		return
 	}
 
-	rspSale := &Sale{
-		ID:          sale.ID,
-		ClientID:    sale.ClientID,
-		Product:     sale.Product,
-		Price:       sale.Price,
-		Observation: sale.Observation,
-		CreatedAt:   sale.CreatedAt,
-	}
-	rspClient := &Client{
-		ID:                  client.ID,
-		FullName:            client.FullName,
-		PhoneWhatsApp:       client.PhoneWhatsapp,
-		PhoneLine:           client.PhoneLine,
-		PetName:             client.PetName,
-		PetBreed:            client.PetBreed,
-		AddressStreet:       client.AddressStreet,
-		AddressNumber:       client.AddressNumber,
-		AddressNeighborhood: client.AddressNeighborhood,
-		AddressReference:    client.AddressReference,
-	}
-
-	// Now you can use the converted sale and client in your struct literal
-	data := struct {
-		Sale   *Sale
-		Client *Client
+	// Create a structure to pass to the template
+	templateData := struct {
+		Reports []Report
 	}{
-		Sale:   rspSale,
-		Client: rspClient,
+		Reports: report,
 	}
 
-	err = tmpl.Execute(file, data)
+	// Execute the template with the data and write to the buffer
+	err = tmpl.Execute(htmlBuffer, templateData)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to execute HTML template"})
 		return
 	}
+
+	// Save the generated HTML to a single file
+	filePath := "api/pdf/index.html"
+	err = os.WriteFile(filePath, []byte(htmlBuffer.String()), 0644)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save HTML file"})
+		return
+	}
+	// For demonstration purposes, you can print the HTML to the console
+	fmt.Println(htmlBuffer.String())
 
 	// Introduce a delay (e.g., 1 second) before starting the Gotenberg command
 	time.Sleep(3 * time.Second)
@@ -179,6 +211,7 @@ func (server *Server) createPdf(ctx *gin.Context) {
 	}
 
 	// Return the PDF file as a response
+	//ctx.JSON(http.StatusOK, report)
 	ctx.File(pdfFilePath)
 }
 
