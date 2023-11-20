@@ -24,6 +24,7 @@ const config: Config = {
       fontFamily: {
         Inconsolata: ["Inconsolata", "monospace"],
         SourceSansPro: ["Source Code Pro", "monospace"],
+        Inter: ["Inter", "sans-serif"],
       },
       screens: {
         "2xl": "1685px",

@@ -1,3 +1,8 @@
+@import "page";
 @import "sidebar";
 @import "header";
 @import "clientes/main.scss";
+
+.wkode-page-admin-main {
+  background: linear-gradient(117deg, #313131 0%, #161616 100%);
+}
