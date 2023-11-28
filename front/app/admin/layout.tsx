@@ -11,7 +11,7 @@ export default function AdminLayout({
   return (
     <>
       <IsAuthenticated />
-      <main className='flex min-h-screen flex-col items-center justify-between p-24 wkode-page-admin-main'>
+      <main className='flex min-h-screen flex-col items-center justify-start p-24 wkode-page-admin-main'>
         <AdminSidebar />
         {children}
       </main>

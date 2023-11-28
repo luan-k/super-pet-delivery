@@ -52,43 +52,66 @@ const ListClients: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <h1>List of Clients</h1>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <ul className='grid grid-cols-3 gap-32'>
-          {clients.map((client) => (
-            <li className='' key={client.id}>
-              <strong>Name:</strong> {client.full_name}
-              <br />
-              <strong>WhatsApp:</strong> {client.phone_whatsapp}
-              <br />
-              <strong>Phone Line:</strong> {client.phone_line}
-              <br />
-              <strong>Pet Name:</strong> {client.pet_name}
-              <br />
-              <strong>Pet Breed:</strong> {client.pet_breed}
-              <br />
-              <strong>Address Street:</strong> {client.address_street}
-              <br />
-              <strong>Address Number:</strong> {client.address_number}
-              <br />
-              <strong>Address Neighborhood:</strong>{" "}
-              {client.address_neighborhood}
-              <br />
-              <strong>Address Reference:</strong> {client.address_reference}
-              <br />
-              <Link
-                href={`/admin/clientes/${client.id}`}
-                className='text-white px-4 py-3 bg-yellow-700 mt-4'>
-                Editar
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <table className='list-clients'>
+      <tbody>
+        {loading ? (
+          <tr>
+            <td>Loading...</td>
+          </tr>
+        ) : (
+          <>
+            <tr className='list-clients__header-row'>
+              <th className='list-clients__client-name'>Name</th>
+              <th className='list-clients__client-whatsapp'>WhatsApp</th>
+              <th className='list-clients__client-pet-name'>Pet Name</th>
+              <th className='list-clients__client-pet-breed'>Pet Breed</th>
+              <th className='list-clients__client-address'>Address</th>
+              <th className='list-clients__client-address-number'>Number</th>
+              <th className='list-clients__client-address-neighborhood'>
+                Neighborhood
+              </th>
+              <th className='list-clients__client-actions'>Edit</th>
+            </tr>
+            {clients.map((client, index) => (
+              <tr
+                className={`list-clients__client-row ${
+                  index % 2 === 0 ? "list-clients--even" : "list-clients--odd"
+                }`}
+                key={client.id}>
+                <td className='list-clients__client-name'>
+                  {client.full_name}
+                </td>
+                <td className='list-clients__client-whatsapp'>
+                  {client.phone_whatsapp}
+                </td>
+                <td className='list-clients__client-pet-name'>
+                  {client.pet_name}
+                </td>
+                <td className='list-clients__client-pet-breed'>
+                  {client.pet_breed}
+                </td>
+                <td className='list-clients__client-address'>
+                  {client.address_street}
+                </td>
+                <td className='list-clients__client-address-number'>
+                  {client.address_number}
+                </td>
+                <td className='list-clients__client-address-neighborhood'>
+                  {client.address_neighborhood}
+                </td>
+                <td className='list-clients__client-actions'>
+                  <Link
+                    href={`/admin/clientes/${client.id}`}
+                    className='text-white px-4 py-3 bg-yellow-700'>
+                    Editar
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </>
+        )}
+      </tbody>
+    </table>
   );
 };
 
