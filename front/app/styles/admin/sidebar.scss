@@ -2,7 +2,7 @@
   background: #1a1b1e;
   font-size: 2rem;
   left: 0;
-  padding-top: 7rem;
+  padding-top: 4.2rem;
   position: absolute;
   top: 0px;
   width: 10%;
@@ -19,8 +19,11 @@
         width: 100%;
       }
     }
+    &.active {
+      background-color: #001b43;
+    }
     &::after {
-      background-color: #172554e1;
+      background-color: #001b43d4;
       content: "";
       height: 100%;
       left: 0;

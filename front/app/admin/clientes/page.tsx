@@ -4,11 +4,16 @@ import ListClients from "./ListClients";
 export default function Clientes() {
   return (
     <>
-      <Link
-        className='bg-sky-700 text-white px-4 py-3'
-        href={"/admin/clientes/criar"}>
-        Novo Cliente
-      </Link>
+      <div className='list-clients-header'>
+        <h1 className='text-5xl font-bold'>Clientes</h1>
+        <div className='wk-btn__wrapper ml-auto'>
+          <Link
+            className='wk-btn wk-btn--blue wk-btn--bg text-2xl'
+            href={"/admin/clientes/criar"}>
+            Novo Cliente
+          </Link>
+        </div>
+      </div>
       <ListClients />
       this is clients
     </>

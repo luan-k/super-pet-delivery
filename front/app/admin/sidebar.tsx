@@ -18,7 +18,7 @@ export default function AdminSidebar() {
 
   const isActive = (href: string) => {
     // Compare the current route with the link's href
-    return currentRoute === href ? "bg-blue-950" : "";
+    return currentRoute === href ? "active" : "";
   };
 
   return (

@@ -2,7 +2,15 @@
 @import "sidebar";
 @import "header";
 @import "clientes/main.scss";
+@import "components/main.scss";
 
 .wkode-page-admin-main {
   background: linear-gradient(117deg, #313131 0%, #161616 100%);
+}
+.list-clients-header {
+  @apply grid grid-cols-2;
+  align-self: flex-end;
+  margin-bottom: 3.9rem;
+  margin-top: 4.8rem;
+  width: 90%;
 }

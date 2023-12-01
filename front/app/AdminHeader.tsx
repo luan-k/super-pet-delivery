@@ -43,7 +43,7 @@ export default function IsAuthenticated() {
   return (
     <>
       <div className='wkode-admin-header'>
-        <h1 className='text-3xl'>hello {username}</h1>
+        <h1 className='text-3xl text-right'>Olá {username}</h1>
       </div>
     </>
   );

@@ -102,7 +102,7 @@ const ListClients: React.FC = () => {
                 <td className='list-clients__client-actions'>
                   <Link
                     href={`/admin/clientes/${client.id}`}
-                    className='text-white px-4 py-3 bg-yellow-700'>
+                    className='wk-btn wk-btn--sm wk-btn--yellow'>
                     Editar
                   </Link>
                 </td>

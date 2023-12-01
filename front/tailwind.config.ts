@@ -25,6 +25,7 @@ const config: Config = {
         Inconsolata: ["Inconsolata", "monospace"],
         SourceSansPro: ["Source Code Pro", "monospace"],
         Inter: ["Inter", "sans-serif"],
+        Hind: ["Hind Siliguri", "sans-serif"],
       },
       screens: {
         "2xl": "1685px",

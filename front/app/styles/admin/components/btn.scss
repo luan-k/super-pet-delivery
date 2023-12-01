@@ -1,0 +1,25 @@
+.wk-btn {
+  @apply text-center  text-white;
+  border-radius: 1rem;
+  border-style: solid;
+  border-width: 3px;
+  font-weight: 600;
+  transition: all 0.3s;
+  &:hover {
+    background-color: transparent;
+    border-color: white;
+  }
+  &--bg {
+    @apply px-10 py-6;
+  }
+  &--sm {
+    @apply px-4 py-3;
+  }
+  &--yellow {
+    @apply bg-yellow-700 border-yellow-700;
+  }
+  &--blue {
+    background-color: #001b43;
+    border-color: #001b43;
+  }
+}
