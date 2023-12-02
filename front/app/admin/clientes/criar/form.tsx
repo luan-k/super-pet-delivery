@@ -29,7 +29,9 @@ const CreateClient: React.FC = () => {
     address_reference: "",
   });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -69,114 +71,118 @@ const CreateClient: React.FC = () => {
 
   return (
     <div className='text-2xl wk-create-client'>
-      <h1>Create Client</h1>
-      <form onSubmit={handleSubmit}>
+      <form className='grid grid-cols-1' onSubmit={handleSubmit}>
         {/* Input fields corresponding to the createClientRequest structure */}
-        <label>
-          Full Name:
-          <input
-            type='text'
-            name='full_name'
-            value={formData.full_name}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <br />
+        <div className='wk-create-client__input-wrapper'>
+          <label>
+            <h4 className='wk-create-client__title font-light'>Nome</h4>
+            <input
+              type='text'
+              name='full_name'
+              value={formData.full_name}
+              onChange={handleChange}
+              required
+            />
+          </label>
+        </div>
 
-        <label>
-          Phone (WhatsApp):
-          <input
-            type='text'
-            name='phone_whatsapp'
-            value={formData.phone_whatsapp}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+        <div className='wk-create-client__input-wrapper wk-create-client__input-wrapper--grid'>
+          <label>
+            <h4 className='wk-create-client__title'>Whatsapp</h4>
+            <input
+              type='text'
+              name='phone_whatsapp'
+              value={formData.phone_whatsapp}
+              onChange={handleChange}
+            />
+          </label>
 
-        <label>
-          Phone (Line):
-          <input
-            type='text'
-            name='phone_line'
-            value={formData.phone_line}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+          <label>
+            <h4 className='wk-create-client__title'>Telefone</h4>
 
-        <label>
-          Pet Name:
-          <input
-            type='text'
-            name='pet_name'
-            value={formData.pet_name}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+            <input
+              type='text'
+              name='phone_line'
+              value={formData.phone_line}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
 
-        <label>
-          Pet Breed:
-          <input
-            type='text'
-            name='pet_breed'
-            value={formData.pet_breed}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+        <div className='wk-create-client__input-wrapper wk-create-client__input-wrapper--grid'>
+          <label>
+            Nome Pet
+            <input
+              type='text'
+              name='pet_name'
+              value={formData.pet_name}
+              onChange={handleChange}
+            />
+          </label>
 
-        <label>
-          Address Street:
-          <input
-            type='text'
-            name='address_street'
-            value={formData.address_street}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+          <label>
+            Raça Pet
+            <input
+              type='text'
+              name='pet_breed'
+              value={formData.pet_breed}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
 
-        <label>
-          Address Number:
-          <input
-            type='text'
-            name='address_number'
-            value={formData.address_number}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+        <div className='wk-create-client__input-wrapper wk-create-client__input-wrapper--grid'>
+          <label>
+            Endereço rua
+            <input
+              type='text'
+              name='address_street'
+              value={formData.address_street}
+              onChange={handleChange}
+            />
+          </label>
 
-        <label>
-          Address Neighborhood:
-          <input
-            type='text'
-            name='address_neighborhood'
-            value={formData.address_neighborhood}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+          <div className='grid grid-cols-2 gap-3'>
+            <label>
+              Numero
+              <input
+                type='text'
+                name='address_number'
+                value={formData.address_number}
+                onChange={handleChange}
+              />
+            </label>
 
-        <label>
-          Address Reference:
-          <input
-            type='text'
-            name='address_reference'
-            value={formData.address_reference}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+            <label>
+              Bairro
+              <input
+                type='text'
+                name='address_neighborhood'
+                value={formData.address_neighborhood}
+                onChange={handleChange}
+              />
+            </label>
+          </div>
+        </div>
 
-        <button
-          className='text-white px-4 py-3 bg-green-700 mt-4'
-          type='submit'>
-          Create Client
-        </button>
+        <div className='wk-create-client__input-wrapper'>
+          <label>
+            Referencia
+            <textarea
+              name='address_reference'
+              value={formData.address_reference}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
+
+        <div>
+          <button
+            className='wk-btn wk-btn--green wk-btn--md mt-4'
+            type='submit'>
+            Criar Cliente
+          </button>
+        </div>
       </form>
     </div>
   );

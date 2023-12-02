@@ -9,8 +9,12 @@
 }
 .list-clients-header {
   @apply grid grid-cols-2;
-  align-self: flex-end;
+
   margin-bottom: 3.9rem;
   margin-top: 4.8rem;
+}
+
+.wk-admin-page-wrapper {
+  align-self: flex-end;
   width: 90%;
 }

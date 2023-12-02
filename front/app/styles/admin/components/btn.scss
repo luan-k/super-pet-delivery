@@ -12,6 +12,9 @@
   &--bg {
     @apply px-10 py-6;
   }
+  &--md {
+    @apply px-7 py-4;
+  }
   &--sm {
     @apply px-4 py-3;
   }
@@ -21,5 +24,8 @@
   &--blue {
     background-color: #001b43;
     border-color: #001b43;
+  }
+  &--green {
+    @apply bg-green-700 border-green-700;
   }
 }
