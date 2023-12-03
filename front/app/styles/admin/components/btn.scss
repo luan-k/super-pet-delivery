@@ -28,4 +28,7 @@
   &--green {
     @apply bg-green-700 border-green-700;
   }
+  &--red {
+    @apply bg-red-500 border-red-500;
+  }
 }

@@ -2,6 +2,7 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import MaskedInput from "react-text-mask";
 
 interface CreateClientRequest {
   full_name: string;
@@ -69,6 +70,24 @@ const CreateClient: React.FC = () => {
     }
   };
 
+  const phoneMask = [
+    "(",
+    /[1-9]/,
+    /\d/,
+    ")",
+    " ",
+    /\d/,
+    /\d/,
+    /\d/,
+    /\d/,
+    /\d/,
+    "-",
+    /\d/,
+    /\d/,
+    /\d/,
+    /\d/,
+  ];
+
   return (
     <div className='text-2xl wk-create-client'>
       <form className='grid grid-cols-1' onSubmit={handleSubmit}>
@@ -89,7 +108,8 @@ const CreateClient: React.FC = () => {
         <div className='wk-create-client__input-wrapper wk-create-client__input-wrapper--grid'>
           <label>
             <h4 className='wk-create-client__title'>Whatsapp</h4>
-            <input
+            <MaskedInput
+              mask={phoneMask}
               type='text'
               name='phone_whatsapp'
               value={formData.phone_whatsapp}
@@ -100,7 +120,8 @@ const CreateClient: React.FC = () => {
           <label>
             <h4 className='wk-create-client__title'>Telefone</h4>
 
-            <input
+            <MaskedInput
+              mask={phoneMask}
               type='text'
               name='phone_line'
               value={formData.phone_line}

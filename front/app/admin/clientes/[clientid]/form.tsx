@@ -2,7 +2,7 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import Cookies from "js-cookie";
 import { usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
+import MaskedInput from "react-text-mask";
 
 interface EditClientFormRequest {
   full_name: string;
@@ -15,6 +15,7 @@ interface EditClientFormRequest {
   address_neighborhood: string;
   address_reference: string;
 }
+
 interface ClientDetails {
   id: number;
   full_name: string;
@@ -58,8 +59,6 @@ const EditClientForm: React.FC = () => {
         }
       } catch (error) {
         console.error("Error:", error);
-      } finally {
-        //setLoading(false);
       }
     };
 
@@ -70,7 +69,7 @@ const EditClientForm: React.FC = () => {
     null
   );
   const [formData, setFormData] = useState<EditClientFormRequest>({
-    full_name: "", // Update field names to match Go structure
+    full_name: "",
     phone_whatsapp: "",
     phone_line: "",
     pet_name: "",
@@ -81,7 +80,6 @@ const EditClientForm: React.FC = () => {
     address_reference: "",
   });
 
-  // Update the form data when client details are fetched
   useEffect(() => {
     if (currentClient) {
       setFormData({
@@ -98,8 +96,9 @@ const EditClientForm: React.FC = () => {
     }
   }, [currentClient]);
 
-  // Define the handleChange function to update the form data
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -128,7 +127,6 @@ const EditClientForm: React.FC = () => {
 
       if (response.ok) {
         console.log("Client Edited successfully!");
-        // Add further actions or redirection upon successful creation
       } else {
         console.error("Failed to edit client");
         console.log(response.json());
@@ -167,125 +165,157 @@ const EditClientForm: React.FC = () => {
     }
   };
 
+  const phoneMask = [
+    "(",
+    /[1-9]/,
+    /\d/,
+    ")",
+    " ",
+    /\d/,
+    /\d/,
+    /\d/,
+    /\d/,
+    /\d/,
+    "-",
+    /\d/,
+    /\d/,
+    /\d/,
+    /\d/,
+  ];
+
   return (
     <div className='text-2xl wk-create-client'>
-      Current Pathname:{pathname}
-      <br />
-      and this is the current id: {currentId}
-      <h1>Edit Client</h1>
-      <form onSubmit={handleSubmit}>
+      <form className='grid grid-cols-1' onSubmit={handleSubmit}>
         {/* Input fields corresponding to the EditClientFormRequest structure */}
-        <label>
-          Full Name:
-          <input
-            type='text'
-            name='full_name'
-            value={formData.full_name}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <br />
+        <div className='wk-create-client__input-wrapper'>
+          <label>
+            <h4 className='wk-create-client__title font-light'>Nome</h4>
+            <input
+              type='text'
+              name='full_name'
+              value={formData.full_name}
+              onChange={handleChange}
+              required
+              className='wk-input'
+            />
+          </label>
+        </div>
 
-        <label>
-          Phone (WhatsApp):
-          <input
-            type='text'
-            name='phone_whatsapp'
-            value={formData.phone_whatsapp}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+        <div className='wk-create-client__input-wrapper wk-create-client__input-wrapper--grid'>
+          <label>
+            <h4 className='wk-create-client__title'>Whatsapp</h4>
+            <MaskedInput
+              mask={phoneMask}
+              type='text'
+              name='phone_whatsapp'
+              value={formData.phone_whatsapp}
+              onChange={handleChange}
+              className='wk-input'
+            />
+          </label>
 
-        <label>
-          Phone (Line):
-          <input
-            type='text'
-            name='phone_line'
-            value={formData.phone_line}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+          <label>
+            <h4 className='wk-create-client__title'>Telefone</h4>
+            <MaskedInput
+              mask={phoneMask}
+              type='text'
+              name='phone_line'
+              value={formData.phone_line}
+              onChange={handleChange}
+              className='wk-input'
+            />
+          </label>
+        </div>
 
-        <label>
-          Pet Name:
-          <input
-            type='text'
-            name='pet_name'
-            value={formData.pet_name}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+        <div className='wk-create-client__input-wrapper wk-create-client__input-wrapper--grid'>
+          <label>
+            Nome Pet
+            <input
+              type='text'
+              name='pet_name'
+              value={formData.pet_name}
+              onChange={handleChange}
+              className='wk-input'
+            />
+          </label>
 
-        <label>
-          Pet Breed:
-          <input
-            type='text'
-            name='pet_breed'
-            value={formData.pet_breed}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+          <label>
+            Raça Pet
+            <input
+              type='text'
+              name='pet_breed'
+              value={formData.pet_breed}
+              onChange={handleChange}
+              className='wk-input'
+            />
+          </label>
+        </div>
 
-        <label>
-          Address Street:
-          <input
-            type='text'
-            name='address_street'
-            value={formData.address_street}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+        <div className='wk-create-client__input-wrapper wk-create-client__input-wrapper--grid'>
+          <label>
+            Endereço rua
+            <input
+              type='text'
+              name='address_street'
+              value={formData.address_street}
+              onChange={handleChange}
+              className='wk-input'
+            />
+          </label>
 
-        <label>
-          Address Number:
-          <input
-            type='text'
-            name='address_number'
-            value={formData.address_number}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+          <div className='grid grid-cols-2 gap-3'>
+            <label>
+              Numero
+              <input
+                type='text'
+                name='address_number'
+                value={formData.address_number}
+                onChange={handleChange}
+                className='wk-input'
+              />
+            </label>
 
-        <label>
-          Address Neighborhood:
-          <input
-            type='text'
-            name='address_neighborhood'
-            value={formData.address_neighborhood}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+            <label>
+              Bairro
+              <input
+                type='text'
+                name='address_neighborhood'
+                value={formData.address_neighborhood}
+                onChange={handleChange}
+                className='wk-input'
+              />
+            </label>
+          </div>
+        </div>
 
-        <label>
-          Address Reference:
-          <input
-            type='text'
-            name='address_reference'
-            value={formData.address_reference}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+        <div className='wk-create-client__input-wrapper'>
+          <label>
+            Referencia
+            <textarea
+              name='address_reference'
+              value={formData.address_reference}
+              onChange={handleChange}
+              className='wk-input'
+            />
+          </label>
+        </div>
 
-        <button
-          className='text-white px-4 py-3 bg-yellow-700 mt-4'
-          type='submit'>
-          Edit Client
-        </button>
-
-        <button
-          className='text-center p-1 bg-red-500 rounded-xl hover:bg-red-600 transition-all'
-          onClick={handleDelete}>
-          Delete this client
-        </button>
+        <div className='grid grid-cols-2'>
+          <div>
+            <button
+              className='wk-btn wk-btn--green wk-btn--md mt-4'
+              type='submit'>
+              Editar Cliente
+            </button>
+          </div>
+          <div className='flex justify-end'>
+            <div
+              className='wk-btn wk-btn--red wk-btn--md mt-4 cursor-pointer w-max self-end'
+              onClick={handleDelete}>
+              Excluir este cliente
+            </div>
+          </div>
+        </div>
       </form>
     </div>
   );

@@ -61,16 +61,16 @@ const ListClients: React.FC = () => {
         ) : (
           <>
             <tr className='list-clients__header-row'>
-              <th className='list-clients__client-name'>Name</th>
+              <th className='list-clients__client-name'>Nome</th>
               <th className='list-clients__client-whatsapp'>WhatsApp</th>
-              <th className='list-clients__client-pet-name'>Pet Name</th>
-              <th className='list-clients__client-pet-breed'>Pet Breed</th>
-              <th className='list-clients__client-address'>Address</th>
-              <th className='list-clients__client-address-number'>Number</th>
+              <th className='list-clients__client-pet-name'>Nome Pet</th>
+              <th className='list-clients__client-pet-breed'>Nome Raça</th>
+              <th className='list-clients__client-address'>Endereço</th>
+              <th className='list-clients__client-address-number'>Número</th>
               <th className='list-clients__client-address-neighborhood'>
-                Neighborhood
+                Bairro
               </th>
-              <th className='list-clients__client-actions'>Edit</th>
+              <th className='list-clients__client-actions'>Editar</th>
             </tr>
             {clients.map((client, index) => (
               <tr
