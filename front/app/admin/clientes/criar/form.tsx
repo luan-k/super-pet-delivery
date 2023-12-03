@@ -31,12 +31,31 @@ const CreateClient: React.FC = () => {
   });
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    mask?: (string | RegExp)[]
   ) => {
+    const maskedValue = mask
+      ? e.target.value
+      : e.target.value.replace(/\D/g, "");
+    const pureNumber = mask ? maskedValue.replace(/\D/g, "") : e.target.value;
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: pureNumber,
     });
+  };
+
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    handleChange(e);
+  };
+
+  const handleMaskedInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    mask: (string | RegExp)[]
+  ) => {
+    handleChange(e, mask);
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -99,7 +118,7 @@ const CreateClient: React.FC = () => {
               type='text'
               name='full_name'
               value={formData.full_name}
-              onChange={handleChange}
+              onChange={handleInputChange}
               required
             />
           </label>
@@ -113,7 +132,7 @@ const CreateClient: React.FC = () => {
               type='text'
               name='phone_whatsapp'
               value={formData.phone_whatsapp}
-              onChange={handleChange}
+              onChange={(e) => handleMaskedInputChange(e, phoneMask)}
             />
           </label>
 
@@ -125,7 +144,7 @@ const CreateClient: React.FC = () => {
               type='text'
               name='phone_line'
               value={formData.phone_line}
-              onChange={handleChange}
+              onChange={(e) => handleMaskedInputChange(e, phoneMask)}
             />
           </label>
         </div>
@@ -137,7 +156,7 @@ const CreateClient: React.FC = () => {
               type='text'
               name='pet_name'
               value={formData.pet_name}
-              onChange={handleChange}
+              onChange={handleInputChange}
             />
           </label>
 
@@ -147,7 +166,7 @@ const CreateClient: React.FC = () => {
               type='text'
               name='pet_breed'
               value={formData.pet_breed}
-              onChange={handleChange}
+              onChange={handleInputChange}
             />
           </label>
         </div>
@@ -159,7 +178,7 @@ const CreateClient: React.FC = () => {
               type='text'
               name='address_street'
               value={formData.address_street}
-              onChange={handleChange}
+              onChange={handleInputChange}
             />
           </label>
 
@@ -170,7 +189,7 @@ const CreateClient: React.FC = () => {
                 type='text'
                 name='address_number'
                 value={formData.address_number}
-                onChange={handleChange}
+                onChange={handleInputChange}
               />
             </label>
 
@@ -180,7 +199,7 @@ const CreateClient: React.FC = () => {
                 type='text'
                 name='address_neighborhood'
                 value={formData.address_neighborhood}
-                onChange={handleChange}
+                onChange={handleInputChange}
               />
             </label>
           </div>
@@ -192,7 +211,7 @@ const CreateClient: React.FC = () => {
             <textarea
               name='address_reference'
               value={formData.address_reference}
-              onChange={handleChange}
+              onChange={handleInputChange}
             />
           </label>
         </div>
