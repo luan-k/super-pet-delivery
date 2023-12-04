@@ -13,6 +13,7 @@ import (
 type Querier interface {
 	AssociateProductWithCategory(ctx context.Context, arg AssociateProductWithCategoryParams) (ProductCategory, error)
 	AssociateProductWithImage(ctx context.Context, arg AssociateProductWithImageParams) (ProductImage, error)
+	CountClients(ctx context.Context) (int64, error)
 	CreateCategory(ctx context.Context, arg CreateCategoryParams) (Category, error)
 	CreateClient(ctx context.Context, arg CreateClientParams) (Client, error)
 	CreateImage(ctx context.Context, arg CreateImageParams) (Image, error)

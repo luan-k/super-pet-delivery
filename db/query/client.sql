@@ -23,6 +23,9 @@ ORDER BY id
 LIMIT $1
 OFFSET $2;
 
+-- name: CountClients :one
+SELECT COUNT(*) FROM client;
+
 -- name: UpdateClient :one
 UPDATE client 
 SET 

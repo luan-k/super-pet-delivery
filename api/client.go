@@ -76,9 +76,14 @@ func (server *Server) getClient(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, client)
 }
 
+type listClientResponse struct {
+	Total   int64       `json:"total"`
+	Clients []db.Client `json:"clients"`
+}
+
 type listClientRequest struct {
 	PageID   int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
+	PageSize int32 `form:"page_size" binding:"required,min=5,max=30"`
 }
 
 func (server *Server) listClient(ctx *gin.Context) {
@@ -93,13 +98,27 @@ func (server *Server) listClient(ctx *gin.Context) {
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
 
+	// Fetch the total number of clients
+	total, err := server.store.CountClients(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	// Fetch the paginated clients
 	clients, err := server.store.ListClients(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, clients)
+	// Create the response structure
+	response := listClientResponse{
+		Total:   total,
+		Clients: clients,
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }
 
 type updateClientRequest struct {

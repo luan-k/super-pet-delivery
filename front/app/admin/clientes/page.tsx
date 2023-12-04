@@ -15,7 +15,6 @@ export default function Clientes() {
         </div>
       </div>
       <ListClients />
-      this is clients
     </>
   );
 }
