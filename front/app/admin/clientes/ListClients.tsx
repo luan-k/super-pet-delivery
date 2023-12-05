@@ -62,31 +62,105 @@ const ListClients: React.FC = () => {
     fetchClients(currentPage, clientsPerPage);
   }, [currentPage, clientsPerPage]);
 
+  const totalPages = Math.ceil(listClientResponse.total / clientsPerPage);
+
+  const renderPaginationButtons = () => {
+    const maxButtonsToShow = 7;
+    const buttons: JSX.Element[] = [];
+
+    if (totalPages <= maxButtonsToShow) {
+      for (let i = 1; i <= totalPages; i++) {
+        buttons.push(
+          <button
+            key={i}
+            className={`font-semibold text-2xl p-7 rounded-2xl  transition-all hover:bg-white hover:text-black ${
+              currentPage === i ? "bg-white text-black" : "bg-transparent"
+            }`}
+            onClick={() => setCurrentPage(i)}
+            disabled={currentPage === i}>
+            {i}
+          </button>
+        );
+      }
+    } else {
+      const startPage = Math.max(
+        1,
+        currentPage - Math.floor(maxButtonsToShow / 2)
+      );
+      const endPage = Math.min(totalPages, startPage + maxButtonsToShow - 1);
+
+      if (startPage > 1) {
+        buttons.push(
+          <button
+            key='first'
+            className='font-semibold text-2xl p-7 rounded-2xl  transition-all hover:bg-white hover:text-black'
+            onClick={() => setCurrentPage(1)}>
+            {"<<"}
+          </button>
+        );
+
+        buttons.push(
+          <button
+            key='prev'
+            className='font-semibold text-2xl p-7 rounded-2xl  transition-all hover:bg-white hover:text-black'
+            onClick={() => setCurrentPage(currentPage - 1)}>
+            {"<"}
+          </button>
+        );
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        buttons.push(
+          <button
+            key={i}
+            className={`font-semibold text-2xl p-7 rounded-2xl  transition-all hover:bg-white hover:text-black ${
+              currentPage === i ? "bg-white text-black" : "bg-transparent"
+            }`}
+            onClick={() => setCurrentPage(i)}
+            disabled={currentPage === i}>
+            {i}
+          </button>
+        );
+      }
+
+      if (endPage < totalPages) {
+        buttons.push(
+          <button
+            key='next'
+            className='font-semibold text-2xl p-7 rounded-2xl  transition-all hover:bg-white hover:text-black'
+            onClick={() => setCurrentPage(currentPage + 1)}>
+            {">"}
+          </button>
+        );
+
+        buttons.push(
+          <button
+            key='last'
+            className='font-semibold text-2xl p-7 rounded-2xl  transition-all hover:bg-white hover:text-black'
+            onClick={() => setCurrentPage(totalPages)}>
+            {">>"}
+          </button>
+        );
+      }
+    }
+
+    return buttons;
+  };
+
   return (
     <>
-      {/* Input for selecting clients per page */}
-      <label htmlFor='clientsPerPage'>Clients Per Page:</label>
-      <input
-        className='text-black'
-        type='number'
-        id='clientsPerPage'
-        value={clientsPerPage}
-        onChange={(e) => setClientsPerPage(Number(e.target.value))}
-        min={5}
-        max={30}
-      />
-
-      {/* Render pagination links */}
-      {Array.from({
-        length: Math.ceil(listClientResponse.total / clientsPerPage),
-      }).map((_, index) => (
-        <button
-          key={index}
-          onClick={() => setCurrentPage(index + 1)}
-          disabled={currentPage === index + 1}>
-          {index + 1}
-        </button>
-      ))}
+      <div className='clients-per-page ml-auto mb-10'>
+        <label className='clientsPerPage mr-4'>Exibindo por pagina:</label>
+        <input
+          className='text-black text-2xl pl-6 py-2 w-20 rounded-2xl'
+          type='number'
+          id='clientsPerPage'
+          value={clientsPerPage}
+          onChange={(e) => setClientsPerPage(Number(e.target.value))}
+          min={5}
+          max={30}
+        />
+      </div>
 
       {loading ? (
         <div>Loading...</div>
@@ -96,7 +170,16 @@ const ListClients: React.FC = () => {
         <table className='list-clients'>
           <tbody>
             <tr className='list-clients__header-row'>
-              {/* ... existing header cells ... */}
+              <th className='list-clients__client-name'>Nome</th>
+              <th className='list-clients__client-whatsapp'>WhatsApp</th>
+              <th className='list-clients__client-pet-name'>Nome Pet</th>
+              <th className='list-clients__client-pet-breed'>Nome Raça</th>
+              <th className='list-clients__client-address'>Endereço</th>
+              <th className='list-clients__client-address-number'>Número</th>
+              <th className='list-clients__client-address-neighborhood'>
+                Bairro
+              </th>
+              <th className='list-clients__client-actions'>Editar</th>
             </tr>
             {listClientResponse.clients.map((client, index) => (
               <tr
@@ -137,6 +220,10 @@ const ListClients: React.FC = () => {
           </tbody>
         </table>
       )}
+
+      <div className='pagination-wrapper flex justify-center gap-4 mt-24'>
+        {renderPaginationButtons()}
+      </div>
     </>
   );
 };
