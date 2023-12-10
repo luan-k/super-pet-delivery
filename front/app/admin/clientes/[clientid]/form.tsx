@@ -3,6 +3,7 @@ import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import Cookies from "js-cookie";
 import { usePathname, useRouter } from "next/navigation";
 import MaskedInput from "react-text-mask";
+import ActionAlert from "../../components/ActionAlert";
 
 interface EditClientFormRequest {
   full_name: string;
@@ -35,6 +36,26 @@ const EditClientForm: React.FC = () => {
   var urlParts = pathname.split("/");
   var currentId = urlParts.at(-1);
 
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+
+  const [currentClient, setCurrentClient] = useState<ClientDetails | null>(
+    null
+  );
+  const [formData, setFormData] = useState<EditClientFormRequest>({
+    full_name: "",
+    phone_whatsapp: "",
+    phone_line: "",
+    pet_name: "",
+    pet_breed: "",
+    address_street: "",
+    address_number: "",
+    address_neighborhood: "",
+    address_reference: "",
+  });
+
+  // Use this state to track whether the form has been submitted
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
   useEffect(() => {
     const fetchClientDetails = async () => {
       try {
@@ -52,10 +73,22 @@ const EditClientForm: React.FC = () => {
 
         if (response.ok) {
           const data: ClientDetails = await response.json();
-          console.log(data);
           setCurrentClient(data);
+
+          // Set the form data here to update the input fields
+          setFormData({
+            full_name: data.full_name,
+            phone_whatsapp: data.phone_whatsapp,
+            phone_line: data.phone_line,
+            pet_name: data.pet_name,
+            pet_breed: data.pet_breed,
+            address_street: data.address_street,
+            address_number: data.address_number,
+            address_neighborhood: data.address_neighborhood,
+            address_reference: data.address_reference,
+          });
         } else {
-          console.error("Failed to fetch clients");
+          console.error("Failed to fetch client details");
         }
       } catch (error) {
         console.error("Error:", error);
@@ -65,36 +98,21 @@ const EditClientForm: React.FC = () => {
     fetchClientDetails();
   }, [currentId]);
 
-  const [currentClient, setCurrentClient] = useState<ClientDetails | null>(
-    null
-  );
-  const [formData, setFormData] = useState<EditClientFormRequest>({
-    full_name: "",
-    phone_whatsapp: "",
-    phone_line: "",
-    pet_name: "",
-    pet_breed: "",
-    address_street: "",
-    address_number: "",
-    address_neighborhood: "",
-    address_reference: "",
-  });
-
   useEffect(() => {
-    if (currentClient) {
-      setFormData({
-        full_name: currentClient.full_name,
-        phone_whatsapp: currentClient.phone_whatsapp,
-        phone_line: currentClient.phone_line,
-        pet_name: currentClient.pet_name,
-        pet_breed: currentClient.pet_breed,
-        address_street: currentClient.address_street,
-        address_number: currentClient.address_number,
-        address_neighborhood: currentClient.address_neighborhood,
-        address_reference: currentClient.address_reference,
-      });
+    if (formSubmitted) {
+      // If the form has been submitted, show the success alert
+      setShowSuccessAlert(true);
+
+      // Hide the success alert after a certain duration (e.g., 3 seconds)
+      const timeoutId = setTimeout(() => {
+        setShowSuccessAlert(false);
+        setFormSubmitted(false); // Reset the formSubmitted state
+      }, 3000);
+
+      // Clear the timeout to prevent memory leaks
+      return () => clearTimeout(timeoutId);
     }
-  }, [currentClient]);
+  }, [formSubmitted]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -146,6 +164,7 @@ const EditClientForm: React.FC = () => {
 
       if (response.ok) {
         console.log("Client Edited successfully!");
+        setFormSubmitted(true); // Set the formSubmitted state to trigger the success alert
       } else {
         console.error("Failed to edit client");
         console.log(response.json());
@@ -204,8 +223,10 @@ const EditClientForm: React.FC = () => {
 
   return (
     <div className='text-2xl wk-create-client'>
+      {showSuccessAlert && (
+        <ActionAlert alertText='Cliente Editado com Sucesso!' />
+      )}
       <form className='grid grid-cols-1' onSubmit={handleSubmit}>
-        {/* Input fields corresponding to the EditClientFormRequest structure */}
         <div className='wk-create-client__input-wrapper'>
           <label>
             <h4 className='wk-create-client__title font-light'>Nome</h4>
