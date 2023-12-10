@@ -37,6 +37,7 @@ const EditClientForm: React.FC = () => {
   var currentId = urlParts.at(-1);
 
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
 
   const [currentClient, setCurrentClient] = useState<ClientDetails | null>(
     null
@@ -113,6 +114,18 @@ const EditClientForm: React.FC = () => {
       return () => clearTimeout(timeoutId);
     }
   }, [formSubmitted]);
+
+  useEffect(() => {
+    if (showDeleteAlert) {
+      // If the delete was successful, show the delete alert
+      const timeoutId = setTimeout(() => {
+        setShowDeleteAlert(false);
+      }, 3000);
+
+      // Clear the timeout to prevent memory leaks
+      return () => clearTimeout(timeoutId);
+    }
+  }, [showDeleteAlert]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -193,6 +206,7 @@ const EditClientForm: React.FC = () => {
 
       if (response.ok) {
         console.log("Client Deleted successfully!");
+        setShowDeleteAlert(true); // Set the state to trigger the delete alert
         router.push(`/admin/clientes/`);
       } else {
         console.error("Failed to delete client");
@@ -224,7 +238,10 @@ const EditClientForm: React.FC = () => {
   return (
     <div className='text-2xl wk-create-client'>
       {showSuccessAlert && (
-        <ActionAlert alertText='Cliente Editado com Sucesso!' />
+        <ActionAlert alertText='Cliente Editado com Sucesso!' color='green' />
+      )}
+      {showDeleteAlert && (
+        <ActionAlert alertText='Cliente Excluído com Sucesso!' color='red' />
       )}
       <form className='grid grid-cols-1' onSubmit={handleSubmit}>
         <div className='wk-create-client__input-wrapper'>

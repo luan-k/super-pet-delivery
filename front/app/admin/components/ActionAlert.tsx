@@ -1,29 +1,35 @@
 "use client";
-import React, { FC, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface ActionAlertProps {
   alertText: string;
+  color?: "red" | "green" | "yellow";
 }
 
-const ActionAlert: FC<ActionAlertProps> = ({ alertText }) => {
+const ActionAlert: React.FC<ActionAlertProps> = ({
+  alertText,
+  color = "green",
+}) => {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
+    // Set a timeout to hide the alert after a certain duration (e.g., 3 seconds)
     const timeoutId = setTimeout(() => {
       setIsVisible(false);
     }, 3000);
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
+    // Clear the timeout to prevent memory leaks
+    return () => clearTimeout(timeoutId);
   }, []);
 
   return (
-    <div
-      className={`wkode-action-alert ${isVisible ? "wk-visible" : "wk-hidden"}`}
-      style={{ opacity: isVisible ? 1 : 0 }}>
-      {alertText}
-    </div>
+    <>
+      {isVisible && (
+        <div className={`wkode-action-alert wk-visible wk-${color}`}>
+          {alertText}
+        </div>
+      )}
+    </>
   );
 };
 
