@@ -60,13 +60,13 @@ function LoginForm() {
   };
 
   return (
-    <>
+    <div className='wkode-login-form__wrapper'>
       <form onSubmit={handleSubmit}>
         <input
           className='w-full mb-6 text-black'
           type='text'
           name='identifier'
-          placeholder='Username or Email'
+          placeholder='Nome de Usuario ou Email'
           value={formData.identifier}
           onChange={handleInputChange}
         />
@@ -74,13 +74,17 @@ function LoginForm() {
           className='w-full mb-6 text-black'
           type='password'
           name='password'
-          placeholder='Password'
+          placeholder='Senha'
           value={formData.password}
           onChange={handleInputChange}
         />
-        <button type='submit'>Login</button>
+        <button
+          className='wk-btn wk-btn--bg wk-btn--green mt-12 w-full'
+          type='submit'>
+          Login
+        </button>
       </form>
-    </>
+    </div>
   );
 }
 

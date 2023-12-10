@@ -1,9 +1,19 @@
 import LoginForm from "./form";
+import "../styles/login/main.scss";
+import "../styles/components/main.scss";
+import Image from "next/image";
+import LogoImage from "../../public/static/images/superpet.png";
 
 export default function LoginPage() {
   return (
-    <main className='flex min-h-screen flex-col items-center justify-between p-24'>
-      <h1 className='text-lg'>Hello world</h1>
+    <main className='wkode-login-form flex min-h-screen flex-col items-center justify-center p-24'>
+      <Image
+        src={LogoImage}
+        width={250}
+        height={250}
+        alt='Logo da empresa Superpet'
+        className='mb-9'
+      />
       <LoginForm />
     </main>
   );
