@@ -19,7 +19,9 @@ const CreateSale: React.FC = () => {
     observation: "",
   });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
 
     let newValue: string | number;
@@ -71,59 +73,61 @@ const CreateSale: React.FC = () => {
 
   return (
     <div className='text-2xl wk-create-client'>
-      <h1>Create Sale</h1>
-      <form onSubmit={handleSubmit}>
+      <form className='grid grid-cols-1' onSubmit={handleSubmit}>
         {/* Input fields corresponding to the createSaleRequest structure */}
-        <label>
-          client id:
-          <input
-            type='number'
-            name='client_id'
-            value={formData.client_id}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <br />
+        <div className='wk-create-client__input-wrapper'>
+          <label>
+            <h4 className='wk-create-client__title'>Cliente</h4>
+            <input
+              type='number'
+              name='client_id'
+              value={formData.client_id}
+              onChange={handleChange}
+              required
+            />
+          </label>
+        </div>
 
-        <label>
-          product:
-          <input
-            type='text'
-            name='product'
-            value={formData.product}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+        <div className='wk-create-client__input-wrapper'>
+          <label>
+            <h4 className='wk-create-client__title'>Produto</h4>
+            <input
+              type='text'
+              name='product'
+              value={formData.product}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
 
-        <label>
-          price:
-          <input
-            type='number'
-            name='price'
-            value={formData.price}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+        <div className='wk-create-client__input-wrapper'>
+          <label>
+            <h4 className='wk-create-client__title'>Preço</h4>
+            <input
+              type='number'
+              name='price'
+              value={formData.price}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
 
-        <label>
-          observation:
-          <input
-            type='text'
-            name='observation'
-            value={formData.observation}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+        <div className='wk-create-client__input-wrapper'>
+          <label>
+            <h4 className='wk-create-client__title'>Observação</h4>
+            <textarea
+              name='observation'
+              value={formData.observation}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
 
-        <button
-          className='text-white px-4 py-3 bg-green-700 mt-4'
-          type='submit'>
-          Create Sale
-        </button>
+        <div>
+          <button className='wk-btn wk-btn--bg wk-btn--green' type='submit'>
+            Criar Venda
+          </button>
+        </div>
       </form>
     </div>
   );

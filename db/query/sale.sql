@@ -18,6 +18,9 @@ ORDER BY id
 LIMIT $1
 OFFSET $2;
 
+-- name: CountSales :one
+SELECT COUNT(*) FROM sale;
+
 -- name: UpdateSale :one
 UPDATE sale 
 SET 

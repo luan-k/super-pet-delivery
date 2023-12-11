@@ -66,9 +66,14 @@ func (server *Server) getSale(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, sale)
 }
 
+type listSaleResponse struct {
+	Total int64     `json:"total"`
+	Sales []db.Sale `json:"sales"`
+}
+
 type listSaleRequest struct {
 	PageID   int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
+	PageSize int32 `form:"page_size" binding:"required,min=5,max=30"`
 }
 
 func (server *Server) listSale(ctx *gin.Context) {
@@ -83,13 +88,27 @@ func (server *Server) listSale(ctx *gin.Context) {
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
 
+	// Fetch the total number of sales
+	total, err := server.store.CountSales(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	// Fetch the paginated sales
 	sales, err := server.store.ListSales(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, sales)
+	// Create the response structure
+	response := listSaleResponse{
+		Total: total,
+		Sales: sales,
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }
 
 type updateSaleRequest struct {

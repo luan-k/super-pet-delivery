@@ -4,13 +4,17 @@ import ListSales from "./ListSales";
 export default function Vendas() {
   return (
     <>
-      <Link
-        className='bg-sky-700 text-white px-4 py-3'
-        href={"/admin/vendas/criar"}>
-        Novo Venda
-      </Link>
+      <div className='list-clients-header wk-admin-page-wrapper'>
+        <h1 className='text-5xl font-bold'>Vendas</h1>
+        <div className='wk-btn__wrapper ml-auto'>
+          <Link
+            className='wk-btn wk-btn--blue wk-btn--bg text-2xl'
+            href={"/admin/vendas/criar"}>
+            Nova Venda
+          </Link>
+        </div>
+      </div>
       <ListSales />
-      this is vendas
     </>
   );
 }
