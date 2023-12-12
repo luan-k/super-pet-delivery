@@ -14,7 +14,7 @@ export default function Vendas() {
           </Link>
         </div>
       </div>
-      <ListSales />
+      <ListSales className='w-11/12' />
     </>
   );
 }

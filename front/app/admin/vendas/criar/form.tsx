@@ -2,6 +2,7 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import ModalDialogClientsList from "../../components/ModalDialogClientsList";
 
 interface CreateSaleRequest {
   client_id: number;
@@ -18,6 +19,7 @@ const CreateSale: React.FC = () => {
     price: 0,
     observation: "",
   });
+  const [selectedClientName, setSelectedClientName] = React.useState("");
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -74,17 +76,30 @@ const CreateSale: React.FC = () => {
   return (
     <div className='text-2xl wk-create-client'>
       <form className='grid grid-cols-1' onSubmit={handleSubmit}>
-        {/* Input fields corresponding to the createSaleRequest structure */}
         <div className='wk-create-client__input-wrapper'>
           <label>
             <h4 className='wk-create-client__title'>Cliente</h4>
-            <input
-              type='number'
-              name='client_id'
-              value={formData.client_id}
-              onChange={handleChange}
-              required
-            />
+            <div className='flex'>
+              <input
+                type='text'
+                name='client_id'
+                className='!w-9/12 !rounded-tr-none !rounded-br-none !border-r-0'
+                value={selectedClientName}
+                readOnly
+                onClick={() => {}}
+                required
+              />
+              <ModalDialogClientsList
+                onClientSelect={(clientId, clientName) => {
+                  console.log(clientId); // Log the client id
+                  setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    client_id: clientId,
+                  }));
+                  setSelectedClientName(clientName); // Set the selected client's name
+                }}
+              />
+            </div>
           </label>
         </div>
 

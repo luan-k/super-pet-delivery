@@ -21,7 +21,11 @@ interface ListSalesResponse {
   sales: Sale[];
 }
 
-const ListSales: React.FC = () => {
+interface ListSalesProps {
+  className?: string;
+}
+
+const ListSales: React.FC<ListSalesProps> = ({ className }) => {
   const [listSalesResponse, setListSalesResponse] = useState<ListSalesResponse>(
     {
       total: 0,
@@ -32,6 +36,7 @@ const ListSales: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [salesPerPage, setSalesPerPage] = useState<number>(10);
   const [clientNames, setClientNames] = useState<Record<number, string>>({});
+  const combinedClassName = `list-clients ${className}`;
 
   const fetchSales = async (pageId: number, pageSize: number) => {
     try {
@@ -207,7 +212,7 @@ const ListSales: React.FC = () => {
       ) : listSalesResponse.sales.length === 0 ? (
         <div>No sales available.</div>
       ) : (
-        <table className='list-clients'>
+        <table className={combinedClassName}>
           <tbody>
             <tr className='list-clients__header-row'>
               <th className='list-clients__client-name'>Produto</th>

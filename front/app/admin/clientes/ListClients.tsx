@@ -20,8 +20,17 @@ interface ListClientResponse {
   total: number;
   clients: Client[];
 }
+interface ListClientsProps {
+  className?: string;
+  onClientSelect?: (clientId: number, clientName: string) => void;
+  isInModal?: boolean;
+}
 
-const ListClients: React.FC = () => {
+const ListClients: React.FC<ListClientsProps> = ({
+  className,
+  onClientSelect,
+  isInModal,
+}) => {
   const [listClientResponse, setListClientResponse] =
     useState<ListClientResponse>({
       total: 0,
@@ -30,6 +39,7 @@ const ListClients: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [clientsPerPage, setClientsPerPage] = useState<number>(10);
+  const combinedClassName = `list-clients ${className}`;
 
   const fetchClients = async (pageId: number, pageSize: number) => {
     try {
@@ -167,7 +177,7 @@ const ListClients: React.FC = () => {
       ) : listClientResponse.clients.length === 0 ? (
         <div>No clients available.</div>
       ) : (
-        <table className='list-clients'>
+        <table className={combinedClassName}>
           <tbody>
             <tr className='list-clients__header-row'>
               <th className='list-clients__client-name'>Nome</th>
@@ -179,14 +189,19 @@ const ListClients: React.FC = () => {
               <th className='list-clients__client-address-neighborhood'>
                 Bairro
               </th>
-              <th className='list-clients__client-actions'>Editar</th>
+              {!isInModal && (
+                <th className='list-clients__client-actions'>Editar</th>
+              )}
             </tr>
             {listClientResponse.clients.map((client, index) => (
               <tr
                 className={`list-clients__client-row ${
                   index % 2 === 0 ? "list-clients--even" : "list-clients--odd"
                 }`}
-                key={client.id}>
+                key={client.id}
+                onClick={() =>
+                  onClientSelect && onClientSelect(client.id, client.full_name)
+                }>
                 <td className='list-clients__client-name'>
                   {client.full_name}
                 </td>
@@ -208,13 +223,15 @@ const ListClients: React.FC = () => {
                 <td className='list-clients__client-address-neighborhood'>
                   {client.address_neighborhood}
                 </td>
-                <td className='list-clients__client-actions'>
-                  <Link
-                    href={`/admin/clientes/${client.id}`}
-                    className='wk-btn wk-btn--sm wk-btn--yellow'>
-                    Editar
-                  </Link>
-                </td>
+                {!isInModal && (
+                  <td className='list-clients__client-actions'>
+                    <Link
+                      href={`/admin/clientes/${client.id}`}
+                      className='wk-btn wk-btn--sm wk-btn--yellow'>
+                      Editar
+                    </Link>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

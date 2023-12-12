@@ -14,7 +14,7 @@ export default function Clientes() {
           </Link>
         </div>
       </div>
-      <ListClients />
+      <ListClients className='w-11/12' />
     </>
   );
 }
