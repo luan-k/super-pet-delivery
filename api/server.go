@@ -15,13 +15,13 @@ import (
 // Server serves HTTP requests for our api.
 type Server struct {
 	config     util.Config
-	store      db.Store
+	store      db.SortableStore
 	tokenMaker token.Maker
 	router     *gin.Engine
 }
 
 // NewServer creates a new HTTP server and set up routing.
-func NewServer(config util.Config, store db.Store) (*Server, error) {
+func NewServer(config util.Config, store db.SortableStore) (*Server, error) {
 	tokenMaker, err := token.NewPasetoMaker(config.TokenSymmetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create token maker: %w", err)

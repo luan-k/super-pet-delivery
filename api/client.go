@@ -82,8 +82,10 @@ type listClientResponse struct {
 }
 
 type listClientRequest struct {
-	PageID   int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5,max=30"`
+	PageID        int32  `form:"page_id" binding:"required,min=1"`
+	PageSize      int32  `form:"page_size" binding:"required,min=5,max=50"`
+	SortField     string `form:"sort_field" binding:""`
+	SortDirection string `form:"sort_direction" binding:""`
 }
 
 func (server *Server) listClient(ctx *gin.Context) {
@@ -105,8 +107,15 @@ func (server *Server) listClient(ctx *gin.Context) {
 		return
 	}
 
-	// Fetch the paginated clients
-	clients, err := server.store.ListClients(ctx, arg)
+	var clients []db.Client
+	// Check if sort fields are provided
+	if req.SortField != "" && req.SortDirection != "" {
+		// Fetch the paginated clients with sorting
+		clients, err = server.store.ListClientsSorted(ctx, arg, req.SortField, req.SortDirection)
+	} else {
+		// Fetch the paginated clients without sorting
+		clients, err = server.store.ListClients(ctx, arg)
+	}
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
