@@ -14,6 +14,10 @@
     &.list-clients__client-name {
       border-radius: 1rem 0 0 0;
     }
+    svg {
+      display: inline;
+      margin-left: 1rem;
+    }
 
     &.list-clients__client-actions {
       border-radius: 0 1rem 0 0;
@@ -72,6 +76,33 @@
   td {
     word-wrap: break-word;
     @apply px-9;
+  }
+
+  &-wrapper--modal {
+    .list-clients {
+      color: white;
+      td {
+        cursor: pointer;
+      }
+      th.list-clients__client-address-neighborhood {
+        border-radius: 0 1rem 0 0;
+      }
+      tr:last-of-type {
+        & .list-clients__client-address-neighborhood {
+          border-radius: 0 0 1rem 0;
+        }
+      }
+      .list-clients--even {
+        background-color: #252525;
+        &:hover {
+          background-color: #2c2c2c;
+        }
+      }
+    }
+    .list-clients__sorting-wrapper {
+      margin-top: 3rem;
+      width: 100%;
+    }
   }
 }
 .list-clients__client-whatsapp,

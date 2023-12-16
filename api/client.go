@@ -86,6 +86,7 @@ type listClientRequest struct {
 	PageSize      int32  `form:"page_size" binding:"required,min=5,max=50"`
 	SortField     string `form:"sort_field" binding:""`
 	SortDirection string `form:"sort_direction" binding:""`
+	Search        string `form:"search" binding:""`
 }
 
 func (server *Server) listClient(ctx *gin.Context) {
@@ -108,12 +109,18 @@ func (server *Server) listClient(ctx *gin.Context) {
 	}
 
 	var clients []db.Client
-	// Check if sort fields are provided
-	if req.SortField != "" && req.SortDirection != "" {
+	// Check if sort fields and search are provided
+	if req.SortField != "" && req.SortDirection != "" && req.Search != "" {
+		// Fetch the paginated clients with sorting and search
+		clients, err = server.store.SearchClients(ctx, req.Search, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection)
+	} else if req.SortField != "" && req.SortDirection != "" {
 		// Fetch the paginated clients with sorting
 		clients, err = server.store.ListClientsSorted(ctx, arg, req.SortField, req.SortDirection)
+	} else if req.Search != "" {
+		// Fetch the paginated clients with search
+		clients, err = server.store.SearchClients(ctx, req.Search, int(req.PageID), int(req.PageSize), "", "")
 	} else {
-		// Fetch the paginated clients without sorting
+		// Fetch the paginated clients without sorting or search
 		clients, err = server.store.ListClients(ctx, arg)
 	}
 	if err != nil {

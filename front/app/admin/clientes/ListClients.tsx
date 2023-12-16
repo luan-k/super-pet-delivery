@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import Link from "next/link";
+import { ChevronUpIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 
 interface Client {
   id: number;
@@ -40,20 +41,34 @@ const ListClients: React.FC<ListClientsProps> = ({
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [clientsPerPage, setClientsPerPage] = useState<number>(10);
   const combinedClassName = `list-clients ${className}`;
+  const [search, setSearch] = useState("");
 
-  const fetchClients = async (pageId: number, pageSize: number) => {
+  const fetchClients = async (
+    pageId: number,
+    pageSize: number,
+    sortField: string | null,
+    sortDirection: "asc" | "desc" | null,
+    search?: string
+  ) => {
     try {
       const token = Cookies.get("access_token");
-      const response = await fetch(
-        `http://localhost:8080/clients?page_id=${pageId}&page_size=${pageSize}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let url =
+        `http://localhost:8080/clients?page_id=${pageId}&page_size=${pageSize}` +
+        (sortField && sortDirection
+          ? `&sort_field=${sortField}&sort_direction=${sortDirection}`
+          : "");
+
+      // Add the search parameter to the URL if it's provided
+      if (search) {
+        url += `&search=${search}`;
+      }
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.ok) {
         const data: ListClientResponse = await response.json();
@@ -69,8 +84,8 @@ const ListClients: React.FC<ListClientsProps> = ({
   };
 
   useEffect(() => {
-    fetchClients(currentPage, clientsPerPage);
-  }, [currentPage, clientsPerPage]);
+    fetchClients(currentPage, clientsPerPage, null, null, search);
+  }, [currentPage, clientsPerPage, search]);
 
   const totalPages = Math.ceil(listClientResponse.total / clientsPerPage);
 
@@ -157,30 +172,78 @@ const ListClients: React.FC<ListClientsProps> = ({
     return buttons;
   };
 
+  // Add state for sort field and direction
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
+    null
+  );
+
+  // Function to handle sorting
+  const handleSort = (field: string) => {
+    // If the field is already being sorted, toggle the direction
+    if (sortField === field) {
+      setSortDirection((prevDirection) => {
+        const newDirection = prevDirection === "asc" ? "desc" : null;
+        if (newDirection === null) {
+          setSortField(null);
+        }
+        fetchClients(currentPage, clientsPerPage, sortField, newDirection);
+        return newDirection;
+      });
+    } else {
+      // Otherwise, sort the new field in ascending order
+      setSortField(field);
+      setSortDirection("asc");
+      fetchClients(currentPage, clientsPerPage, field, "asc");
+    }
+  };
+
   return (
     <>
-      <div className='clients-per-page ml-auto mb-10'>
-        <label className='clientsPerPage mr-4'>Exibindo por pagina:</label>
+      <div className='list-clients__sorting-wrapper grid grid-cols-2 w-11/12 ml-auto mb-6'>
         <input
-          className='text-black text-2xl pl-6 py-2 w-20 rounded-2xl'
-          type='number'
-          id='clientsPerPage'
-          value={clientsPerPage}
-          onChange={(e) => setClientsPerPage(Number(e.target.value))}
-          min={5}
-          max={30}
+          className='text-black text-2xl pl-6 py-2 rounded-2xl w-1/2'
+          type='text'
+          id='search'
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder='Pesquisar...'
         />
+        <div className='clients-per-page ml-auto'>
+          <label className='clientsPerPage mr-4'>Exibindo por pagina:</label>
+          <input
+            className='text-black text-2xl pl-6 py-2 w-20 rounded-2xl'
+            type='number'
+            id='clientsPerPage'
+            value={clientsPerPage}
+            onChange={(e) => setClientsPerPage(Number(e.target.value))}
+            min={5}
+            max={30}
+          />
+        </div>
       </div>
 
       {loading ? (
         <div>Loading...</div>
-      ) : listClientResponse.clients.length === 0 ? (
+      ) : listClientResponse &&
+        listClientResponse.clients &&
+        listClientResponse.clients.length === 0 ? (
         <div>No clients available.</div>
       ) : (
         <table className={combinedClassName}>
           <tbody>
             <tr className='list-clients__header-row'>
-              <th className='list-clients__client-name'>Nome</th>
+              <th
+                className='list-clients__client-name cursor-pointer'
+                onClick={() => handleSort("full_name")}>
+                Nome
+                {sortField === "full_name" &&
+                  (sortDirection === "asc" ? (
+                    <ChevronUpIcon />
+                  ) : sortDirection === "desc" ? (
+                    <ChevronDownIcon />
+                  ) : null)}
+              </th>
               <th className='list-clients__client-whatsapp'>WhatsApp</th>
               <th className='list-clients__client-pet-name'>Nome Pet</th>
               <th className='list-clients__client-pet-breed'>Nome Raça</th>
@@ -193,47 +256,50 @@ const ListClients: React.FC<ListClientsProps> = ({
                 <th className='list-clients__client-actions'>Editar</th>
               )}
             </tr>
-            {listClientResponse.clients.map((client, index) => (
-              <tr
-                className={`list-clients__client-row ${
-                  index % 2 === 0 ? "list-clients--even" : "list-clients--odd"
-                }`}
-                key={client.id}
-                onClick={() =>
-                  onClientSelect && onClientSelect(client.id, client.full_name)
-                }>
-                <td className='list-clients__client-name'>
-                  {client.full_name}
-                </td>
-                <td className='list-clients__client-whatsapp'>
-                  {client.phone_whatsapp}
-                </td>
-                <td className='list-clients__client-pet-name'>
-                  {client.pet_name}
-                </td>
-                <td className='list-clients__client-pet-breed'>
-                  {client.pet_breed}
-                </td>
-                <td className='list-clients__client-address'>
-                  {client.address_street}
-                </td>
-                <td className='list-clients__client-address-number'>
-                  {client.address_number}
-                </td>
-                <td className='list-clients__client-address-neighborhood'>
-                  {client.address_neighborhood}
-                </td>
-                {!isInModal && (
-                  <td className='list-clients__client-actions'>
-                    <Link
-                      href={`/admin/clientes/${client.id}`}
-                      className='wk-btn wk-btn--sm wk-btn--yellow'>
-                      Editar
-                    </Link>
+            {listClientResponse &&
+              listClientResponse.clients &&
+              listClientResponse.clients.map((client, index) => (
+                <tr
+                  className={`list-clients__client-row ${
+                    index % 2 === 0 ? "list-clients--even" : "list-clients--odd"
+                  }`}
+                  key={client.id}
+                  onClick={() =>
+                    onClientSelect &&
+                    onClientSelect(client.id, client.full_name)
+                  }>
+                  <td className='list-clients__client-name'>
+                    {client.full_name}
                   </td>
-                )}
-              </tr>
-            ))}
+                  <td className='list-clients__client-whatsapp'>
+                    {client.phone_whatsapp}
+                  </td>
+                  <td className='list-clients__client-pet-name'>
+                    {client.pet_name}
+                  </td>
+                  <td className='list-clients__client-pet-breed'>
+                    {client.pet_breed}
+                  </td>
+                  <td className='list-clients__client-address'>
+                    {client.address_street}
+                  </td>
+                  <td className='list-clients__client-address-number'>
+                    {client.address_number}
+                  </td>
+                  <td className='list-clients__client-address-neighborhood'>
+                    {client.address_neighborhood}
+                  </td>
+                  {!isInModal && (
+                    <td className='list-clients__client-actions'>
+                      <Link
+                        href={`/admin/clientes/${client.id}`}
+                        className='wk-btn wk-btn--sm wk-btn--yellow'>
+                        Editar
+                      </Link>
+                    </td>
+                  )}
+                </tr>
+              ))}
           </tbody>
         </table>
       )}

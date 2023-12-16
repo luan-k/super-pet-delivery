@@ -21,12 +21,12 @@ const ModalDialogClientsList: React.FC<ModalDialogClientsListProps> = ({
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className='DialogOverlay' />
-        <Dialog.Content className='DialogContent'>
+        <Dialog.Content className='DialogContent overflow-y-scroll list-clients-wrapper--modal'>
           <Dialog.Title className='DialogTitle'>
             Selecionar Cliente
           </Dialog.Title>
           <ListClients
-            className='w-full'
+            className='w-full '
             onClientSelect={(clientId, clientName) => {
               onClientSelect?.(clientId, clientName);
               closeRef.current?.click();
