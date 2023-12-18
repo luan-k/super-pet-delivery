@@ -10,6 +10,7 @@ import (
 type CustomQuerier interface {
 	Querier
 	ListClientsSorted(ctx context.Context, arg ListClientsParams, sortField string, sortDirection string) ([]Client, error)
+	ListSalesSorted(ctx context.Context, arg ListSalesParams, sortField string, sortDirection string) ([]Sale, error)
 }
 
 type CustomQueries struct {
@@ -41,4 +42,23 @@ func (q *CustomQueries) ListClientsSorted(ctx context.Context, arg ListClientsPa
 	}
 
 	return clients, nil
+}
+func (q *CustomQueries) ListSalesSorted(ctx context.Context, arg ListSalesParams, sortField string, sortDirection string) ([]Sale, error) {
+	query := fmt.Sprintf(`SELECT * FROM sale ORDER BY %s %s LIMIT $1 OFFSET $2`, sortField, sortDirection)
+	rows, err := q.db.QueryxContext(ctx, query, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var sales []Sale
+	for rows.Next() {
+		var s Sale
+		if err := rows.StructScan(&s); err != nil {
+			return nil, err
+		}
+		sales = append(sales, s)
+	}
+
+	return sales, nil
 }

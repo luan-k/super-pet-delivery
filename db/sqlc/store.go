@@ -14,6 +14,8 @@ type SortableStore interface {
 	Store
 	ListClientsSorted(ctx context.Context, arg ListClientsParams, sortField string, sortDirection string) ([]Client, error)
 	SearchClients(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Client, error)
+	ListSalesSorted(ctx context.Context, arg ListSalesParams, sortField string, sortDirection string) ([]Sale, error)
+	SearchSales(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Sale, error)
 }
 
 // Store provides all functions to execute db queries and transaction
@@ -120,4 +122,93 @@ func (store *SortableSQLStore) SearchClients(ctx context.Context, search string,
 	}
 
 	return clients, nil
+}
+
+func (store *SortableSQLStore) ListSalesSorted(ctx context.Context, arg ListSalesParams, sortField string, sortDirection string) ([]Sale, error) {
+	// Define a map of valid sort fields and directions
+	validSortFields := map[string]bool{"product": true, "price": true, "created_at": true}
+	validSortDirections := map[string]bool{"asc": true, "desc": true}
+
+	// If sortField is provided, validate it
+	if sortField != "" {
+		if !validSortFields[sortField] {
+			return nil, fmt.Errorf("invalid sort field: %s", sortField)
+		}
+	} else {
+		// If sortField is not provided, use a default value
+		sortField = "product"
+	}
+
+	// If sortDirection is provided, validate it
+	if sortDirection != "" {
+		if !validSortDirections[sortDirection] {
+			return nil, fmt.Errorf("invalid sort direction: %s", sortDirection)
+		}
+	} else {
+		// If sortDirection is not provided, use a default value
+		sortDirection = "asc"
+	}
+
+	// Create the SQL query
+	query := fmt.Sprintf("SELECT * FROM sale ORDER BY %s %s LIMIT $1 OFFSET $2", sortField, sortDirection)
+
+	// Execute the query
+	rows, err := store.db.QueryContext(ctx, query, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// Scan the results into a Sale slice
+	var sales []Sale
+	for rows.Next() {
+		var sale Sale
+		if err := rows.Scan(&sale.ID, &sale.ClientID, &sale.Product, &sale.Price, &sale.Observation, &sale.CreatedAt, &sale.ChangedAt, &sale.PdfGeneratedAt); err != nil {
+			return nil, err
+		}
+		sales = append(sales, sale)
+	}
+
+	// Check for errors from iterating over rows
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return sales, nil
+}
+
+func (store *SortableSQLStore) SearchSales(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Sale, error) {
+	offset := (pageId - 1) * pageSize
+
+	query := `SELECT * FROM sale WHERE 
+        LOWER(product) LIKE LOWER($1) OR 
+        LOWER(observation) LIKE LOWER($1) OR
+        CAST(price AS TEXT) LIKE LOWER($1)`
+
+	if sortField != "" && sortDirection != "" {
+		query += fmt.Sprintf(" ORDER BY %s %s", sortField, sortDirection)
+	}
+
+	query += " LIMIT $2 OFFSET $3"
+
+	rows, err := store.db.QueryContext(ctx, query, "%"+search+"%", pageSize, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var sales []Sale
+	for rows.Next() {
+		var s Sale
+		if err = rows.Scan(&s.ID, &s.ClientID, &s.Product, &s.Price, &s.Observation, &s.CreatedAt, &s.ChangedAt, &s.PdfGeneratedAt); err != nil {
+			return nil, err
+		}
+		sales = append(sales, s)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return sales, nil
 }

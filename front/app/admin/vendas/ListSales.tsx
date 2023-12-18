@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import Link from "next/link";
+import { ChevronUpIcon, ChevronDownIcon } from "@radix-ui/react-icons";
+import { CheckedSalesContext } from "./CheckedSalesContext";
+import { useContext } from "react";
 
 interface Sale {
   id: number;
@@ -9,6 +12,7 @@ interface Sale {
   product: string;
   price: number;
   observation: string;
+  created_at: string;
 }
 
 interface Client {
@@ -36,21 +40,96 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [salesPerPage, setSalesPerPage] = useState<number>(10);
   const [clientNames, setClientNames] = useState<Record<number, string>>({});
+  const [search, setSearch] = useState("");
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
+    null
+  );
   const combinedClassName = `list-clients ${className}`;
 
-  const fetchSales = async (pageId: number, pageSize: number) => {
+  const { checkedSales, setCheckedSales } = useContext(CheckedSalesContext);
+  const [allChecked, setAllChecked] = useState<boolean>(false);
+
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(
+        sortDirection === "asc"
+          ? "desc"
+          : sortDirection === "desc"
+          ? null
+          : "asc"
+      );
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const handleCheck = (id: number, isChecked: boolean) => {
+    if (isChecked) {
+      setCheckedSales((prevCheckedSales) => [...prevCheckedSales, id]);
+    } else {
+      setCheckedSales((prevCheckedSales) =>
+        prevCheckedSales.filter((saleId) => saleId !== id)
+      );
+    }
+  };
+
+  useEffect(() => {
+    console.log(checkedSales);
+  }, [checkedSales]);
+
+  const handleButtonClick = async () => {
     try {
       const token = Cookies.get("access_token");
-      const response = await fetch(
-        `http://localhost:8080/sales?page_id=${pageId}&page_size=${pageSize}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch("http://localhost:8080/pdf/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // replace with your token
+        },
+        body: JSON.stringify({
+          sale_id: checkedSales,
+        }),
+      });
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "sales.pdf");
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchSales = async (
+    pageId: number,
+    pageSize: number,
+    sortField: string | null,
+    sortDirection: "asc" | "desc" | null,
+    search?: string
+  ) => {
+    try {
+      const token = Cookies.get("access_token");
+      let url = `http://localhost:8080/sales?page_id=${pageId}&page_size=${pageSize}`;
+
+      if (sortField && sortDirection) {
+        url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
+      }
+
+      if (search) {
+        url += `&search=${search}`;
+      }
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.ok) {
         const data: ListSalesResponse = await response.json();
@@ -104,8 +183,12 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
   };
 
   useEffect(() => {
-    fetchSales(currentPage, salesPerPage);
-  }, [currentPage, salesPerPage]);
+    fetchSales(currentPage, salesPerPage, sortField, sortDirection, search);
+  }, [currentPage, salesPerPage, sortField, sortDirection, search]);
+
+  useEffect(() => {
+    setAllChecked(false);
+  }, [currentPage]);
 
   const totalPages = Math.ceil(listSalesResponse.total / salesPerPage);
 
@@ -192,19 +275,57 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
     return buttons;
   };
 
+  const handleCheckAll = () => {
+    if (allChecked) {
+      setCheckedSales([]);
+    } else {
+      const allSaleIds = listSalesResponse.sales.map((sale) => sale.id);
+      setCheckedSales((prevCheckedSales) => [
+        ...prevCheckedSales,
+        ...allSaleIds,
+      ]);
+    }
+    setAllChecked(!allChecked);
+  };
+
   return (
     <>
-      <div className='clients-per-page ml-auto mb-10'>
-        <label className='clientsPerPage mr-4'>Exibindo por pagina:</label>
+      <div className='list-clients__sorting-wrapper grid grid-cols-4 w-11/12 ml-auto mb-6'>
         <input
-          className='text-black text-2xl pl-6 py-2 w-20 rounded-2xl'
-          type='number'
-          id='clientsPerPage'
-          value={salesPerPage}
-          onChange={(e) => setSalesPerPage(Number(e.target.value))}
-          min={5}
-          max={30}
+          className='text-black text-2xl pl-6 py-2 rounded-2xl w-1/2'
+          type='text'
+          id='search'
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder='Pesquisar...'
         />
+        <div className='flex justify-center'>
+          <button
+            className='wk-btn wk-btn--bg wk-btn--yellow w-1/2 text-2xl'
+            onClick={handleCheckAll}>
+            {allChecked ? "Desfazer" : "Checar Todos"}
+          </button>
+        </div>
+        <div className='flex justify-center'>
+          <button
+            className='wk-btn wk-btn--bg wk-btn--green w-1/2 text-2xl disabled:opacity-70 disabled:bg-green-900 disabled:hover:bg-green-900 disabled:border-green-900 disabled:hover:border-green-900'
+            onClick={handleButtonClick}
+            disabled={checkedSales.length === 0}>
+            Gerar PDF
+          </button>
+        </div>
+        <div className='clients-per-page ml-auto mb-10'>
+          <label className='clientsPerPage mr-4'>Exibindo por pagina:</label>
+          <input
+            className='text-black text-2xl pl-6 py-2 w-20 rounded-2xl'
+            type='number'
+            id='clientsPerPage'
+            value={salesPerPage}
+            onChange={(e) => setSalesPerPage(Number(e.target.value))}
+            min={5}
+            max={30}
+          />
+        </div>
       </div>
 
       {loading ? (
@@ -215,10 +336,42 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
         <table className={combinedClassName}>
           <tbody>
             <tr className='list-clients__header-row'>
-              <th className='list-clients__client-name'>Produto</th>
-              <th className='list-clients__client-whatsapp'>Preço</th>
+              <th className='list-clients__client-name !w-1/12'>Selecionar</th>
+              <th
+                className='list-clients__client-name  cursor-pointer'
+                onClick={() => handleSort("product")}>
+                Produto
+                {sortField === "product" &&
+                  (sortDirection === "asc" ? (
+                    <ChevronUpIcon />
+                  ) : sortDirection === "desc" ? (
+                    <ChevronDownIcon />
+                  ) : null)}
+              </th>
+              <th
+                className='list-clients__client-whatsapp  cursor-pointer'
+                onClick={() => handleSort("price")}>
+                Preço
+                {sortField === "price" &&
+                  (sortDirection === "asc" ? (
+                    <ChevronUpIcon />
+                  ) : sortDirection === "desc" ? (
+                    <ChevronDownIcon />
+                  ) : null)}
+              </th>
               <th className='list-clients__client-pet-name'>Observação</th>
               <th className='list-clients__client-pet-breed'>Cliente</th>
+              <th
+                className='list-clients__client-actions cursor-pointer'
+                onClick={() => handleSort("created_at")}>
+                Criado em
+                {sortField === "created_at" &&
+                  (sortDirection === "asc" ? (
+                    <ChevronUpIcon />
+                  ) : sortDirection === "desc" ? (
+                    <ChevronDownIcon />
+                  ) : null)}
+              </th>
               <th className='list-clients__client-actions'>Editar</th>
             </tr>
             {listSalesResponse.sales.map((sale, index) => (
@@ -227,6 +380,13 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
                   index % 2 === 0 ? "list-clients--even" : "list-clients--odd"
                 }`}
                 key={sale.id}>
+                <td className='list-clients__client-name !w-1/12'>
+                  <input
+                    type='checkbox'
+                    checked={checkedSales.includes(sale.id)}
+                    onChange={(e) => handleCheck(sale.id, e.target.checked)}
+                  />
+                </td>
                 <td className='list-clients__client-name'>{sale.product}</td>
                 <td className='list-clients__client-whatsapp'>{sale.price}</td>
                 <td className='list-clients__client-pet-name'>
@@ -234,6 +394,13 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
                 </td>
                 <td className='list-clients__client-pet-breed'>
                   {clientNames[sale.client_id] || "Loading..."}
+                </td>
+                <td className='list-sales__table-data'>
+                  {new Date(sale.created_at).toLocaleDateString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
                 </td>
                 <td className='list-clients__client-actions'>
                   <Link

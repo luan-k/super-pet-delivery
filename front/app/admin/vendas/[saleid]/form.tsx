@@ -3,6 +3,7 @@ import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import Cookies from "js-cookie";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import ModalDialogClientsList from "../../components/ModalDialogClientsList";
 
 interface EditSaleFormRequest {
   client_id: number;
@@ -23,6 +24,7 @@ const EditSaleForm: React.FC = () => {
   const pathname = usePathname();
   var urlParts = pathname.split("/");
   var currentId = urlParts.at(-1);
+  const [selectedClientName, setSelectedClientName] = React.useState("");
 
   useEffect(() => {
     const fetchSaleDetails = async () => {
@@ -43,6 +45,7 @@ const EditSaleForm: React.FC = () => {
           const data: SaleDetails = await response.json();
           console.log(data);
           setCurrentSale(data);
+          setSelectedClientName(data.client_id.toString()); // Assuming client_id can be used as the client name
         } else {
           console.error("Failed to fetch sales");
         }
@@ -64,6 +67,39 @@ const EditSaleForm: React.FC = () => {
     observation: "",
   });
 
+  //fetch client name
+  useEffect(() => {
+    const fetchClientName = async () => {
+      try {
+        const token = Cookies.get("access_token");
+        const response = await fetch(
+          `http://localhost:8080/clients/${currentSale?.client_id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          setSelectedClientName(data.full_name);
+        } else {
+          console.error("Failed to fetch client name");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        //setLoading(false);
+      }
+    };
+
+    fetchClientName();
+  }, [currentSale]);
+
   // Update the form data when sale details are fetched
   useEffect(() => {
     if (currentSale) {
@@ -73,11 +109,14 @@ const EditSaleForm: React.FC = () => {
         price: currentSale.price,
         observation: currentSale.observation,
       });
+      setSelectedClientName(currentSale.client_id.toString());
     }
   }, [currentSale]);
 
   // Define the handleChange function to update the form data
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -141,68 +180,77 @@ const EditSaleForm: React.FC = () => {
 
   return (
     <div className='text-2xl wk-create-client'>
-      Current Pathname:{pathname}
-      <br />
-      and this is the current id: {currentId}
-      <h1>Edit Sale</h1>
-      <form onSubmit={handleSubmit}>
-        {/* Input fields corresponding to the createSaleRequest structure */}
-        <label>
-          client id:
-          <input
-            type='number'
-            name='client_id'
-            value={formData.client_id}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <br />
+      <form className='grid grid-cols-1' onSubmit={handleSubmit}>
+        <div className='wk-create-client__input-wrapper'>
+          <label>
+            <h4 className='wk-create-client__title'>Cliente</h4>
+            <div className='flex'>
+              <input
+                type='text'
+                name='client_id'
+                value={selectedClientName}
+                readOnly
+                className='wk-create-client__input'
+              />
+              <ModalDialogClientsList
+                onClientSelect={(clientId, clientName) => {
+                  setFormData({ ...formData, client_id: clientId });
+                  setSelectedClientName(clientName);
+                }}
+              />
+            </div>
+          </label>
+        </div>
 
-        <label>
-          product:
-          <input
-            type='text'
-            name='product'
-            value={formData.product}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+        <div className='wk-create-client__input-wrapper'>
+          <label>
+            <h4 className='wk-create-client__title'>Produto</h4>
+            <input
+              type='text'
+              name='product'
+              value={formData.product}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
 
-        <label>
-          price:
-          <input
-            type='number'
-            name='price'
-            value={formData.price}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+        <div className='wk-create-client__input-wrapper'>
+          <label>
+            <h4 className='wk-create-client__title'>Preço</h4>
+            <input
+              type='number'
+              name='price'
+              value={formData.price}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
 
-        <label>
-          observation:
-          <input
-            type='text'
-            name='observation'
-            value={formData.observation}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
+        <div className='wk-create-client__input-wrapper'>
+          <label>
+            <h4 className='wk-create-client__title'>Observação</h4>
+            <textarea
+              name='observation'
+              value={formData.observation}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
 
-        <button
-          className='text-white px-4 py-3 bg-yellow-700 mt-4'
-          type='submit'>
-          Edit Sale
-        </button>
-
-        <button
-          className='text-center p-1 bg-red-500 rounded-xl hover:bg-red-600 transition-all'
-          onClick={handleDelete}>
-          Delete this sale
-        </button>
+        <div className='grid grid-cols-2'>
+          <div>
+            <button className='wk-btn wk-btn--bg wk-btn--green' type='submit'>
+              Editar Venda
+            </button>
+          </div>
+          <div className='flex justify-end'>
+            <button
+              className='wk-btn wk-btn--bg wk-btn--red'
+              onClick={handleDelete}>
+              Deletar Venda
+            </button>
+          </div>
+        </div>
       </form>
     </div>
   );

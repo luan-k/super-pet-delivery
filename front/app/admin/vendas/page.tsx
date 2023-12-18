@@ -1,7 +1,11 @@
+"use client";
 import Link from "next/link";
 import ListSales from "./ListSales";
+import { CheckedSalesContext } from "./CheckedSalesContext";
+import { useState } from "react";
 
 export default function Vendas() {
+  const [checkedSales, setCheckedSales] = useState<number[]>([]);
   return (
     <>
       <div className='list-clients-header wk-admin-page-wrapper'>
@@ -14,7 +18,9 @@ export default function Vendas() {
           </Link>
         </div>
       </div>
-      <ListSales className='w-11/12' />
+      <CheckedSalesContext.Provider value={{ checkedSales, setCheckedSales }}>
+        <ListSales className='w-11/12' />
+      </CheckedSalesContext.Provider>
     </>
   );
 }

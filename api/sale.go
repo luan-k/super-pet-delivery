@@ -72,8 +72,11 @@ type listSaleResponse struct {
 }
 
 type listSaleRequest struct {
-	PageID   int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5,max=30"`
+	PageID        int32  `form:"page_id" binding:"required,min=1"`
+	PageSize      int32  `form:"page_size" binding:"required,min=5,max=50"`
+	SortField     string `form:"sort_field" binding:""`
+	SortDirection string `form:"sort_direction" binding:""`
+	Search        string `form:"search" binding:""`
 }
 
 func (server *Server) listSale(ctx *gin.Context) {
@@ -95,8 +98,21 @@ func (server *Server) listSale(ctx *gin.Context) {
 		return
 	}
 
-	// Fetch the paginated sales
-	sales, err := server.store.ListSales(ctx, arg)
+	var sales []db.Sale
+	// Check if sort fields and search are provided
+	if req.SortField != "" && req.SortDirection != "" && req.Search != "" {
+		// Fetch the paginated sales with sorting and search
+		sales, err = server.store.SearchSales(ctx, req.Search, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection)
+	} else if req.SortField != "" && req.SortDirection != "" {
+		// Fetch the paginated sales with sorting
+		sales, err = server.store.ListSalesSorted(ctx, arg, req.SortField, req.SortDirection)
+	} else if req.Search != "" {
+		// Fetch the paginated sales with search
+		sales, err = server.store.SearchSales(ctx, req.Search, int(req.PageID), int(req.PageSize), "", "")
+	} else {
+		// Fetch the paginated sales without sorting or search
+		sales, err = server.store.ListSales(ctx, arg)
+	}
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
