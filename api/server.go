@@ -112,7 +112,7 @@ func (server *Server) setupRouter() {
 	authRoutes.DELETE("/sales/:id", server.deleteSale)
 
 	authRoutes.POST("/pdf/", server.createPdf)
-	authRoutes.GET("/pdf/", server.getPdf)
+	//authRoutes.GET("/pdf/", server.getPdf)
 
 	authRoutes.POST("/images", server.createImage)
 	router.GET("/images/:id", server.getImage)
