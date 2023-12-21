@@ -17,7 +17,7 @@ CREATE TABLE "sale" (
   "product" varchar NOT NULL,
   "price" bigint NOT NULL,
   "observation" varchar NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  "created_at" timestamptz NOT NULL DEFAULT (now() AT TIME ZONE 'America/Sao_Paulo'),
   "changed_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
   "pdf_generated_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z'
 );

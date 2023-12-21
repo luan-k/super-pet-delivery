@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -97,6 +98,7 @@ func (server *Server) createPdf(ctx *gin.Context) {
 			Product:     sale.Product,
 			Price:       sale.Price,
 			Observation: sale.Observation,
+			CreatedAt:   sale.CreatedAt,
 		}
 
 		// Fetch client data using the client_id from the sale response
@@ -125,8 +127,12 @@ func (server *Server) createPdf(ctx *gin.Context) {
 			Client: clientArg, // You need to fetch client data and assign it here
 		}
 
+		log.Printf("Report Entry: %+v\n", reportEntry)
+
 		// Append the Report entry to the report slice
 		report = append(report, reportEntry)
+
+		log.Printf("Report: %+v\n", report)
 	}
 
 	// Create a new buffer to store the HTML output
@@ -134,39 +140,109 @@ func (server *Server) createPdf(ctx *gin.Context) {
 
 	// Define the HTML template with a loop for sections
 	htmlTemplate := `
-	    <!DOCTYPE html>
-	    <html>
-	    <head>
-	        <title>Sale Details</title>
-	    </head>
-	    <body>
-			{{range .Reports}}
-				<section>
-					<h1>Sale code: {{.Sale.ID}}</h1>
-					<img style="width: 210px;" src="img.png" />
-					<h2>Sale Details</h2>
-					<p>ID: {{.Sale.ID}}</p>
-					<p>Product: {{.Sale.Product}}</p>
-					<p>Price: ${{.Sale.Price}}</p>
-					<p>Observation: {{.Sale.Observation}}</p>
-					<p>Created At: {{.Sale.CreatedAt}}</p>
-
-					<h2>Client Details</h2>
-					<p>ID: {{.Client.ID}}</p>
-					<p>Full Name: {{.Client.FullName}}</p>
-					<p>Phone (WhatsApp): {{.Client.PhoneWhatsApp}}</p>
-					<p>Phone (Line): {{.Client.PhoneLine}}</p>
-					<p>Pet Name: {{.Client.PetName}}</p>
-					<p>Pet Breed: {{.Client.PetBreed}}</p>
-					<p>Address Street: {{.Client.AddressStreet}}</p>
-					<p>Address Number: {{.Client.AddressNumber}}</p>
-					<p>Address Neighborhood: {{.Client.AddressNeighborhood}}</p>
-					<p>Address Reference: {{.Client.AddressReference}}</p>
-				</section>
-			{{end}}
-	    </body>
-	    </html>
-	`
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NOTA DE ENTREGA</title>
+	<style>
+		body {
+			font-family: Verdana, sans-serif;
+			font-size: 15px;
+		}
+		table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+		tr.sales-header{
+			border: 0;
+    		background-color: #f3f3f3;
+		}
+		tr.sales-header td{
+			border: 0;
+		}
+		th,
+		td {
+			border: 1px solid black;
+			padding: 5px;
+			text-align: left;
+		}
+		.data-title {
+			font-weight: 600;
+		}
+		.center {
+			text-align: center;
+		}
+		.quarter {
+			width: 25%;
+		}
+    </style>
+</head>
+<body>
+    <div class="center">
+        <img style="width: 90px;" src="img.png" />
+        <h1 style="margin: 5px; font-size: 21px;">NOTA DE ENTREGA</h1>
+    </div>
+    <table>
+        <tr>
+            <td class="quarter data-title">Data</td>
+            <td class="quarter"></td>
+            <td class="quarter data-title">Motorista</td>
+            <td class="quarter"></td>
+        </tr>
+        {{range .Reports}}
+        <tr class="sales-header">
+            <td colspan="4" class="center"><h2 style="margin: 0;">Venda</h2></td>
+        </tr>
+        <tr>
+            <td class="quarter data-title">Produto:</td>
+            <td colspan="3">{{.Sale.Product}}</td>
+        </tr>
+        <tr>
+            <td class="quarter data-title">Preço:</td>
+            <td>{{.Sale.Price}}</td>
+            <td class="data-title">Criado em:</td>
+            <td>{{.Sale.CreatedAt.Format "02/01/2006, 15:04"}}</td>
+        </tr>
+        <tr>
+            <td class="quarter data-title">Nome:</td>
+            <td colspan="3">{{.Client.FullName}}</td>
+        </tr>
+        <tr>
+            <td class="quarter data-title">Rua:</td>
+            <td colspan="3">{{.Client.AddressStreet}}</td>
+        </tr>
+        <tr>
+            <td class="quarter data-title">Bairro:</td>
+            <td>{{.Client.AddressNeighborhood}}</td>
+            <td class="data-title">Numero:</td>
+            <td>{{.Client.AddressNumber}}</td>
+        </tr>
+        <tr>
+            <td class="quarter data-title">WhatsApp:</td>
+            <td>{{.Client.PhoneWhatsApp}}</td>
+            <td class="data-title">Telefone:</td>
+            <td>{{.Client.PhoneLine}}</td>
+        </tr>
+        <tr>
+            <td class="quarter data-title">Pet:</td>
+            <td>{{.Client.PetName}}</td>
+            <td class="data-title">Raça/tipo:</td>
+            <td>{{.Client.PetBreed}}</td>
+        </tr>
+        <tr>
+            <td class="quarter data-title">Referência:</td>
+            <td>{{.Client.AddressReference}}</td>
+            <td class="data-title">ID:</td>
+            <td>{{.Client.ID}}</td>
+        </tr>
+        <tr>
+            <td class="quarter data-title">Observação:</td>
+            <td colspan="3">{{.Sale.Observation}}</td>
+        </tr>
+        {{end}}
+    </table>
+</body>
+</html>`
 
 	// Parse the HTML template
 	tmpl, err := template.New("pdf").Parse(htmlTemplate)
@@ -175,6 +251,8 @@ func (server *Server) createPdf(ctx *gin.Context) {
 		return
 	}
 
+	fmt.Println("parsed template")
+
 	// Create a structure to pass to the template
 	templateData := struct {
 		Reports []Report
@@ -182,12 +260,17 @@ func (server *Server) createPdf(ctx *gin.Context) {
 		Reports: report,
 	}
 
+	fmt.Println("template data")
+
 	// Execute the template with the data and write to the buffer
 	err = tmpl.Execute(htmlBuffer, templateData)
 	if err != nil {
+		log.Println("Error executing template:", err) // Log the error
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to execute HTML template"})
 		return
 	}
+
+	fmt.Println("executed template")
 
 	// Save the generated HTML to a single file
 	filePath := "api/pdf/index.html"
@@ -196,14 +279,23 @@ func (server *Server) createPdf(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save HTML file"})
 		return
 	}
+
+	fmt.Println("saved file")
+
 	// For demonstration purposes, you can print the HTML to the console
 	fmt.Println(htmlBuffer.String())
 
 	// Introduce a delay (e.g., 1 second) before starting the Gotenberg command
 	time.Sleep(3 * time.Second)
 
+	// Get the current time
+	currentTime := time.Now()
+
+	// Format the current time as a string and use it as the file name
+	fileName := currentTime.Format("2006-01-02_15-04-05") + ".pdf"
+
 	// Use Gotenberg to convert the HTML to PDF, including the image parameter
-	pdfFilePath := "test.pdf"
+	pdfFilePath := fileName
 	err2 := convertHTMLToPDF(filePath, "api/pdf/img.png", pdfFilePath)
 	if err2 != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to convert HTML to PDF using Go"})

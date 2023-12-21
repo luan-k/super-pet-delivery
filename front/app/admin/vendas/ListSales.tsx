@@ -96,7 +96,18 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "sales.pdf");
+      const date = new Date();
+      const options = {
+        timeZone: "America/Sao_Paulo",
+        hour12: false,
+      };
+      const formattedDate = date.toLocaleDateString("pt-BR");
+      const formattedTime = date
+        .toLocaleTimeString("pt-BR", options)
+        .replace(/:/g, "-");
+      const fileName =
+        formattedDate + " " + formattedTime + "-nota-de-entrega" + ".pdf";
+      link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
     } catch (error) {
