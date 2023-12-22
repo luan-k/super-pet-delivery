@@ -39,8 +39,10 @@ type Client struct {
 	AddressReference    string `json:"address_reference"`
 }
 
+// type of is either delivery or simple
 type createPdfRequest struct {
-	SaleId []int64 `json:"sale_id" validate:"required"`
+	SaleId    []int64 `json:"sale_id" validate:"required"`
+	TypeOfPdf string  `json:"type_of_pdf" validate:"required" `
 }
 
 type Report struct {
@@ -78,6 +80,7 @@ func (server *Server) createPdf(ctx *gin.Context) {
 	}
 
 	var report []Report
+	var htmlTemplate string
 
 	//result := req.saleID[0]
 
@@ -140,113 +143,182 @@ func (server *Server) createPdf(ctx *gin.Context) {
 	// Create a new buffer to store the HTML output
 	var htmlBuffer = new(strings.Builder)
 
-	// Define the HTML template with a loop for sections
-	htmlTemplate := `
-<!DOCTYPE html>
-<html>
-<head>
-    <title>NOTA DE ENTREGA</title>
-	<style>
-		body {
-			font-family: Verdana, sans-serif;
-			font-size: 15px;
-		}
-		table {
-			width: 100%;
-			border-collapse: collapse;
-		}
-		tr.sales-header{
-			border: 0;
-    		background-color: #f3f3f3;
-		}
-		tr.sales-header td{
-			border: 0;
-		}
-		th,
-		td {
-			border: 1px solid black;
-			padding: 5px;
-			text-align: left;
-		}
-		.data-title {
-			font-weight: 600;
-		}
-		.center {
-			text-align: center;
-		}
-		.quarter {
-			width: 25%;
-		}
-    </style>
-</head>
-<body>
-    <div class="center">
-        <img style="width: 90px;" src="img.png" />
-        <h1 style="margin: 5px; font-size: 21px;">NOTA DE ENTREGA</h1>
-    </div>
-    <table>
-        <tr>
-            <td class="quarter data-title">Data</td>
-            <td class="quarter"></td>
-            <td class="quarter data-title">Motorista</td>
-            <td class="quarter"></td>
-        </tr>
-        {{range .Reports}}
-        <tr class="sales-header">
-            <td colspan="4" class="center"><h2 style="margin: 0;">Venda</h2></td>
-        </tr>
-        <tr>
-            <td class="quarter data-title">Produto:</td>
-            <td colspan="3">{{.Sale.Product}}</td>
-        </tr>
-        <tr>
-            <td class="quarter data-title">Preço:</td>
-            <td>{{.Sale.Price}}</td>
-            <td class="data-title">Criado em:</td>
-            <td>{{.Sale.CreatedAt.Format "02/01/2006, 15:04"}}</td>
-        </tr>
-        <tr>
-            <td class="quarter data-title">Nome:</td>
-            <td colspan="3">{{.Client.FullName}}</td>
-        </tr>
-        <tr>
-            <td class="quarter data-title">Rua:</td>
-            <td colspan="3">{{.Client.AddressStreet}}</td>
-        </tr>
-        <tr>
-            <td class="quarter data-title">Bairro:</td>
-            <td>{{.Client.AddressNeighborhood}}</td>
-            <td class="data-title">Numero:</td>
-            <td>{{.Client.AddressNumber}}</td>
-        </tr>
-        <tr>
-            <td class="quarter data-title">WhatsApp:</td>
-            <td>{{.Client.PhoneWhatsApp}}</td>
-            <td class="data-title">Telefone:</td>
-            <td>{{.Client.PhoneLine}}</td>
-        </tr>
-        <tr>
-            <td class="quarter data-title">Pet:</td>
-            <td>{{.Client.PetName}}</td>
-            <td class="data-title">Raça/tipo:</td>
-            <td>{{.Client.PetBreed}}</td>
-        </tr>
-        <tr>
-            <td class="quarter data-title">Referência:</td>
-            <td>{{.Client.AddressReference}}</td>
-            <td class="data-title">ID:</td>
-            <td>{{.Client.ID}}</td>
-        </tr>
-		<tr>
-			<td class="quarter data-title">Observação:</td>
-			<td>{{.Sale.Observation}}</td>
-			<td class="data-title">Cidade:</td>
-			<td>{{.Client.AddressCity}}</td>
-		</tr>
-        {{end}}
-    </table>
-</body>
-</html>`
+	switch req.TypeOfPdf {
+	case "delivery":
+		// Define the HTML template with a loop for sections
+		htmlTemplate = `
+			<!DOCTYPE html>
+			<html>
+			<head>
+				<title>NOTA DE ENTREGA</title>
+				<style>
+					body {
+						font-family: Verdana, sans-serif;
+						font-size: 15px;
+					}
+					table {
+						width: 100%;
+						border-collapse: collapse;
+					}
+					tr.sales-header{
+						border: 0;
+						background-color: #f3f3f3;
+					}
+					tr.sales-header td{
+						border: 0;
+					}
+					th,
+					td {
+						border: 1px solid black;
+						padding: 5px;
+						text-align: left;
+					}
+					.data-title {
+						font-weight: 600;
+					}
+					.center {
+						text-align: center;
+					}
+					.quarter {
+						width: 25%;
+					}
+				</style>
+				<meta charset="UTF-8">
+			</head>
+			<body>
+				<div class="center">
+					<img style="width: 90px;" src="img.png" />
+					<h1 style="margin: 5px; font-size: 21px;">NOTA DE ENTREGA</h1>
+				</div>
+				<table>
+					<tr>
+						<td class="quarter data-title">Data</td>
+						<td class="quarter"></td>
+						<td class="quarter data-title">Motorista</td>
+						<td class="quarter"></td>
+					</tr>
+					{{range .Reports}}
+					<tr class="sales-header">
+						<td colspan="4" class="center"><h2 style="margin: 0;">Venda</h2></td>
+					</tr>
+					<tr>
+						<td class="quarter data-title">Produto:</td>
+						<td colspan="3">{{.Sale.Product}}</td>
+					</tr>
+					<tr>
+						<td class="quarter data-title">Preço:</td>
+						<td>{{.Sale.Price}}</td>
+						<td class="data-title">Criado em:</td>
+						<td>{{.Sale.CreatedAt.Format "02/01/2006, 15:04"}}</td>
+					</tr>
+					<tr>
+						<td class="quarter data-title">Nome:</td>
+						<td colspan="3">{{.Client.FullName}}</td>
+					</tr>
+					<tr>
+						<td class="quarter data-title">Rua:</td>
+						<td colspan="3">{{.Client.AddressStreet}}</td>
+					</tr>
+					<tr>
+						<td class="quarter data-title">Bairro:</td>
+						<td>{{.Client.AddressNeighborhood}}</td>
+						<td class="data-title">Numero:</td>
+						<td>{{.Client.AddressNumber}}</td>
+					</tr>
+					<tr>
+						<td class="quarter data-title">WhatsApp:</td>
+						<td>{{.Client.PhoneWhatsApp}}</td>
+						<td class="data-title">Telefone:</td>
+						<td>{{.Client.PhoneLine}}</td>
+					</tr>
+					<tr>
+						<td class="quarter data-title">Pet:</td>
+						<td>{{.Client.PetName}}</td>
+						<td class="data-title">Raça/tipo:</td>
+						<td>{{.Client.PetBreed}}</td>
+					</tr>
+					<tr>
+						<td class="quarter data-title">Referência:</td>
+						<td>{{.Client.AddressReference}}</td>
+						<td class="data-title">ID:</td>
+						<td>{{.Client.ID}}</td>
+					</tr>
+					<tr>
+						<td class="quarter data-title">Observação:</td>
+						<td>{{.Sale.Observation}}</td>
+						<td class="data-title">Cidade:</td>
+						<td>{{.Client.AddressCity}}</td>
+					</tr>
+					{{end}}
+				</table>
+			</body>
+			</html>`
+	case "simple":
+		htmlTemplate = `
+			<!DOCTYPE html>
+			<html>
+			<head>
+				<title>Relatório de vendas</title>
+				<style>
+					body {
+						font-family: Verdana, sans-serif;
+						font-size: 15px;
+					}
+					table {
+						width: 100%;
+						border-collapse: collapse;
+					}
+					tr.sales-header{
+						border: 0;
+						background-color: #f3f3f3;
+					}
+					tr.sales-header td{
+						border: 0;
+					}
+					th,
+					td {
+						border: 1px solid black;
+						padding: 5px;
+						text-align: left;
+					}
+					.data-title {
+						font-weight: 600;
+					}
+					.center {
+						text-align: center;
+					}
+					.fith {
+						width: 20%;
+					}
+				</style>
+				<meta charset="UTF-8">
+			</head>
+			<body>
+				<div class="center">
+					<img style="width: 90px;" src="img.png" />
+					<h1 style="margin: 5px; font-size: 21px;">RELATÓRIO DE VENDAS</h1>
+				</div>
+				<table>
+					<tr>
+						<td class="fith data-title">Nome</td>
+						<td class="fith data-title">Whatsapp</td>
+						<td class="fith data-title">Criado em</td>
+						<td class="fith data-title">Produto</td>
+						<td class="fith data-title">Preço</td>
+					</tr>
+					{{range .Reports}}
+						<tr>
+							<td class="fith">{{.Client.FullName}}</td>
+							<td class="fith">{{.Client.PhoneWhatsApp}}</td>
+							<td class="fith">{{.Sale.CreatedAt.Format "02/01/2006, 15:04"}}</td>
+							<td class="fith">{{.Sale.Product}}</td>
+							<td class="fith">{{.Sale.Price}}</td>
+						</tr>
+					{{end}}
+				</table>
+			</body>
+			</html>`
+	}
 
 	// Parse the HTML template
 	tmpl, err := template.New("pdf").Parse(htmlTemplate)

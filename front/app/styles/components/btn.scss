@@ -5,6 +5,11 @@
   border-width: 3px;
   font-weight: 600;
   transition: all 0.3s;
+  svg {
+    animation: spin 1s linear infinite;
+    margin: auto;
+    transition: all 0.3s;
+  }
   &:hover {
     background-color: transparent;
     border-color: white;
@@ -30,5 +35,13 @@
   }
   &--red {
     @apply bg-red-500 border-red-500;
+  }
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

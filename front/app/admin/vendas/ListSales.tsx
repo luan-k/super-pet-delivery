@@ -1,8 +1,12 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, MouseEventHandler } from "react";
 import Cookies from "js-cookie";
 import Link from "next/link";
-import { ChevronUpIcon, ChevronDownIcon } from "@radix-ui/react-icons";
+import {
+  ChevronUpIcon,
+  ChevronDownIcon,
+  SymbolIcon,
+} from "@radix-ui/react-icons";
 import { CheckedSalesContext } from "./CheckedSalesContext";
 import { useContext } from "react";
 
@@ -49,6 +53,8 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
 
   const { checkedSales, setCheckedSales } = useContext(CheckedSalesContext);
   const [allChecked, setAllChecked] = useState<boolean>(false);
+  const [isDeliveryLoading, setIsDeliveryLoading] = useState(false);
+  const [isSimpleLoading, setIsSimpleLoading] = useState(false);
 
   const handleSort = (field: string) => {
     if (sortField === field) {
@@ -79,9 +85,15 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
     console.log(checkedSales);
   }, [checkedSales]);
 
-  const handleButtonClick = async () => {
+  const handleButtonClick = async (TypeOfPdf: string): Promise<void> => {
+    if (TypeOfPdf === "delivery") {
+      setIsDeliveryLoading(true);
+    } else if (TypeOfPdf === "simple") {
+      setIsSimpleLoading(true);
+    }
     try {
       const token = Cookies.get("access_token");
+
       const response = await fetch("http://localhost:8080/pdf/", {
         method: "POST",
         headers: {
@@ -90,6 +102,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
         },
         body: JSON.stringify({
           sale_id: checkedSales,
+          type_of_pdf: TypeOfPdf,
         }),
       });
       const blob = await response.blob();
@@ -105,13 +118,30 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
       const formattedTime = date
         .toLocaleTimeString("pt-BR", options)
         .replace(/:/g, "-");
-      const fileName =
-        formattedDate + " " + formattedTime + "-nota-de-entrega" + ".pdf";
+
+      let fileName = "";
+      if (TypeOfPdf === "delivery") {
+        fileName =
+          formattedDate + " " + formattedTime + "-nota-de-entrega" + ".pdf";
+      } else if (TypeOfPdf === "simple") {
+        fileName =
+          formattedDate + " " + formattedTime + "-relatorio-de-vendas" + ".pdf";
+      }
       link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
+      if (TypeOfPdf === "delivery") {
+        setIsDeliveryLoading(false);
+      } else if (TypeOfPdf === "simple") {
+        setIsSimpleLoading(false);
+      }
     } catch (error) {
       console.error(error);
+      if (TypeOfPdf === "delivery") {
+        setIsDeliveryLoading(false);
+      } else if (TypeOfPdf === "simple") {
+        setIsSimpleLoading(false);
+      }
     }
   };
 
@@ -301,7 +331,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
 
   return (
     <>
-      <div className='list-clients__sorting-wrapper grid grid-cols-4 w-11/12 ml-auto mb-6'>
+      <div className='list-clients__sorting-wrapper grid grid-cols-5 w-11/12 ml-auto mb-6'>
         <input
           className='text-black text-2xl pl-6 py-2 rounded-2xl w-1/2'
           type='text'
@@ -317,12 +347,24 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
             {allChecked ? "Desfazer" : "Checar Todos"}
           </button>
         </div>
-        <div className='flex justify-center'>
+        <div className='flex justify-end'>
           <button
-            className='wk-btn wk-btn--bg wk-btn--green w-1/2 text-2xl disabled:opacity-70 disabled:bg-green-900 disabled:hover:bg-green-900 disabled:border-green-900 disabled:hover:border-green-900'
-            onClick={handleButtonClick}
-            disabled={checkedSales.length === 0}>
-            Gerar PDF
+            className='wk-btn wk-btn--bg wk-btn--green w-11/12 text-2xl disabled:opacity-70 disabled:bg-green-900 disabled:hover:bg-green-900 disabled:border-green-900 disabled:hover:border-green-900'
+            onClick={() => handleButtonClick("delivery")}
+            disabled={
+              checkedSales.length === 0 || isDeliveryLoading || isSimpleLoading
+            }>
+            {isDeliveryLoading ? <SymbolIcon /> : "Gerar Nota de Entrega"}
+          </button>
+        </div>
+        <div className='flex justify-start'>
+          <button
+            className='wk-btn wk-btn--bg wk-btn--green w-11/12 text-2xl disabled:opacity-70 disabled:bg-green-900 disabled:hover:bg-green-900 disabled:border-green-900 disabled:hover:border-green-900'
+            onClick={() => handleButtonClick("simple")}
+            disabled={
+              checkedSales.length === 0 || isDeliveryLoading || isSimpleLoading
+            }>
+            {isSimpleLoading ? <SymbolIcon /> : "Gerar Relatório de vendas"}
           </button>
         </div>
         <div className='clients-per-page ml-auto mb-10'>
@@ -341,8 +383,8 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
 
       {loading ? (
         <div>Loading...</div>
-      ) : listSalesResponse.sales.length === 0 ? (
-        <div>No sales available.</div>
+      ) : !listSalesResponse.sales || listSalesResponse.sales.length === 0 ? (
+        <div>Nenhuma venda disponível.</div>
       ) : (
         <table className={combinedClassName}>
           <tbody>

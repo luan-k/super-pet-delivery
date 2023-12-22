@@ -68,7 +68,7 @@ func (store *SortableSQLStore) ListClientsSorted(ctx context.Context, arg ListCl
 	var clients []Client
 	for rows.Next() {
 		var client Client
-		if err := rows.Scan(&client.ID, &client.FullName, &client.PhoneWhatsapp, &client.PhoneLine, &client.PetName, &client.PetBreed, &client.AddressStreet, &client.AddressNumber, &client.AddressNeighborhood, &client.AddressReference); err != nil {
+		if err := rows.Scan(&client.ID, &client.FullName, &client.PhoneWhatsapp, &client.PhoneLine, &client.PetName, &client.PetBreed, &client.AddressStreet, &client.AddressCity, &client.AddressNumber, &client.AddressNeighborhood, &client.AddressReference); err != nil {
 			return nil, err
 		}
 		clients = append(clients, client)
