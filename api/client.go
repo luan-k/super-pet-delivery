@@ -17,6 +17,7 @@ type createClientRequest struct {
 	PetName             string `json:"pet_name"`
 	PetBreed            string `json:"pet_breed"`
 	AddressStreet       string `json:"address_street"`
+	AddressCity         string `json:"address_city"`
 	AddressNumber       string `json:"address_number"`
 	AddressNeighborhood string `json:"address_neighborhood"`
 	AddressReference    string `json:"address_reference"`
@@ -36,6 +37,7 @@ func (server *Server) createClient(ctx *gin.Context) {
 		PetName:             req.PetName,
 		PetBreed:            req.PetBreed,
 		AddressStreet:       req.AddressStreet,
+		AddressCity:         req.AddressCity,
 		AddressNumber:       req.AddressNumber,
 		AddressNeighborhood: req.AddressNeighborhood,
 		AddressReference:    req.AddressReference,
@@ -144,6 +146,7 @@ type updateClientRequest struct {
 	PetName             string `json:"pet_name"`
 	PetBreed            string `json:"pet_breed"`
 	AddressStreet       string `json:"address_street"`
+	AddressCity         string `json:"address_city"`
 	AddressNumber       string `json:"address_number"`
 	AddressNeighborhood string `json:"address_neighborhood"`
 	AddressReference    string `json:"address_reference"`
@@ -199,6 +202,10 @@ func (server *Server) updateClient(ctx *gin.Context) {
 		existingClient.AddressStreet = req.AddressStreet
 	}
 
+	if req.AddressCity != "" {
+		existingClient.AddressCity = req.AddressCity
+	}
+
 	if req.AddressNumber != "" {
 		existingClient.AddressNumber = req.AddressNumber
 	}
@@ -221,6 +228,7 @@ func (server *Server) updateClient(ctx *gin.Context) {
 		PetName:             existingClient.PetName,
 		PetBreed:            existingClient.PetBreed,
 		AddressStreet:       existingClient.AddressStreet,
+		AddressCity:         existingClient.AddressCity,
 		AddressNumber:       existingClient.AddressNumber,
 		AddressNeighborhood: existingClient.AddressNeighborhood,
 		AddressReference:    existingClient.AddressReference,

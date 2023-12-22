@@ -33,6 +33,7 @@ type Client struct {
 	PetName             string `json:"pet_name"`
 	PetBreed            string `json:"pet_breed"`
 	AddressStreet       string `json:"address_street"`
+	AddressCity         string `json:"address_city"`
 	AddressNumber       string `json:"address_number"`
 	AddressNeighborhood string `json:"address_neighborhood"`
 	AddressReference    string `json:"address_reference"`
@@ -116,6 +117,7 @@ func (server *Server) createPdf(ctx *gin.Context) {
 			PetName:             client.PetName,
 			PetBreed:            client.PetBreed,
 			AddressStreet:       client.AddressStreet,
+			AddressCity:         client.AddressCity,
 			AddressNumber:       client.AddressNumber,
 			AddressNeighborhood: client.AddressNeighborhood,
 			AddressReference:    client.AddressReference,
@@ -235,10 +237,12 @@ func (server *Server) createPdf(ctx *gin.Context) {
             <td class="data-title">ID:</td>
             <td>{{.Client.ID}}</td>
         </tr>
-        <tr>
-            <td class="quarter data-title">Observação:</td>
-            <td colspan="3">{{.Sale.Observation}}</td>
-        </tr>
+		<tr>
+			<td class="quarter data-title">Observação:</td>
+			<td>{{.Sale.Observation}}</td>
+			<td class="data-title">Cidade:</td>
+			<td>{{.Client.AddressCity}}</td>
+		</tr>
         {{end}}
     </table>
 </body>

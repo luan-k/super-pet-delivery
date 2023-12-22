@@ -92,6 +92,7 @@ func (store *SortableSQLStore) SearchClients(ctx context.Context, search string,
         LOWER(pet_name) LIKE LOWER($1) OR 
         LOWER(pet_breed) LIKE LOWER($1) OR 
         LOWER(address_street) LIKE LOWER($1) OR 
+		LOWER(address_city) LIKE LOWER($1) OR
         LOWER(address_number) LIKE LOWER($1) OR 
         LOWER(address_neighborhood) LIKE LOWER($1) OR 
         LOWER(address_reference) LIKE LOWER($1)`
@@ -111,7 +112,7 @@ func (store *SortableSQLStore) SearchClients(ctx context.Context, search string,
 	var clients []Client
 	for rows.Next() {
 		var c Client
-		if err = rows.Scan(&c.ID, &c.FullName, &c.PhoneWhatsapp, &c.PhoneLine, &c.PetName, &c.PetBreed, &c.AddressStreet, &c.AddressNumber, &c.AddressNeighborhood, &c.AddressReference); err != nil {
+		if err = rows.Scan(&c.ID, &c.FullName, &c.PhoneWhatsapp, &c.PhoneLine, &c.PetName, &c.PetBreed, &c.AddressStreet, &c.AddressCity, &c.AddressNumber, &c.AddressNeighborhood, &c.AddressReference); err != nil {
 			return nil, err
 		}
 		clients = append(clients, c)

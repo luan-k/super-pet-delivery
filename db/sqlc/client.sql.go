@@ -28,12 +28,13 @@ INSERT INTO client (
     pet_name,
     pet_breed,
     address_street,
+    address_city,
     address_number,
     address_neighborhood,
     address_reference
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9
-) RETURNING id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_number, address_neighborhood, address_reference
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+) RETURNING id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_city, address_number, address_neighborhood, address_reference
 `
 
 type CreateClientParams struct {
@@ -43,6 +44,7 @@ type CreateClientParams struct {
 	PetName             string `json:"pet_name"`
 	PetBreed            string `json:"pet_breed"`
 	AddressStreet       string `json:"address_street"`
+	AddressCity         string `json:"address_city"`
 	AddressNumber       string `json:"address_number"`
 	AddressNeighborhood string `json:"address_neighborhood"`
 	AddressReference    string `json:"address_reference"`
@@ -56,6 +58,7 @@ func (q *Queries) CreateClient(ctx context.Context, arg CreateClientParams) (Cli
 		arg.PetName,
 		arg.PetBreed,
 		arg.AddressStreet,
+		arg.AddressCity,
 		arg.AddressNumber,
 		arg.AddressNeighborhood,
 		arg.AddressReference,
@@ -69,6 +72,7 @@ func (q *Queries) CreateClient(ctx context.Context, arg CreateClientParams) (Cli
 		&i.PetName,
 		&i.PetBreed,
 		&i.AddressStreet,
+		&i.AddressCity,
 		&i.AddressNumber,
 		&i.AddressNeighborhood,
 		&i.AddressReference,
@@ -87,7 +91,7 @@ func (q *Queries) DeleteClient(ctx context.Context, id int64) error {
 }
 
 const getClient = `-- name: GetClient :one
-SELECT id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_number, address_neighborhood, address_reference FROM client
+SELECT id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_city, address_number, address_neighborhood, address_reference FROM client
 WHERE id = $1 LIMIT 1
 `
 
@@ -102,6 +106,7 @@ func (q *Queries) GetClient(ctx context.Context, id int64) (Client, error) {
 		&i.PetName,
 		&i.PetBreed,
 		&i.AddressStreet,
+		&i.AddressCity,
 		&i.AddressNumber,
 		&i.AddressNeighborhood,
 		&i.AddressReference,
@@ -110,7 +115,7 @@ func (q *Queries) GetClient(ctx context.Context, id int64) (Client, error) {
 }
 
 const listClients = `-- name: ListClients :many
-SELECT id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_number, address_neighborhood, address_reference FROM client
+SELECT id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_city, address_number, address_neighborhood, address_reference FROM client
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -138,6 +143,7 @@ func (q *Queries) ListClients(ctx context.Context, arg ListClientsParams) ([]Cli
 			&i.PetName,
 			&i.PetBreed,
 			&i.AddressStreet,
+			&i.AddressCity,
 			&i.AddressNumber,
 			&i.AddressNeighborhood,
 			&i.AddressReference,
@@ -164,11 +170,12 @@ SET
     pet_name = COALESCE($5, pet_name),
     pet_breed = COALESCE($6, pet_breed),
     address_street = COALESCE($7, address_street),
-    address_number = COALESCE($8, address_number),
-    address_neighborhood = COALESCE($9, address_neighborhood),
-    address_reference = COALESCE($10, address_reference)
+    address_city = COALESCE($8, address_city),
+    address_number = COALESCE($9, address_number),
+    address_neighborhood = COALESCE($10, address_neighborhood),
+    address_reference = COALESCE($11, address_reference)
 WHERE id = $1
-RETURNING id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_number, address_neighborhood, address_reference
+RETURNING id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_city, address_number, address_neighborhood, address_reference
 `
 
 type UpdateClientParams struct {
@@ -179,6 +186,7 @@ type UpdateClientParams struct {
 	PetName             string `json:"pet_name"`
 	PetBreed            string `json:"pet_breed"`
 	AddressStreet       string `json:"address_street"`
+	AddressCity         string `json:"address_city"`
 	AddressNumber       string `json:"address_number"`
 	AddressNeighborhood string `json:"address_neighborhood"`
 	AddressReference    string `json:"address_reference"`
@@ -193,6 +201,7 @@ func (q *Queries) UpdateClient(ctx context.Context, arg UpdateClientParams) (Cli
 		arg.PetName,
 		arg.PetBreed,
 		arg.AddressStreet,
+		arg.AddressCity,
 		arg.AddressNumber,
 		arg.AddressNeighborhood,
 		arg.AddressReference,
@@ -206,6 +215,7 @@ func (q *Queries) UpdateClient(ctx context.Context, arg UpdateClientParams) (Cli
 		&i.PetName,
 		&i.PetBreed,
 		&i.AddressStreet,
+		&i.AddressCity,
 		&i.AddressNumber,
 		&i.AddressNeighborhood,
 		&i.AddressReference,

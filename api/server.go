@@ -38,6 +38,13 @@ func NewServer(config util.Config, store db.SortableStore) (*Server, error) {
 	if err != nil {
 		log.Fatal("cannot create initial user:", err)
 	}
+
+	// Create dummy data
+	err = server.createDummyData(store)
+	if err != nil {
+		log.Fatal("cannot create dummy data:", err)
+	}
+
 	server.setupRouter()
 	return server, nil
 }

@@ -24,6 +24,7 @@ type Client struct {
 	PetName             string `json:"pet_name"`
 	PetBreed            string `json:"pet_breed"`
 	AddressStreet       string `json:"address_street"`
+	AddressCity         string `json:"address_city"`
 	AddressNumber       string `json:"address_number"`
 	AddressNeighborhood string `json:"address_neighborhood"`
 	AddressReference    string `json:"address_reference"`

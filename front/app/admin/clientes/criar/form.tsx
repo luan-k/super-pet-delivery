@@ -11,6 +11,7 @@ interface CreateClientRequest {
   pet_name: string;
   pet_breed: string;
   address_street: string;
+  address_city: string;
   address_number: string;
   address_neighborhood: string;
   address_reference: string;
@@ -25,6 +26,7 @@ const CreateClient: React.FC = () => {
     pet_name: "",
     pet_breed: "",
     address_street: "",
+    address_city: "",
     address_number: "",
     address_neighborhood: "",
     address_reference: "",
@@ -172,16 +174,26 @@ const CreateClient: React.FC = () => {
         </div>
 
         <div className='wk-create-client__input-wrapper wk-create-client__input-wrapper--grid'>
-          <label>
-            Endereço rua
-            <input
-              type='text'
-              name='address_street'
-              value={formData.address_street}
-              onChange={handleInputChange}
-            />
-          </label>
-
+          <div className='grid grid-cols-2 gap-3'>
+            <label>
+              Endereço rua
+              <input
+                type='text'
+                name='address_street'
+                value={formData.address_street}
+                onChange={handleInputChange}
+              />
+            </label>
+            <label>
+              Endereço cidade
+              <input
+                type='text'
+                name='address_city'
+                value={formData.address_city}
+                onChange={handleInputChange}
+              />
+            </label>
+          </div>
           <div className='grid grid-cols-2 gap-3'>
             <label>
               Numero

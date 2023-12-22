@@ -6,11 +6,12 @@ INSERT INTO client (
     pet_name,
     pet_breed,
     address_street,
+    address_city,
     address_number,
     address_neighborhood,
     address_reference
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
 ) RETURNING *;
 
 -- name: GetClient :one
@@ -35,9 +36,10 @@ SET
     pet_name = COALESCE($5, pet_name),
     pet_breed = COALESCE($6, pet_breed),
     address_street = COALESCE($7, address_street),
-    address_number = COALESCE($8, address_number),
-    address_neighborhood = COALESCE($9, address_neighborhood),
-    address_reference = COALESCE($10, address_reference)
+    address_city = COALESCE($8, address_city),
+    address_number = COALESCE($9, address_number),
+    address_neighborhood = COALESCE($10, address_neighborhood),
+    address_reference = COALESCE($11, address_reference)
 WHERE id = $1
 RETURNING *;
 
