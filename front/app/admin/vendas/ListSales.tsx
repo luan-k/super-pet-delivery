@@ -50,7 +50,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
     null
   );
-  const combinedClassName = `list-clients ${className}`;
+  const combinedClassName = `list-clients list-sales ${className}`;
 
   const { checkedSales, setCheckedSales } = useContext(CheckedSalesContext);
   const [allChecked, setAllChecked] = useState<boolean>(false);
@@ -332,9 +332,9 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
 
   return (
     <>
-      <div className='list-clients__sorting-wrapper grid grid-cols-5 w-11/12 ml-auto mb-6'>
+      <div className='list-clients__sorting-wrapper grid grid-cols-5 w-11/12 ml-auto mb-6 items-center'>
         <input
-          className='text-black text-2xl pl-6 py-2 rounded-2xl w-1/2'
+          className='text-black text-2xl pl-6 py-2 rounded-2xl w-11/12'
           type='text'
           id='search'
           value={search}
@@ -348,7 +348,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
             {allChecked ? "Desfazer" : "Checar Todos"}
           </button>
         </div>
-        <div className='flex justify-end'>
+        <div className='flex justify-center'>
           <button
             className='wk-btn wk-btn--bg wk-btn--green w-11/12 text-2xl disabled:opacity-70 disabled:bg-green-900 disabled:hover:bg-green-900 disabled:border-green-900 disabled:hover:border-green-900'
             onClick={() => handleButtonClick("delivery")}
@@ -358,7 +358,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
             {isDeliveryLoading ? <SymbolIcon /> : "Gerar Nota de Entrega"}
           </button>
         </div>
-        <div className='flex justify-start'>
+        <div className='flex justify-center'>
           <button
             className='wk-btn wk-btn--bg wk-btn--green w-11/12 text-2xl disabled:opacity-70 disabled:bg-green-900 disabled:hover:bg-green-900 disabled:border-green-900 disabled:hover:border-green-900'
             onClick={() => handleButtonClick("simple")}
@@ -368,7 +368,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
             {isSimpleLoading ? <SymbolIcon /> : "Gerar Relatório de vendas"}
           </button>
         </div>
-        <div className='clients-per-page ml-auto mb-10'>
+        <div className='clients-per-page ml-auto'>
           <label className='clientsPerPage mr-4'>Exibindo por pagina:</label>
           <input
             className='text-black text-2xl pl-6 py-2 w-20 rounded-2xl'
@@ -390,7 +390,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
         <table className={combinedClassName}>
           <tbody>
             <tr className='list-clients__header-row'>
-              <th className='list-clients__client-name !w-1/12'>Selecionar</th>
+              <th className='list-clients__client-checkbox'>Selecionar</th>
               <th
                 className='list-clients__client-name  cursor-pointer'
                 onClick={() => handleSort("product")}>
@@ -444,11 +444,12 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
                   index % 2 === 0 ? "list-clients--even" : "list-clients--odd"
                 }`}
                 key={sale.id}>
-                <td className='list-clients__client-name !w-1/12'>
+                <td className='list-clients__client-checkbox'>
                   <input
                     type='checkbox'
                     checked={checkedSales.includes(sale.id)}
                     onChange={(e) => handleCheck(sale.id, e.target.checked)}
+                    className='list-clients__client-checkbox__input'
                   />
                 </td>
                 <td className='list-clients__client-name'>{sale.product}</td>

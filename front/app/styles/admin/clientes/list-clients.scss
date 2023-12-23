@@ -60,6 +60,36 @@
     &-actions {
       width: 5%;
     }
+    &-checkbox {
+      width: 3%;
+      &__input {
+        &,
+        input[type="checkbox"] {
+          appearance: none;
+          background-color: transparent;
+          border: 0.3rem solid #828282;
+          border-radius: 0.15rem;
+          display: grid;
+          height: 2.4rem;
+          margin: auto;
+          place-content: center;
+          position: relative;
+          width: 2.4rem;
+          &::before {
+            border-radius: 0.15rem;
+            box-shadow: inset 1em 1em rgb(255, 255, 255);
+            content: "";
+            height: 1rem;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            width: 1rem;
+          }
+          &:checked::before {
+            transform: scale(1);
+          }
+        }
+      }
+    }
   }
 
   .list-clients__client-name,
@@ -116,4 +146,35 @@
 }
 .list-clients__client-address-number {
   width: 5%;
+}
+
+.list-sales {
+  th {
+    &.list-clients__client-name {
+      border-radius: 0;
+    }
+    &.list-clients__client-checkbox {
+      border-radius: 1rem 0 0 0;
+    }
+    svg {
+      display: inline;
+      margin-left: 1rem;
+    }
+
+    &.list-clients__client-actions {
+      border-radius: 0 1rem 0 0;
+    }
+  }
+  tr:last-of-type {
+    & .list-clients__client-checkbox {
+      border-radius: 0 0 0 1rem;
+    }
+
+    &.list-clients__client-name {
+      border-radius: 0;
+    }
+    & .list-clients__client-actions {
+      border-radius: 0 0 1rem 0;
+    }
+  }
 }
