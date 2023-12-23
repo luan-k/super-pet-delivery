@@ -127,7 +127,7 @@ func (store *SortableSQLStore) SearchClients(ctx context.Context, search string,
 
 func (store *SortableSQLStore) ListSalesSorted(ctx context.Context, arg ListSalesParams, sortField string, sortDirection string) ([]Sale, error) {
 	// Define a map of valid sort fields and directions
-	validSortFields := map[string]bool{"product": true, "price": true, "created_at": true}
+	validSortFields := map[string]bool{"product": true, "price": true, "created_at": true, "client_name": true}
 	validSortDirections := map[string]bool{"asc": true, "desc": true}
 
 	// If sortField is provided, validate it
@@ -164,7 +164,7 @@ func (store *SortableSQLStore) ListSalesSorted(ctx context.Context, arg ListSale
 	var sales []Sale
 	for rows.Next() {
 		var sale Sale
-		if err := rows.Scan(&sale.ID, &sale.ClientID, &sale.Product, &sale.Price, &sale.Observation, &sale.CreatedAt, &sale.ChangedAt, &sale.PdfGeneratedAt); err != nil {
+		if err := rows.Scan(&sale.ID, &sale.ClientID, &sale.ClientName, &sale.Product, &sale.Price, &sale.Observation, &sale.CreatedAt, &sale.ChangedAt, &sale.PdfGeneratedAt); err != nil {
 			return nil, err
 		}
 		sales = append(sales, sale)
@@ -183,6 +183,7 @@ func (store *SortableSQLStore) SearchSales(ctx context.Context, search string, p
 
 	query := `SELECT * FROM sale WHERE 
         LOWER(product) LIKE LOWER($1) OR 
+		LOWER(client_name) LIKE LOWER($1) OR
         LOWER(observation) LIKE LOWER($1) OR
         CAST(price AS TEXT) LIKE LOWER($1)`
 
@@ -201,7 +202,7 @@ func (store *SortableSQLStore) SearchSales(ctx context.Context, search string, p
 	var sales []Sale
 	for rows.Next() {
 		var s Sale
-		if err = rows.Scan(&s.ID, &s.ClientID, &s.Product, &s.Price, &s.Observation, &s.CreatedAt, &s.ChangedAt, &s.PdfGeneratedAt); err != nil {
+		if err = rows.Scan(&s.ID, &s.ClientID, &s.ClientName, &s.Product, &s.Price, &s.Observation, &s.CreatedAt, &s.ChangedAt, &s.PdfGeneratedAt); err != nil {
 			return nil, err
 		}
 		sales = append(sales, s)

@@ -24,8 +24,19 @@ func (server *Server) createSale(ctx *gin.Context) {
 		return
 	}
 
+	client, err := server.store.GetClient(ctx, req.ClientID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
 	arg := db.CreateSaleParams{
 		ClientID:    req.ClientID,
+		ClientName:  client.FullName,
 		Product:     req.Product,
 		Price:       req.Price,
 		Observation: req.Observation,

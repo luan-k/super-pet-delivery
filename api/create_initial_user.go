@@ -43,24 +43,6 @@ func (server *Server) createInitialUser(store db.Store) error {
 }
 
 func (server *Server) createDummyData(store db.Store) error {
-	fmt.Println("Checking for existing sales...")
-
-	arg := db.ListSalesParams{
-		Limit:  10,
-		Offset: 1,
-	}
-
-	sales, err := store.ListSales(context.Background(), arg)
-	if err != nil {
-		fmt.Println("There was an error fetching sales")
-		return err
-	}
-
-	// If there are sales, don't create dummy data
-	if len(sales) > 0 {
-		fmt.Println("Sales exist, skipping dummy data creation")
-		return nil
-	}
 
 	fmt.Println("Checking for existing clients...")
 
@@ -78,6 +60,24 @@ func (server *Server) createDummyData(store db.Store) error {
 	// If there are clients, don't create dummy data
 	if len(clients) > 0 {
 		fmt.Println("Clients exist, skipping dummy data creation")
+		return nil
+	}
+	fmt.Println("Checking for existing sales...")
+
+	arg := db.ListSalesParams{
+		Limit:  10,
+		Offset: 1,
+	}
+
+	sales, err := store.ListSales(context.Background(), arg)
+	if err != nil {
+		fmt.Println("There was an error fetching sales")
+		return err
+	}
+
+	// If there are sales, don't create dummy data
+	if len(sales) > 0 {
+		fmt.Println("Sales exist, skipping dummy data creation")
 		return nil
 	}
 
@@ -116,6 +116,7 @@ func (server *Server) createDummyData(store db.Store) error {
 		for j := 1; j <= 20; j++ {
 			sale := db.CreateSaleParams{
 				ClientID:    createdClient.ID,
+				ClientName:  createdClient.FullName,
 				Product:     products[j%len(products)],
 				Price:       int64(j * 10),
 				Observation: "Observation " + strconv.Itoa(j),

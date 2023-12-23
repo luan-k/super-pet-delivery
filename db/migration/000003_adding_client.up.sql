@@ -15,6 +15,7 @@ CREATE TABLE "client" (
 CREATE TABLE "sale" (
   "id" BIGSERIAL PRIMARY KEY,
   "client_id" BIGSERIAL NOT NULL,
+  "client_name" varchar NOT NULL,
   "product" varchar NOT NULL,
   "price" bigint NOT NULL,
   "observation" varchar NOT NULL,

@@ -23,16 +23,18 @@ func (q *Queries) CountSales(ctx context.Context) (int64, error) {
 const createSale = `-- name: CreateSale :one
 INSERT INTO sale (
     client_id,
+    client_name,
     product,
     price,
     observation
 ) VALUES (
-    $1, $2, $3, $4
-) RETURNING id, client_id, product, price, observation, created_at, changed_at, pdf_generated_at
+    $1, $2, $3, $4, $5
+) RETURNING id, client_id, client_name, product, price, observation, created_at, changed_at, pdf_generated_at
 `
 
 type CreateSaleParams struct {
 	ClientID    int64  `json:"client_id"`
+	ClientName  string `json:"client_name"`
 	Product     string `json:"product"`
 	Price       int64  `json:"price"`
 	Observation string `json:"observation"`
@@ -41,6 +43,7 @@ type CreateSaleParams struct {
 func (q *Queries) CreateSale(ctx context.Context, arg CreateSaleParams) (Sale, error) {
 	row := q.db.QueryRowContext(ctx, createSale,
 		arg.ClientID,
+		arg.ClientName,
 		arg.Product,
 		arg.Price,
 		arg.Observation,
@@ -49,6 +52,7 @@ func (q *Queries) CreateSale(ctx context.Context, arg CreateSaleParams) (Sale, e
 	err := row.Scan(
 		&i.ID,
 		&i.ClientID,
+		&i.ClientName,
 		&i.Product,
 		&i.Price,
 		&i.Observation,
@@ -70,7 +74,7 @@ func (q *Queries) DeleteSale(ctx context.Context, id int64) error {
 }
 
 const getSale = `-- name: GetSale :one
-SELECT id, client_id, product, price, observation, created_at, changed_at, pdf_generated_at FROM sale
+SELECT id, client_id, client_name, product, price, observation, created_at, changed_at, pdf_generated_at FROM sale
 WHERE id = $1 LIMIT 1
 `
 
@@ -80,6 +84,7 @@ func (q *Queries) GetSale(ctx context.Context, id int64) (Sale, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.ClientID,
+		&i.ClientName,
 		&i.Product,
 		&i.Price,
 		&i.Observation,
@@ -91,7 +96,7 @@ func (q *Queries) GetSale(ctx context.Context, id int64) (Sale, error) {
 }
 
 const listSales = `-- name: ListSales :many
-SELECT id, client_id, product, price, observation, created_at, changed_at, pdf_generated_at FROM sale
+SELECT id, client_id, client_name, product, price, observation, created_at, changed_at, pdf_generated_at FROM sale
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -114,6 +119,7 @@ func (q *Queries) ListSales(ctx context.Context, arg ListSalesParams) ([]Sale, e
 		if err := rows.Scan(
 			&i.ID,
 			&i.ClientID,
+			&i.ClientName,
 			&i.Product,
 			&i.Price,
 			&i.Observation,
@@ -138,16 +144,18 @@ const updateSale = `-- name: UpdateSale :one
 UPDATE sale 
 SET 
     client_id = COALESCE($2, client_id),
-    product = COALESCE($3, product),
-    price = COALESCE($4, price),
-    observation = COALESCE($5, observation)
+    client_name = COALESCE($3, client_name),
+    product = COALESCE($4, product),
+    price = COALESCE($5, price),
+    observation = COALESCE($6, observation)
 WHERE id = $1
-RETURNING id, client_id, product, price, observation, created_at, changed_at, pdf_generated_at
+RETURNING id, client_id, client_name, product, price, observation, created_at, changed_at, pdf_generated_at
 `
 
 type UpdateSaleParams struct {
 	ID          int64  `json:"id"`
 	ClientID    int64  `json:"client_id"`
+	ClientName  string `json:"client_name"`
 	Product     string `json:"product"`
 	Price       int64  `json:"price"`
 	Observation string `json:"observation"`
@@ -157,6 +165,7 @@ func (q *Queries) UpdateSale(ctx context.Context, arg UpdateSaleParams) (Sale, e
 	row := q.db.QueryRowContext(ctx, updateSale,
 		arg.ID,
 		arg.ClientID,
+		arg.ClientName,
 		arg.Product,
 		arg.Price,
 		arg.Observation,
@@ -165,6 +174,7 @@ func (q *Queries) UpdateSale(ctx context.Context, arg UpdateSaleParams) (Sale, e
 	err := row.Scan(
 		&i.ID,
 		&i.ClientID,
+		&i.ClientName,
 		&i.Product,
 		&i.Price,
 		&i.Observation,

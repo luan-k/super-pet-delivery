@@ -60,6 +60,7 @@ type ProductImage struct {
 type Sale struct {
 	ID             int64     `json:"id"`
 	ClientID       int64     `json:"client_id"`
+	ClientName     string    `json:"client_name"`
 	Product        string    `json:"product"`
 	Price          int64     `json:"price"`
 	Observation    string    `json:"observation"`
