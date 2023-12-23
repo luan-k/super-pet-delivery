@@ -13,6 +13,7 @@ import { useContext } from "react";
 interface Sale {
   id: number;
   client_id: number;
+  client_name: string;
   product: string;
   price: number;
   observation: string;
@@ -413,7 +414,17 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
                   ) : null)}
               </th>
               <th className='list-clients__client-pet-name'>Observação</th>
-              <th className='list-clients__client-pet-breed'>Cliente</th>
+              <th
+                className='list-clients__client-pet-breed cursor-pointer'
+                onClick={() => handleSort("client_name")}>
+                Cliente
+                {sortField === "client_name" &&
+                  (sortDirection === "asc" ? (
+                    <ChevronUpIcon />
+                  ) : sortDirection === "desc" ? (
+                    <ChevronDownIcon />
+                  ) : null)}
+              </th>
               <th
                 className='list-clients__client-actions cursor-pointer'
                 onClick={() => handleSort("created_at")}>
@@ -446,7 +457,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
                   {sale.observation}
                 </td>
                 <td className='list-clients__client-pet-breed'>
-                  {clientNames[sale.client_id] || "Loading..."}
+                  {sale.client_name}
                 </td>
                 <td className='list-sales__table-data'>
                   {new Date(sale.created_at).toLocaleDateString("pt-BR", {
