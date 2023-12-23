@@ -9,10 +9,16 @@ export default function IsAuthenticated() {
   const [username, setUsername] = useState<string>("");
 
   useEffect(() => {
+    const token = Cookies.get("access_token");
+
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
     const fetchData = async () => {
       try {
         const headers = new Headers();
-        const token = Cookies.get("access_token");
         headers.append("Authorization", `Bearer ${token}`);
 
         const response = await fetch(
@@ -38,7 +44,7 @@ export default function IsAuthenticated() {
     };
 
     fetchData();
-  });
+  }, []);
 
   return (
     <>

@@ -87,12 +87,17 @@
           &:checked::before {
             transform: scale(1);
           }
+          &:focus {
+            outline: max(2px, 0.15em) solid rgb(222, 222, 222);
+            outline-offset: max(2px, 0.15em);
+          }
         }
       }
     }
   }
 
   .list-clients__client-name,
+  .list-clients__client-checkbox,
   .list-clients__client-whatsapp,
   .list-clients__client-pet-name,
   .list-clients__client-pet-breed,

@@ -2,6 +2,8 @@
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { FaUser } from "react-icons/fa";
+import { MdOutlinePointOfSale } from "react-icons/md";
 import "../styles/admin/sidebar.scss";
 
 export default function AdminSidebar() {
@@ -24,9 +26,11 @@ export default function AdminSidebar() {
   return (
     <div className='h-full w-1/12 wkode-admin-sidebar '>
       <Link className={isActive("/admin/clientes")} href={"/admin/clientes"}>
+        <FaUser />
         Clientes
       </Link>
       <Link className={isActive("/admin/vendas")} href={"/admin/vendas"}>
+        <MdOutlinePointOfSale />
         Vendas
       </Link>
     </div>
