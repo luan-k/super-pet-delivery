@@ -355,7 +355,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
 
   return (
     <>
-      <div className='list-clients__sorting-wrapper grid grid-cols-5 w-11/12 ml-auto mb-6 items-center'>
+      <div className='list-clients__sorting-wrapper grid grid-cols-6 w-11/12 ml-auto mb-6 items-center'>
         <input
           className='text-black text-2xl pl-6 py-2 rounded-2xl w-11/12'
           type='text'
@@ -366,15 +366,17 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
         />
         <div className='flex justify-center'>
           <button
-            className='wk-btn wk-btn--bg wk-btn--yellow w-1/2 text-xl disabled:opacity-70 disabled:bg-yellow-900 disabled:hover:bg-yellow-900 disabled:border-yellow-900 disabled:hover:border-yellow-900'
+            className='wk-btn wk-btn--bg wk-btn--yellow w-11/12 text-xl disabled:opacity-70 disabled:bg-yellow-900 disabled:hover:bg-yellow-900 disabled:border-yellow-900 disabled:hover:border-yellow-900'
             onClick={handleCheckAllInPage}
             disabled={allChecked}>
             {allCheckedInPage
               ? "Remover desta pagina"
               : "Checar Todos da Pagina"}
           </button>
+        </div>
+        <div className='flex justify-center'>
           <button
-            className='wk-btn wk-btn--bg wk-btn--yellow w-1/2 text-xl disabled:opacity-70 disabled:bg-yellow-900 disabled:hover:bg-yellow-900 disabled:border-yellow-900 disabled:hover:border-yellow-900'
+            className='wk-btn wk-btn--bg wk-btn--yellow w-11/12 text-xl disabled:opacity-70 disabled:bg-yellow-900 disabled:hover:bg-yellow-900 disabled:border-yellow-900 disabled:hover:border-yellow-900'
             onClick={handleCheckAll}
             disabled={allCheckedInPage}>
             {allChecked ? "Remover todos" : "Checar Todos"}
