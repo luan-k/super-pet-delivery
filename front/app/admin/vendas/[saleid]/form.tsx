@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import ModalDialogClientsList from "../../components/ModalDialogClientsList";
+import { toast } from "react-toastify";
 
 interface EditSaleFormRequest {
   client_id: number;
@@ -142,8 +143,10 @@ const EditSaleForm: React.FC = () => {
 
       if (response.ok) {
         console.log("Sale Edited successfully!");
+        toast.success("Venda editada com sucesso!");
         // Add further actions or redirection upon successful creation
       } else {
+        toast.error("Houve um erro ao editar a venda!");
         console.error("Failed to edit sale");
         console.log(response.json());
       }
@@ -169,9 +172,11 @@ const EditSaleForm: React.FC = () => {
       if (response.ok) {
         console.log("Sale Deleted successfully!");
         router.push(`/admin/vendas/`);
+        toast.success("Venda deletada com sucesso!");
       } else {
         console.error("Failed to delete sale");
         console.log(response.json());
+        toast.error("Houve um erro ao deletar a venda!");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -181,7 +186,7 @@ const EditSaleForm: React.FC = () => {
   return (
     <div className='text-2xl wk-create-client'>
       <form className='grid grid-cols-1' onSubmit={handleSubmit}>
-        <div className='wk-create-client__input-wrapper'>
+        {/* <div className='wk-create-client__input-wrapper'>
           <label>
             <h4 className='wk-create-client__title'>Cliente</h4>
             <div className='flex'>
@@ -200,7 +205,7 @@ const EditSaleForm: React.FC = () => {
               />
             </div>
           </label>
-        </div>
+        </div> */}
 
         <div className='wk-create-client__input-wrapper'>
           <label>

@@ -18,6 +18,10 @@ INSERT INTO client (
 SELECT * FROM client
 WHERE id = $1 LIMIT 1;
 
+-- name: GetSalesByClientID :many
+SELECT * FROM sale
+WHERE client_id = $1;
+
 -- name: ListClients :many
 SELECT * FROM client
 ORDER BY id

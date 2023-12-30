@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import { usePathname, useRouter } from "next/navigation";
 import MaskedInput from "react-text-mask";
 import ActionAlert from "../../components/ActionAlert";
+import { toast } from "react-toastify";
 
 interface EditClientFormRequest {
   full_name: string;
@@ -212,6 +213,19 @@ const EditClientForm: React.FC = () => {
         console.log("Client Deleted successfully!");
         setShowDeleteAlert(true); // Set the state to trigger the delete alert
         router.push(`/admin/clientes/`);
+        toast.success("Cliente excluído com sucesso!");
+      } else if (response.status === 409) {
+        const data = await response.json();
+        const products = data.associated_sales
+          .map((sale: any) => sale.product)
+          .join(", ");
+        console.log(
+          "Vendas associadas com esse cliente:",
+          data.associated_sales
+        );
+        toast.error(
+          `Este cliente tem uma ou mais vendas associadas com ele: ${products}`
+        );
       } else {
         console.error("Failed to delete client");
         console.log(response.json());
@@ -264,7 +278,7 @@ const EditClientForm: React.FC = () => {
 
         <div className='wk-create-client__input-wrapper wk-create-client__input-wrapper--grid'>
           <label>
-            <h4 className='wk-create-client__title'>Whatsapp</h4>
+            <h4 className='wk-create-client__title'>WhatsApp</h4>
             <MaskedInput
               mask={phoneMask}
               type='text'
@@ -338,7 +352,7 @@ const EditClientForm: React.FC = () => {
 
           <div className='grid grid-cols-2 gap-3'>
             <label>
-              Numero
+              Número
               <input
                 type='text'
                 name='address_number'
@@ -363,7 +377,7 @@ const EditClientForm: React.FC = () => {
 
         <div className='wk-create-client__input-wrapper'>
           <label>
-            Referencia
+            Referência
             <textarea
               name='address_reference'
               value={formData.address_reference}

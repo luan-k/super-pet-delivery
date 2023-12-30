@@ -3,6 +3,8 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import MaskedInput from "react-text-mask";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface CreateClientRequest {
   full_name: string;
@@ -81,7 +83,8 @@ const CreateClient: React.FC = () => {
         console.log("Client created successfully!");
         const data = await response.json();
         console.log(data);
-        router.push(`/admin/clientes/${data.id}`);
+        router.push(`/admin/clientes/`); //${data.id}`);
+        toast.success("Cliente criado com sucesso!");
       } else {
         console.error("Failed to create client");
         console.log(response.json());
@@ -128,7 +131,7 @@ const CreateClient: React.FC = () => {
 
         <div className='wk-create-client__input-wrapper wk-create-client__input-wrapper--grid'>
           <label>
-            <h4 className='wk-create-client__title'>Whatsapp</h4>
+            <h4 className='wk-create-client__title'>WhatsApp</h4>
             <MaskedInput
               mask={phoneMask}
               type='text'
@@ -196,7 +199,7 @@ const CreateClient: React.FC = () => {
           </div>
           <div className='grid grid-cols-2 gap-3'>
             <label>
-              Numero
+              Número
               <input
                 type='text'
                 name='address_number'
@@ -219,7 +222,7 @@ const CreateClient: React.FC = () => {
 
         <div className='wk-create-client__input-wrapper'>
           <label>
-            Referencia
+            Referência
             <textarea
               name='address_reference'
               value={formData.address_reference}

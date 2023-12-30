@@ -85,7 +85,7 @@ type listClientResponse struct {
 
 type listClientRequest struct {
 	PageID        int32  `form:"page_id" binding:"required,min=1"`
-	PageSize      int32  `form:"page_size" binding:"required,min=5,max=50"`
+	PageSize      int32  `form:"page_size" binding:"required,min=5,max=100"`
 	SortField     string `form:"sort_field" binding:""`
 	SortDirection string `form:"sort_direction" binding:""`
 	Search        string `form:"search" binding:""`
@@ -256,8 +256,19 @@ func (server *Server) deleteClient(ctx *gin.Context) {
 		return
 	}
 
+	// Check if client is associated with any sales
+	sales, err := server.store.GetSalesByClientID(ctx, req.ID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	if len(sales) > 0 {
+		ctx.JSON(http.StatusConflict, gin.H{"error": "Cannot delete client associated with sales", "associated_sales": sales})
+		return
+	}
+
 	// delete existing client
-	err := server.store.DeleteClient(ctx, req.ID)
+	err = server.store.DeleteClient(ctx, req.ID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

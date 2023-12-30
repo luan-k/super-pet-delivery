@@ -315,6 +315,21 @@ func (mr *MockStoreMockRecorder) DisassociateProductFromImage(arg0, arg1 interfa
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DisassociateProductFromImage", reflect.TypeOf((*MockStore)(nil).DisassociateProductFromImage), arg0, arg1)
 }
 
+// GetAllSaleIDs mocks base method.
+func (m *MockStore) GetAllSaleIDs(arg0 context.Context) ([]int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllSaleIDs", arg0)
+	ret0, _ := ret[0].([]int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllSaleIDs indicates an expected call of GetAllSaleIDs.
+func (mr *MockStoreMockRecorder) GetAllSaleIDs(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllSaleIDs", reflect.TypeOf((*MockStore)(nil).GetAllSaleIDs), arg0)
+}
+
 // GetCategory mocks base method.
 func (m *MockStore) GetCategory(arg0 context.Context, arg1 int64) (db.Category, error) {
 	m.ctrl.T.Helper()
@@ -388,6 +403,21 @@ func (m *MockStore) GetSale(arg0 context.Context, arg1 int64) (db.Sale, error) {
 func (mr *MockStoreMockRecorder) GetSale(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSale", reflect.TypeOf((*MockStore)(nil).GetSale), arg0, arg1)
+}
+
+// GetSalesByClientID mocks base method.
+func (m *MockStore) GetSalesByClientID(arg0 context.Context, arg1 int64) ([]db.Sale, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSalesByClientID", arg0, arg1)
+	ret0, _ := ret[0].([]db.Sale)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSalesByClientID indicates an expected call of GetSalesByClientID.
+func (mr *MockStoreMockRecorder) GetSalesByClientID(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSalesByClientID", reflect.TypeOf((*MockStore)(nil).GetSalesByClientID), arg0, arg1)
 }
 
 // GetSession mocks base method.

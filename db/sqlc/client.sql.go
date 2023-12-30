@@ -114,6 +114,44 @@ func (q *Queries) GetClient(ctx context.Context, id int64) (Client, error) {
 	return i, err
 }
 
+const getSalesByClientID = `-- name: GetSalesByClientID :many
+SELECT id, client_id, client_name, product, price, observation, created_at, changed_at, pdf_generated_at FROM sale
+WHERE client_id = $1
+`
+
+func (q *Queries) GetSalesByClientID(ctx context.Context, clientID int64) ([]Sale, error) {
+	rows, err := q.db.QueryContext(ctx, getSalesByClientID, clientID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Sale{}
+	for rows.Next() {
+		var i Sale
+		if err := rows.Scan(
+			&i.ID,
+			&i.ClientID,
+			&i.ClientName,
+			&i.Product,
+			&i.Price,
+			&i.Observation,
+			&i.CreatedAt,
+			&i.ChangedAt,
+			&i.PdfGeneratedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listClients = `-- name: ListClients :many
 SELECT id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_city, address_number, address_neighborhood, address_reference FROM client
 ORDER BY id

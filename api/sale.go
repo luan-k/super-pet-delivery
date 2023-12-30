@@ -84,7 +84,7 @@ type listSaleResponse struct {
 
 type listSaleRequest struct {
 	PageID        int32  `form:"page_id" binding:"required,min=1"`
-	PageSize      int32  `form:"page_size" binding:"required,min=5,max=50"`
+	PageSize      int32  `form:"page_size" binding:"required,min=5,max=100"`
 	SortField     string `form:"sort_field" binding:""`
 	SortDirection string `form:"sort_direction" binding:""`
 	Search        string `form:"search" binding:""`
@@ -136,6 +136,16 @@ func (server *Server) listSale(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, response)
+}
+
+func (server *Server) listAllSales(ctx *gin.Context) {
+	saleIDs, err := server.store.GetAllSaleIDs(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, saleIDs)
 }
 
 type updateSaleRequest struct {

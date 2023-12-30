@@ -19,6 +19,10 @@ ORDER BY id
 LIMIT $1
 OFFSET $2;
 
+-- name: GetAllSaleIDs :many
+SELECT id FROM sale
+ORDER BY id;
+
 -- name: CountSales :one
 SELECT COUNT(*) FROM sale;
 

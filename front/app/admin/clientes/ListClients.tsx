@@ -39,7 +39,7 @@ const ListClients: React.FC<ListClientsProps> = ({
     });
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [clientsPerPage, setClientsPerPage] = useState<number>(10);
+  const [clientsPerPage, setClientsPerPage] = useState<number>(20);
   const combinedClassName = `list-clients ${className}`;
   const [search, setSearch] = useState("");
 
@@ -218,7 +218,7 @@ const ListClients: React.FC<ListClientsProps> = ({
             value={clientsPerPage}
             onChange={(e) => setClientsPerPage(Number(e.target.value))}
             min={5}
-            max={30}
+            max={100}
           />
         </div>
       </div>

@@ -115,6 +115,7 @@ func (server *Server) setupRouter() {
 	authRoutes.POST("/sales", server.createSale)
 	authRoutes.GET("/sales/:id", server.getSale)
 	authRoutes.GET("/sales", server.listSale)
+	authRoutes.GET("/sales/all", server.listAllSales)
 	authRoutes.PUT("/sales/:id", server.updateSale)
 	authRoutes.DELETE("/sales/:id", server.deleteSale)
 

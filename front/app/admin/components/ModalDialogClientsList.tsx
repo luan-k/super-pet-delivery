@@ -38,11 +38,7 @@ const ModalDialogClientsList: React.FC<ModalDialogClientsListProps> = ({
               display: "flex",
               marginTop: 25,
               justifyContent: "flex-end",
-            }}>
-            <Dialog.Close asChild>
-              <button className='Button green'>Save changes</button>
-            </Dialog.Close>
-          </div>
+            }}></div>
           <Dialog.Close ref={closeRef} asChild>
             <button className='IconButton' aria-label='Close'>
               <Cross2Icon />

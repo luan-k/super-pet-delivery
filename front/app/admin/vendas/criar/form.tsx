@@ -3,6 +3,7 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import ModalDialogClientsList from "../../components/ModalDialogClientsList";
+import { toast } from "react-toastify";
 
 interface CreateSaleRequest {
   client_id: number;
@@ -62,11 +63,13 @@ const CreateSale: React.FC = () => {
         console.log("Sale created successfully!");
         const data = await response.json();
         console.log(data);
-        router.push(`/admin/vendas/${data.id}`);
+        router.push(`/admin/vendas/`); //${data.id}`);
+        toast.success("Venda criada com sucesso!");
       } else {
         console.error("Failed to create sale");
         const data = await response.json();
         console.log(data);
+        toast.error("Houve um erro ao criar a venda!");
       }
     } catch (error) {
       console.error("Error:", error);

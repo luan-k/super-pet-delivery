@@ -1,6 +1,7 @@
 "use client";
 import Router, { useRouter } from "next/navigation";
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
+import { toast } from "react-toastify";
 
 interface FormData {
   identifier: string;
@@ -30,6 +31,7 @@ function LoginForm() {
     });
   };
 
+  // if successfull, show alert, if not, show error alert
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -50,8 +52,10 @@ function LoginForm() {
           // Update the access token state
           setAccessToken(data.access_token);
           router.push("/admin");
+          toast.success("Login efetuado com sucesso!");
         } else {
           console.error("Login failed");
+          toast.error("Houve um erro ao realizar o Login!");
         }
       }
     } catch (error) {

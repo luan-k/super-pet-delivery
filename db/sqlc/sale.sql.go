@@ -73,6 +73,34 @@ func (q *Queries) DeleteSale(ctx context.Context, id int64) error {
 	return err
 }
 
+const getAllSaleIDs = `-- name: GetAllSaleIDs :many
+SELECT id FROM sale
+ORDER BY id
+`
+
+func (q *Queries) GetAllSaleIDs(ctx context.Context) ([]int64, error) {
+	rows, err := q.db.QueryContext(ctx, getAllSaleIDs)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []int64{}
+	for rows.Next() {
+		var id int64
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getSale = `-- name: GetSale :one
 SELECT id, client_id, client_name, product, price, observation, created_at, changed_at, pdf_generated_at FROM sale
 WHERE id = $1 LIMIT 1

@@ -30,11 +30,13 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id int64) error
 	DisassociateProductFromCategory(ctx context.Context, arg DisassociateProductFromCategoryParams) (ProductCategory, error)
 	DisassociateProductFromImage(ctx context.Context, arg DisassociateProductFromImageParams) (ProductImage, error)
+	GetAllSaleIDs(ctx context.Context) ([]int64, error)
 	GetCategory(ctx context.Context, id int64) (Category, error)
 	GetClient(ctx context.Context, id int64) (Client, error)
 	GetImage(ctx context.Context, id int64) (Image, error)
 	GetProduct(ctx context.Context, id int64) (Product, error)
 	GetSale(ctx context.Context, id int64) (Sale, error)
+	GetSalesByClientID(ctx context.Context, clientID int64) ([]Sale, error)
 	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetUser(ctx context.Context, id int64) (User, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)

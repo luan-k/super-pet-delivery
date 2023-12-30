@@ -43,7 +43,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
   );
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [salesPerPage, setSalesPerPage] = useState<number>(10);
+  const [salesPerPage, setSalesPerPage] = useState<number>(100);
   const [clientNames, setClientNames] = useState<Record<number, string>>({});
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState<string | null>(null);
@@ -54,6 +54,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
 
   const { checkedSales, setCheckedSales } = useContext(CheckedSalesContext);
   const [allChecked, setAllChecked] = useState<boolean>(false);
+  const [allCheckedInPage, setAllCheckedInPage] = useState<boolean>(false);
   const [isDeliveryLoading, setIsDeliveryLoading] = useState(false);
   const [isSimpleLoading, setIsSimpleLoading] = useState(false);
 
@@ -229,7 +230,8 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
   }, [currentPage, salesPerPage, sortField, sortDirection, search]);
 
   useEffect(() => {
-    setAllChecked(false);
+    //setAllChecked(false);
+    setAllCheckedInPage(false);
   }, [currentPage]);
 
   const totalPages = Math.ceil(listSalesResponse.total / salesPerPage);
@@ -317,8 +319,8 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
     return buttons;
   };
 
-  const handleCheckAll = () => {
-    if (allChecked) {
+  const handleCheckAllInPage = () => {
+    if (allCheckedInPage) {
       setCheckedSales([]);
     } else {
       const allSaleIds = listSalesResponse.sales.map((sale) => sale.id);
@@ -326,6 +328,27 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
         ...prevCheckedSales,
         ...allSaleIds,
       ]);
+    }
+    setAllCheckedInPage(!allCheckedInPage);
+  };
+
+  const handleCheckAll = async () => {
+    const token = Cookies.get("access_token");
+
+    if (allChecked) {
+      setCheckedSales([]);
+    } else {
+      const response = await fetch("http://localhost:8080/sales/all", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      console.log("all sales");
+      console.log(data);
+      setCheckedSales(data);
     }
     setAllChecked(!allChecked);
   };
@@ -343,9 +366,18 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
         />
         <div className='flex justify-center'>
           <button
-            className='wk-btn wk-btn--bg wk-btn--yellow w-1/2 text-2xl'
-            onClick={handleCheckAll}>
-            {allChecked ? "Desfazer" : "Checar Todos"}
+            className='wk-btn wk-btn--bg wk-btn--yellow w-1/2 text-xl disabled:opacity-70 disabled:bg-yellow-900 disabled:hover:bg-yellow-900 disabled:border-yellow-900 disabled:hover:border-yellow-900'
+            onClick={handleCheckAllInPage}
+            disabled={allChecked}>
+            {allCheckedInPage
+              ? "Remover desta pagina"
+              : "Checar Todos da Pagina"}
+          </button>
+          <button
+            className='wk-btn wk-btn--bg wk-btn--yellow w-1/2 text-xl disabled:opacity-70 disabled:bg-yellow-900 disabled:hover:bg-yellow-900 disabled:border-yellow-900 disabled:hover:border-yellow-900'
+            onClick={handleCheckAll}
+            disabled={allCheckedInPage}>
+            {allChecked ? "Remover todos" : "Checar Todos"}
           </button>
         </div>
         <div className='flex justify-center'>
@@ -369,7 +401,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
           </button>
         </div>
         <div className='clients-per-page ml-auto'>
-          <label className='clientsPerPage mr-4'>Exibindo por pagina:</label>
+          <label className='clientsPerPage mr-4'>Exibindo por página:</label>
           <input
             className='text-black text-2xl pl-6 py-2 w-20 rounded-2xl'
             type='number'
@@ -377,7 +409,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
             value={salesPerPage}
             onChange={(e) => setSalesPerPage(Number(e.target.value))}
             min={5}
-            max={30}
+            max={100}
           />
         </div>
       </div>
