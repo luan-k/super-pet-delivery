@@ -1,13 +1,13 @@
-DB_URL=postgresql://root:secret@localhost:5432/product-db?sslmode=disable
+DB_URL=postgresql://root:secret@localhost:5432/superpet?sslmode=disable
 
 postgres:
 	docker run --name postgres12 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:12-alpine
 
 createdb:
-	winpty docker exec -it postgres12 createdb --username=root --owner=root product-db
+	winpty docker exec -it postgres12 createdb --username=root --owner=root superpet
 
 dropdb:
-	winpty docker exec -it postgres12 dropdb product-db
+	winpty docker exec -it postgres12 dropdb superpet
 
 new_migrate:
 	migrate create -ext sql -dir db/migration -seq migration_name
