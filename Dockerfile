@@ -15,6 +15,7 @@ COPY app.env .
 COPY start.sh .
 COPY wait-for.sh .
 COPY db/migration ./migration
+COPY api/pdf /app/api/pdf
 RUN chmod +x ./start.sh
 RUN chmod +x ./wait-for.sh
 

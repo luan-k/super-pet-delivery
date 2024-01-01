@@ -450,14 +450,28 @@ func convertHTMLToPDF(filePath, imgPath, pdfPath string) error {
 	if err != nil {
 		return err
 	}
-	defer pdfFile.Close()
 
 	// Copy the response body (PDF content) to the PDF file
 	_, err = io.Copy(pdfFile, resp.Body)
 	if err != nil {
+		pdfFile.Close()
 		return err
 	}
 
+	// Close the PDF file
+	err = pdfFile.Close()
+	if err != nil {
+		return err
+	}
+
+	// Schedule the deletion of the PDF file after 3 seconds
+	time.AfterFunc(3*time.Second, func() {
+		err := os.Remove(pdfPath)
+		log.Printf("deleted PDF file: %s", pdfPath)
+		if err != nil {
+			log.Printf("failed to delete PDF file: %v", err)
+		}
+	})
 	return nil
 }
 

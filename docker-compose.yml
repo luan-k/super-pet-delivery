@@ -1,12 +1,15 @@
 version: "3.9"
 services:
   postgres:
+    container_name: postgres
     image: postgres:12-alpine
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=product-db
+      - TZ=America/Sao_Paulo
   api:
+    container_name: api
     build:
       context: .
       dockerfile: Dockerfile
@@ -16,3 +19,17 @@ services:
       - DB_SOURCE=postgresql://root:secret@postgres:5432/product-db?sslmode=disable
     entrypoint: ["/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh"]
     command: ["/app/main"]
+    restart: always
+  gotenberg:
+    container_name: pdf-generator
+    image: gotenberg/gotenberg:7
+  front:
+    container_name: front
+    build:
+      context: .
+      dockerfile: front/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api:8080
+    restart: always
