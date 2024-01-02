@@ -40,10 +40,10 @@ func NewServer(config util.Config, store db.SortableStore) (*Server, error) {
 	}
 
 	// Create dummy data
-	err = server.createDummyData(store)
-	if err != nil {
+	//err = server.createDummyData(store)
+	/* if err != nil {
 		log.Fatal("cannot create dummy data:", err)
-	}
+	} */
 
 	server.setupRouter()
 	return server, nil
