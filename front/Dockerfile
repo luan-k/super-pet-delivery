@@ -5,8 +5,8 @@ FROM node:21-alpine3.17 AS builder
 WORKDIR /app
 
 # Copy the package.json and package-lock.json files
-COPY front/package.json ./ 
-COPY front/package-lock.json ./
+COPY package.json ./ 
+COPY package-lock.json ./
 
 # Install project dependencies
 RUN npm install
