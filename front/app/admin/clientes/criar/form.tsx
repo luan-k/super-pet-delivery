@@ -69,7 +69,7 @@ const CreateClient: React.FC = () => {
     console.log(formData);
 
     try {
-      const response = await fetch("http://localhost:8080/clients", {
+      const response = await fetch("http://15.228.47.144:8080/clients", {
         method: "POST",
         credentials: "include",
         headers: {

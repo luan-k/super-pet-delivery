@@ -49,7 +49,7 @@ const CreateSale: React.FC = () => {
     console.log(formData);
 
     try {
-      const response = await fetch("http://localhost:8080/sales", {
+      const response = await fetch("http://15.228.47.144:8080/sales", {
         method: "POST",
         credentials: "include",
         headers: {

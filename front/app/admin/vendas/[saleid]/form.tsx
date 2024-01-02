@@ -32,7 +32,7 @@ const EditSaleForm: React.FC = () => {
       try {
         const token = Cookies.get("access_token");
         const response = await fetch(
-          `http://localhost:8080/sales/${currentId}`,
+          `http://15.228.47.144:8080/sales/${currentId}`,
           {
             method: "GET",
             headers: {
@@ -74,7 +74,7 @@ const EditSaleForm: React.FC = () => {
       try {
         const token = Cookies.get("access_token");
         const response = await fetch(
-          `http://localhost:8080/clients/${currentSale?.client_id}`,
+          `http://15.228.47.144:8080/clients/${currentSale?.client_id}`,
           {
             method: "GET",
             headers: {
@@ -131,15 +131,18 @@ const EditSaleForm: React.FC = () => {
     console.log(formData);
 
     try {
-      const response = await fetch(`http://localhost:8080/sales/${currentId}`, {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `http://15.228.47.144:8080/sales/${currentId}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (response.ok) {
         console.log("Sale Edited successfully!");
@@ -160,14 +163,17 @@ const EditSaleForm: React.FC = () => {
     const token = Cookies.get("access_token");
 
     try {
-      const response = await fetch(`http://localhost:8080/sales/${currentId}`, {
-        method: "DELETE",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `http://15.228.47.144:8080/sales/${currentId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.ok) {
         console.log("Sale Deleted successfully!");
