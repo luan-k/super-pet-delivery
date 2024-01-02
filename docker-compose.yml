@@ -12,9 +12,17 @@ services:
     entrypoint: ["/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh"]
     command: ["/app/main"]
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 300m
   gotenberg:
     container_name: pdf-generator
     image: gotenberg/gotenberg:7
+    deploy:
+      resources:
+        limits:
+          memory: 300m
   front:
     container_name: front
     build:
@@ -25,3 +33,7 @@ services:
     environment:
       - NEXT_PUBLIC_API_URL=http://api:8080
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 400m
