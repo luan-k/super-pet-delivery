@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"strconv"
 	db "super-pet-delivery/db/sqlc"
 	"super-pet-delivery/util"
 )
@@ -42,6 +41,7 @@ func (server *Server) createInitialUser(store db.Store) error {
 	return nil
 }
 
+/*
 func (server *Server) createDummyData(store db.Store) error {
 
 	fmt.Println("Checking for existing clients...")
@@ -133,3 +133,4 @@ func (server *Server) createDummyData(store db.Store) error {
 	fmt.Println("Dummy data created successfully")
 	return nil
 }
+*/
