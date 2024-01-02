@@ -12,7 +12,7 @@ COPY package-lock.json ./
 RUN npm install
 
 # Copy the entire app directory to the container
-COPY front .
+COPY . .
 
 # Build the Next.js app
 RUN npm run build
