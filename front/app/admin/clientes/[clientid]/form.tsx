@@ -66,7 +66,7 @@ const EditClientForm: React.FC = () => {
       try {
         const token = Cookies.get("access_token");
         const response = await fetch(
-          `http://15.228.47.144:8080/clients/${currentId}`,
+          `http://18.228.64.21:8080/clients/${currentId}`,
           {
             method: "GET",
             headers: {
@@ -168,7 +168,7 @@ const EditClientForm: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://15.228.47.144:8080/clients/${currentId}`,
+        `http://18.228.64.21:8080/clients/${currentId}`,
         {
           method: "PUT",
           credentials: "include",
@@ -198,7 +198,7 @@ const EditClientForm: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://15.228.47.144:8080/clients/${currentId}`,
+        `http://18.228.64.21:8080/clients/${currentId}`,
         {
           method: "DELETE",
           credentials: "include",

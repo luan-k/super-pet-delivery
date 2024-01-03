@@ -20,7 +20,7 @@ export default function Admin() {
         headers.append("Authorization", `Bearer ${token}`);
 
         const response = await fetch(
-          `http://15.228.47.144:8080/users?page_id=${pageId}&page_size=${pageSize}`,
+          `http://18.228.64.21:8080/users?page_id=${pageId}&page_size=${pageSize}`,
           {
             method: "GET",
             credentials: "include",

@@ -37,7 +37,7 @@ function LoginForm() {
 
     try {
       if (typeof window !== "undefined" && localStorage) {
-        const response = await fetch("http://15.228.47.144:8080/users/login", {
+        const response = await fetch("http://18.228.64.21:8080/users/login", {
           method: "POST",
           credentials: "include",
           headers: {

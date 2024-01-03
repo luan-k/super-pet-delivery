@@ -32,7 +32,7 @@ const EditSaleForm: React.FC = () => {
       try {
         const token = Cookies.get("access_token");
         const response = await fetch(
-          `http://15.228.47.144:8080/sales/${currentId}`,
+          `http://18.228.64.21:8080/sales/${currentId}`,
           {
             method: "GET",
             headers: {
@@ -74,7 +74,7 @@ const EditSaleForm: React.FC = () => {
       try {
         const token = Cookies.get("access_token");
         const response = await fetch(
-          `http://15.228.47.144:8080/clients/${currentSale?.client_id}`,
+          `http://18.228.64.21:8080/clients/${currentSale?.client_id}`,
           {
             method: "GET",
             headers: {
@@ -132,7 +132,7 @@ const EditSaleForm: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://15.228.47.144:8080/sales/${currentId}`,
+        `http://18.228.64.21:8080/sales/${currentId}`,
         {
           method: "PUT",
           credentials: "include",
@@ -164,7 +164,7 @@ const EditSaleForm: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://15.228.47.144:8080/sales/${currentId}`,
+        `http://18.228.64.21:8080/sales/${currentId}`,
         {
           method: "DELETE",
           credentials: "include",
