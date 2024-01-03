@@ -19,6 +19,10 @@ COPY api/pdf /app/api/pdf
 RUN chmod +x ./start.sh
 RUN chmod +x ./wait-for.sh
 
+# Set environment variables
+ENV ACCESS_TOKEN_DURATION=50m
+ENV REFRESH_TOKEN_DURATION=7d
+
 EXPOSE 8080
 CMD [ "/app/main" ]
 ENTRYPOINT [ "/app/start.sh" ]
