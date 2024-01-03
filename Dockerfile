@@ -21,7 +21,7 @@ RUN chmod +x ./wait-for.sh
 
 # Set environment variables
 ENV ACCESS_TOKEN_DURATION=50m
-ENV REFRESH_TOKEN_DURATION=7d
+ENV REFRESH_TOKEN_DURATION=168h
 
 EXPOSE 8080
 CMD [ "/app/main" ]

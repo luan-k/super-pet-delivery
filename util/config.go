@@ -31,5 +31,14 @@ func LoadConfig(path string) (config Config, err error) {
 	}
 
 	err = viper.Unmarshal(&config)
+	if err != nil {
+		return
+	}
+
+	// Convert the ACCESS_TOKEN_DURATION and REFRESH_TOKEN_DURATION
+	// environment variables to time.Duration values
+	config.AccessTokenDuration = viper.GetDuration("ACCESS_TOKEN_DURATION")
+	config.RefreshTokenDuration = viper.GetDuration("REFRESH_TOKEN_DURATION")
+
 	return
 }
