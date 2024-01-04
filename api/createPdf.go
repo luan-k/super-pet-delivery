@@ -424,7 +424,7 @@ func convertHTMLToPDF(filePath, imgPath, pdfPath string) error {
 	writer.Close()
 
 	// Create a POST request to Gotenberg
-	req, err := http.NewRequest("POST", "http://gotenberg:3000/forms/chromium/convert/html", &requestBody)
+	req, err := http.NewRequest("POST", "http://18.228.64.21:3000/forms/chromium/convert/html", &requestBody)
 	if err != nil {
 		return err
 	}
