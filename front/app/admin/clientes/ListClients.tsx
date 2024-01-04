@@ -53,7 +53,7 @@ const ListClients: React.FC<ListClientsProps> = ({
     try {
       const token = Cookies.get("access_token");
       let url =
-        `http://18.228.64.21:8080/clients?page_id=${pageId}&page_size=${pageSize}` +
+        `http://54.94.135.147:8080/clients?page_id=${pageId}&page_size=${pageSize}` +
         (sortField && sortDirection
           ? `&sort_field=${sortField}&sort_direction=${sortDirection}`
           : "");
