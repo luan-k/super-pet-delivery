@@ -2,7 +2,6 @@ package token
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/aead/chacha20poly1305"
@@ -36,14 +35,10 @@ func (maker *PasetoMaker) CreateToken(username string, duration time.Duration) (
 		return "", payload, err
 	}
 
-	log.Printf("Creating token for user %s with duration %v", username, duration)
-
 	token, err := maker.paseto.Encrypt(maker.symmetricKey, payload, nil)
 	if err != nil {
 		return "", nil, err
 	}
-
-	log.Printf("Created token: %s", token)
 
 	return token, payload, nil
 }
