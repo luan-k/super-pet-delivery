@@ -49,15 +49,18 @@ const CreateSale: React.FC = () => {
     console.log(formData);
 
     try {
-      const response = await fetch("http://54.94.135.147:8080/sales", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "http://superpetdelivery.com.br:8080/sales",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (response.ok) {
         console.log("Sale created successfully!");

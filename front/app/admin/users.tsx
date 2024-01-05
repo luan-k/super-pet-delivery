@@ -20,7 +20,7 @@ export default function Admin() {
         headers.append("Authorization", `Bearer ${token}`);
 
         const response = await fetch(
-          `http://54.94.135.147:8080/users?page_id=${pageId}&page_size=${pageSize}`,
+          `http://superpetdelivery.com.br:8080/users?page_id=${pageId}&page_size=${pageSize}`,
           {
             method: "GET",
             credentials: "include",
