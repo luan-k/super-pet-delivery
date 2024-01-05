@@ -143,7 +143,7 @@ func (server *Server) RenewAccessTokenHeader(ctx *gin.Context) {
 	}
 
 	// Set the access token as a cookie
-	ctx.SetCookie("access_token", accessToken, int(server.config.AccessTokenDuration.Seconds()), "/", "54.94.135.147", false, false)
+	ctx.SetCookie("access_token", accessToken, int(server.config.AccessTokenDuration.Seconds()), "/", "superpetdelivery.com.br", false, false)
 	fmt.Print("the acess token is set inside")
 	fmt.Print(session.Username)
 

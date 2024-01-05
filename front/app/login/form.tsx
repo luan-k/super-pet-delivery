@@ -37,14 +37,17 @@ function LoginForm() {
 
     try {
       if (typeof window !== "undefined" && localStorage) {
-        const response = await fetch("http://54.94.135.147:8080/users/login", {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
+        const response = await fetch(
+          "http://superpetdelivery.com.br:8080/users/login",
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          }
+        );
 
         if (response.ok) {
           const data = await response.json();
