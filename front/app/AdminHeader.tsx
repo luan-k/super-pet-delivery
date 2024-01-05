@@ -22,7 +22,7 @@ export default function IsAuthenticated() {
         headers.append("Authorization", `Bearer ${token}`);
 
         const response = await fetch(
-          `http://superpetdelivery.com.br:8080/tokens/renew_access`,
+          `http://54.94.135.147:8080/tokens/renew_access`,
           {
             method: "POST",
             credentials: "include",

@@ -96,7 +96,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
     try {
       const token = Cookies.get("access_token");
 
-      const response = await fetch("http://superpetdelivery.com.br:8080/pdf/", {
+      const response = await fetch("http://54.94.135.147:8080/pdf/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -156,7 +156,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
   ) => {
     try {
       const token = Cookies.get("access_token");
-      let url = `http://superpetdelivery.com.br:8080/sales?page_id=${pageId}&page_size=${pageSize}`;
+      let url = `http://54.94.135.147:8080/sales?page_id=${pageId}&page_size=${pageSize}`;
 
       if (sortField && sortDirection) {
         url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
@@ -196,7 +196,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
       const token = Cookies.get("access_token");
       const promises = clientIds.map(async (clientId) => {
         const response = await fetch(
-          `http://superpetdelivery.com.br:8080/clients/${clientId}`,
+          `http://54.94.135.147:8080/clients/${clientId}`,
           {
             method: "GET",
             headers: {
@@ -338,16 +338,13 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
     if (allChecked) {
       setCheckedSales([]);
     } else {
-      const response = await fetch(
-        "http://superpetdelivery.com.br:8080/sales/all",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch("http://54.94.135.147:8080/sales/all", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await response.json();
       console.log("all sales");
       console.log(data);
