@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
 	db "super-pet-delivery/db/sqlc"
 	"super-pet-delivery/util"
 )
@@ -41,7 +42,6 @@ func (server *Server) createInitialUser(store db.Store) error {
 	return nil
 }
 
-/*
 func (server *Server) createDummyData(store db.Store) error {
 
 	fmt.Println("Checking for existing clients...")
@@ -118,7 +118,7 @@ func (server *Server) createDummyData(store db.Store) error {
 				ClientID:    createdClient.ID,
 				ClientName:  createdClient.FullName,
 				Product:     products[j%len(products)],
-				Price:       int64(j * 10),
+				Price:       float64(j * 10),
 				Observation: "Observation " + strconv.Itoa(j),
 			}
 
@@ -133,4 +133,3 @@ func (server *Server) createDummyData(store db.Store) error {
 	fmt.Println("Dummy data created successfully")
 	return nil
 }
-*/

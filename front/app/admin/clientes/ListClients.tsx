@@ -53,7 +53,7 @@ const ListClients: React.FC<ListClientsProps> = ({
     try {
       const token = Cookies.get("access_token");
       let url =
-        `http://superpetdelivery.com.br:8080/clients?page_id=${pageId}&page_size=${pageSize}` +
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients?page_id=${pageId}&page_size=${pageSize}` +
         (sortField && sortDirection
           ? `&sort_field=${sortField}&sort_direction=${sortDirection}`
           : "");

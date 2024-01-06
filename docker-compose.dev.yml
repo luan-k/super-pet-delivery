@@ -20,6 +20,7 @@ services:
     environment:
       - DB_SOURCE=postgresql://root:secret@postgres:5432/superpet?sslmode=disable
       - TZ=America/Sao_Paulo
+      - SUPERPET_DELIVERY_URL=http://gotenberg
     entrypoint: ["/app/wait-for.sh", "postgres:5432", "--", "/app/startdev.sh"]
     command: ["sh", "-c", "cd /app/app && make devserver"]
     restart: always
@@ -38,6 +39,7 @@ services:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://api:8080
+      - NEXT_PUBLIC_SUPERPET_DELIVERY_URL=http://localhost
     restart: always
     volumes:
       - ./front:/app

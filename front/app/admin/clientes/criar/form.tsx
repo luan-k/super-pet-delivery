@@ -70,7 +70,7 @@ const CreateClient: React.FC = () => {
 
     try {
       const response = await fetch(
-        "http://superpetdelivery.com.br:8080/clients",
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients`,
         {
           method: "POST",
           credentials: "include",

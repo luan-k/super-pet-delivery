@@ -20,7 +20,7 @@ type Sale struct {
 	ID          int64     `json:"sale_id"`
 	ClientID    int64     `json:"client_id"`
 	Product     string    `json:"product"`
-	Price       int64     `json:"price"`
+	Price       float64   `json:"price"`
 	Observation string    `json:"observation"`
 	CreatedAt   time.Time `json:"created_at"`
 }

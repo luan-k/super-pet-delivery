@@ -38,7 +38,7 @@ function LoginForm() {
     try {
       if (typeof window !== "undefined" && localStorage) {
         const response = await fetch(
-          "http://superpetdelivery.com.br:8080/users/login",
+          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/users/login`,
           {
             method: "POST",
             credentials: "include",

@@ -96,17 +96,20 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
     try {
       const token = Cookies.get("access_token");
 
-      const response = await fetch("http://superpetdelivery.com.br:8080/pdf/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // replace with your token
-        },
-        body: JSON.stringify({
-          sale_id: checkedSales,
-          type_of_pdf: TypeOfPdf,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/pdf/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // replace with your token
+          },
+          body: JSON.stringify({
+            sale_id: checkedSales,
+            type_of_pdf: TypeOfPdf,
+          }),
+        }
+      );
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -156,7 +159,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
   ) => {
     try {
       const token = Cookies.get("access_token");
-      let url = `http://superpetdelivery.com.br:8080/sales?page_id=${pageId}&page_size=${pageSize}`;
+      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales?page_id=${pageId}&page_size=${pageSize}`;
 
       if (sortField && sortDirection) {
         url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
@@ -196,7 +199,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
       const token = Cookies.get("access_token");
       const promises = clientIds.map(async (clientId) => {
         const response = await fetch(
-          `http://superpetdelivery.com.br:8080/clients/${clientId}`,
+          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients/${clientId}`,
           {
             method: "GET",
             headers: {
@@ -339,7 +342,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
       setCheckedSales([]);
     } else {
       const response = await fetch(
-        "http://superpetdelivery.com.br:8080/sales/all",
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales/all`,
         {
           method: "GET",
           headers: {

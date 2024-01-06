@@ -11,10 +11,10 @@ import (
 )
 
 type createSaleRequest struct {
-	ClientID    int64  `json:"client_id" binding:"required"`
-	Product     string `json:"product" binding:"required"`
-	Price       int64  `json:"price" binding:"required"`
-	Observation string `json:"observation" binding:"required"`
+	ClientID    int64   `json:"client_id" binding:"required"`
+	Product     string  `json:"product" binding:"required"`
+	Price       float64 `json:"price" binding:"required"`
+	Observation string  `json:"observation" binding:"required"`
 }
 
 func (server *Server) createSale(ctx *gin.Context) {
@@ -149,9 +149,9 @@ func (server *Server) listAllSales(ctx *gin.Context) {
 }
 
 type updateSaleRequest struct {
-	Product     string `json:"product"`
-	Price       int64  `json:"price"`
-	Observation string `json:"observation"`
+	Product     string  `json:"product"`
+	Price       float64 `json:"price"`
+	Observation string  `json:"observation"`
 }
 
 func (server *Server) updateSale(ctx *gin.Context) {

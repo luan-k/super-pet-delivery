@@ -66,7 +66,7 @@ const EditClientForm: React.FC = () => {
       try {
         const token = Cookies.get("access_token");
         const response = await fetch(
-          `http://superpetdelivery.com.br:8080/clients/${currentId}`,
+          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients/${currentId}`,
           {
             method: "GET",
             headers: {
@@ -168,7 +168,7 @@ const EditClientForm: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://superpetdelivery.com.br:8080/clients/${currentId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients/${currentId}`,
         {
           method: "PUT",
           credentials: "include",
@@ -198,7 +198,7 @@ const EditClientForm: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://superpetdelivery.com.br:8080/clients/${currentId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients/${currentId}`,
         {
           method: "DELETE",
           credentials: "include",

@@ -33,11 +33,11 @@ INSERT INTO sale (
 `
 
 type CreateSaleParams struct {
-	ClientID    int64  `json:"client_id"`
-	ClientName  string `json:"client_name"`
-	Product     string `json:"product"`
-	Price       int64  `json:"price"`
-	Observation string `json:"observation"`
+	ClientID    int64   `json:"client_id"`
+	ClientName  string  `json:"client_name"`
+	Product     string  `json:"product"`
+	Price       float64 `json:"price"`
+	Observation string  `json:"observation"`
 }
 
 func (q *Queries) CreateSale(ctx context.Context, arg CreateSaleParams) (Sale, error) {
@@ -181,12 +181,12 @@ RETURNING id, client_id, client_name, product, price, observation, created_at, c
 `
 
 type UpdateSaleParams struct {
-	ID          int64  `json:"id"`
-	ClientID    int64  `json:"client_id"`
-	ClientName  string `json:"client_name"`
-	Product     string `json:"product"`
-	Price       int64  `json:"price"`
-	Observation string `json:"observation"`
+	ID          int64   `json:"id"`
+	ClientID    int64   `json:"client_id"`
+	ClientName  string  `json:"client_name"`
+	Product     string  `json:"product"`
+	Price       float64 `json:"price"`
+	Observation string  `json:"observation"`
 }
 
 func (q *Queries) UpdateSale(ctx context.Context, arg UpdateSaleParams) (Sale, error) {

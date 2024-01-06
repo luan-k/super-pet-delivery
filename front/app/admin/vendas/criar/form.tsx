@@ -50,7 +50,7 @@ const CreateSale: React.FC = () => {
 
     try {
       const response = await fetch(
-        "http://superpetdelivery.com.br:8080/sales",
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales`,
         {
           method: "POST",
           credentials: "include",

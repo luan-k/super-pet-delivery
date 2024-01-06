@@ -9,6 +9,7 @@ RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.12.2/
 # Run stage
 FROM alpine:3.18
 WORKDIR /app
+ENV NEXT_PUBLIC_SUPERPET_DELIVERY_URL=http://superpetdelivery.com.br
 COPY --from=builder /app/main .
 COPY --from=builder /app/migrate.linux-amd64 ./migrate
 COPY app.env .

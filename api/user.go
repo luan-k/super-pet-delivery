@@ -397,9 +397,9 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.SetCookie("access_token", accessToken, int(server.config.AccessTokenDuration.Seconds()), "/", "superpetdelivery.com.br", false, false)
+	ctx.SetCookie("access_token", accessToken, int(server.config.AccessTokenDuration.Seconds()), "/", "", false, false)
 	// Set the refresh token as an HTTP-only cookie
-	ctx.SetCookie("refresh_token", refreshToken, int(server.config.RefreshTokenDuration.Seconds()), "/", "superpetdelivery.com.br", false, true)
+	ctx.SetCookie("refresh_token", refreshToken, int(server.config.RefreshTokenDuration.Seconds()), "/", "", false, true)
 	fmt.Println("cookie successfully set")
 
 	rsp := loginUserResponse{
