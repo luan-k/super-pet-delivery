@@ -5,16 +5,17 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	db "super-pet-delivery/db/sqlc"
 
 	"github.com/gin-gonic/gin"
 )
 
 type createSaleRequest struct {
-	ClientID    int64   `json:"client_id" binding:"required"`
-	Product     string  `json:"product" binding:"required"`
-	Price       float64 `json:"price" binding:"required"`
-	Observation string  `json:"observation" binding:"required"`
+	ClientID    int64  `json:"client_id" binding:"required"`
+	Product     string `json:"product" binding:"required"`
+	Price       string `json:"price" binding:"required"`
+	Observation string `json:"observation" binding:"required"`
 }
 
 func (server *Server) createSale(ctx *gin.Context) {
@@ -34,11 +35,17 @@ func (server *Server) createSale(ctx *gin.Context) {
 		return
 	}
 
+	price, err := strconv.ParseFloat(strings.Replace(req.Price, ",", ".", -1), 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
 	arg := db.CreateSaleParams{
 		ClientID:    req.ClientID,
 		ClientName:  client.FullName,
 		Product:     req.Product,
-		Price:       req.Price,
+		Price:       price,
 		Observation: req.Observation,
 	}
 
@@ -149,9 +156,10 @@ func (server *Server) listAllSales(ctx *gin.Context) {
 }
 
 type updateSaleRequest struct {
-	Product     string  `json:"product"`
-	Price       float64 `json:"price"`
-	Observation string  `json:"observation"`
+	ClientID    int64  `json:"client_id"`
+	Product     string `json:"product"`
+	Price       string `json:"price"`
+	Observation string `json:"observation"`
 }
 
 func (server *Server) updateSale(ctx *gin.Context) {
@@ -177,6 +185,22 @@ func (server *Server) updateSale(ctx *gin.Context) {
 		return
 	}
 
+	price, err := strconv.ParseFloat(strings.Replace(req.Price, ",", ".", -1), 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	client, err := server.store.GetClient(ctx, req.ClientID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
 	// Update only the fields that are provided in the request
 	// Conditional Checks for Updating Sale Fields
 
@@ -184,8 +208,12 @@ func (server *Server) updateSale(ctx *gin.Context) {
 		existingSale.Product = req.Product
 	}
 
-	if req.Price != 0 {
-		existingSale.Price = req.Price
+	if req.ClientID != 0 {
+		existingSale.ClientID = req.ClientID
+	}
+
+	if price != 0 {
+		existingSale.Price = price
 	}
 
 	if req.Observation != "" {
@@ -195,6 +223,7 @@ func (server *Server) updateSale(ctx *gin.Context) {
 	arg := db.UpdateSaleParams{
 		ID:          saleID,
 		ClientID:    existingSale.ClientID,
+		ClientName:  client.FullName,
 		Product:     existingSale.Product,
 		Price:       existingSale.Price,
 		Observation: existingSale.Observation,

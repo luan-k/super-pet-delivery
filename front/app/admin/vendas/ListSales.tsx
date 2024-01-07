@@ -411,7 +411,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
         <div className='clients-per-page ml-auto'>
           <label className='clientsPerPage mr-4'>Exibindo por página:</label>
           <input
-            className='text-black text-2xl pl-6 py-2 w-20 rounded-2xl'
+            className='text-black text-2xl pl-6 py-2 w-24 rounded-2xl'
             type='number'
             id='clientsPerPage'
             value={salesPerPage}
@@ -466,7 +466,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
                   ) : null)}
               </th>
               <th
-                className='list-clients__client-actions cursor-pointer'
+                className='list-clients__client-actions cursor-pointer !rounded-none'
                 onClick={() => handleSort("created_at")}>
                 Criado em
                 {sortField === "created_at" &&
@@ -493,7 +493,9 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
                   />
                 </td>
                 <td className='list-clients__client-name'>{sale.product}</td>
-                <td className='list-clients__client-whatsapp'>{sale.price}</td>
+                <td className='list-clients__client-whatsapp'>
+                  {sale.price.toString().replace(".", ",")}
+                </td>
                 <td className='list-clients__client-pet-name'>
                   {sale.observation}
                 </td>
@@ -510,7 +512,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
                 <td className='list-clients__client-actions'>
                   <Link
                     href={`/admin/vendas/${sale.id}`}
-                    className='wk-btn wk-btn--sm wk-btn--yellow'>
+                    className='wk-btn wk-btn--sm wk-btn--yellow w-full block'>
                     Editar
                   </Link>
                 </td>

@@ -9,14 +9,15 @@ import { toast } from "react-toastify";
 interface EditSaleFormRequest {
   client_id: number;
   product: string;
-  price: number;
+  price: string;
   observation: string;
 }
 interface SaleDetails {
   id: number;
   client_id: number;
+  client_name: string;
   product: string;
-  price: number;
+  price: string;
   observation: string;
 }
 
@@ -64,7 +65,7 @@ const EditSaleForm: React.FC = () => {
   const [formData, setFormData] = useState<EditSaleFormRequest>({
     client_id: 0, // Update field names to match Go structure
     product: "",
-    price: 0,
+    price: "",
     observation: "",
   });
 
@@ -107,7 +108,7 @@ const EditSaleForm: React.FC = () => {
       setFormData({
         client_id: currentSale.client_id,
         product: currentSale.product,
-        price: currentSale.price,
+        price: currentSale.price.toString().replace(".", ","),
         observation: currentSale.observation,
       });
       setSelectedClientName(currentSale.client_id.toString());
@@ -192,7 +193,7 @@ const EditSaleForm: React.FC = () => {
   return (
     <div className='text-2xl wk-create-client'>
       <form className='grid grid-cols-1' onSubmit={handleSubmit}>
-        {/* <div className='wk-create-client__input-wrapper'>
+        <div className='wk-create-client__input-wrapper'>
           <label>
             <h4 className='wk-create-client__title'>Cliente</h4>
             <div className='flex'>
@@ -211,7 +212,7 @@ const EditSaleForm: React.FC = () => {
               />
             </div>
           </label>
-        </div> */}
+        </div>
 
         <div className='wk-create-client__input-wrapper'>
           <label>
@@ -229,7 +230,7 @@ const EditSaleForm: React.FC = () => {
           <label>
             <h4 className='wk-create-client__title'>Preço</h4>
             <input
-              type='number'
+              type='text'
               name='price'
               value={formData.price}
               onChange={handleChange}

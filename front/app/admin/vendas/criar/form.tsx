@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 interface CreateSaleRequest {
   client_id: number;
   product: string;
-  price: number;
+  price: string;
   observation: string;
 }
 
@@ -17,7 +17,7 @@ const CreateSale: React.FC = () => {
   const [formData, setFormData] = useState<CreateSaleRequest>({
     client_id: 0,
     product: "",
-    price: 0,
+    price: "",
     observation: "",
   });
   const [selectedClientName, setSelectedClientName] = React.useState("");
@@ -29,8 +29,7 @@ const CreateSale: React.FC = () => {
 
     let newValue: string | number;
 
-    if (name === "client_id" || name === "price") {
-      // Use the unary plus (+) or Number() to convert to numbers for specific fields
+    if (name === "client_id") {
       newValue = value !== "" ? +value : 0;
     } else {
       newValue = value;
@@ -125,7 +124,7 @@ const CreateSale: React.FC = () => {
           <label>
             <h4 className='wk-create-client__title'>Preço</h4>
             <input
-              type='number'
+              type='text'
               name='price'
               value={formData.price}
               onChange={handleChange}
