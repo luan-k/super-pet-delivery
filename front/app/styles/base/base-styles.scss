@@ -37,9 +37,9 @@ html {
 }
 
 body {
-  background: linear-gradient(135deg, #0c0910 0%, #151526 100%);
+  background: linear-gradient(135deg, #ededed 0%, #d8d8d8 100%);
   box-sizing: border-box; /* Padding and Margin are no longer part of the width and height of the element */
-  color: white;
+  color: rgb(40, 40, 40);
   overflow-x: hidden;
   scroll-behavior: smooth;
   @apply font-Hind;

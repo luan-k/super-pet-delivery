@@ -1,0 +1,39 @@
+.wk-slider {
+  max-width: 100%;
+  .slick-slide {
+    width: 100%;
+  }
+  .slick-arrow {
+    z-index: 9;
+    &.slick-next {
+      right: 2.1rem;
+    }
+    &.slick-prev {
+      left: 2.1rem;
+    }
+  }
+  .slick-dots {
+    bottom: 3rem;
+    li {
+      &.slick-active button:before {
+        color: white;
+      }
+      button:before {
+        color: #ffffff;
+        font-size: 1.5rem;
+        height: 3rem;
+        width: 3rem;
+      }
+    }
+  }
+  div {
+    height: 100%;
+    min-height: 80rem;
+    position: relative;
+    img {
+      height: auto;
+      min-width: 100%;
+      object-fit: cover;
+    }
+  }
+}
