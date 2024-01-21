@@ -19,7 +19,7 @@ export default function Vendas() {
         </div>
       </div>
       <CheckedSalesContext.Provider value={{ checkedSales, setCheckedSales }}>
-        <ListSales className='w-11/12' />
+        <ListSales className='' />
       </CheckedSalesContext.Provider>
     </>
   );

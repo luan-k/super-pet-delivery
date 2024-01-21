@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { MdOutlinePointOfSale } from "react-icons/md";
 import "../styles/admin/sidebar.scss";
-// now to import the svg for home, vendas, produtos, clientes galeria e usuarios
 import HomeIcon from "../../public/admin-home.svg";
 import VendasIcon from "../../public/admin-vendas.svg";
 import ProdutosIcon from "../../public/admin-produtos.svg";
@@ -15,7 +14,12 @@ import UsuariosIcon from "../../public/admin-usuarios.svg";
 import LockClosedIcon from "../../public/sidebar-lock.svg";
 import LockOpenIcon from "../../public/sidebar-lock-open.svg";
 
-export default function AdminSidebar() {
+type AdminSidebarProps = {
+  sidebarState: string;
+  onStateChange: (newState: string) => void;
+};
+
+export default function AdminSidebar({ onStateChange }: AdminSidebarProps) {
   const router = useRouter();
   const [currentRoute, setCurrentRoute] = useState("");
   const [sidebarState, setSidebarState] = useState(
@@ -28,10 +32,11 @@ export default function AdminSidebar() {
     // Update the current route when the route changes
     setCurrentRoute(pathname);
   }, [pathname]);
+
   useEffect(() => {
     localStorage.setItem("sidebarState", sidebarState);
-  }, [sidebarState]);
-  console.log(currentRoute);
+    onStateChange(sidebarState); // Notify the parent component about the change
+  }, [sidebarState, onStateChange]);
 
   const isActive = (href: string) => {
     // Compare the current route with the link's href

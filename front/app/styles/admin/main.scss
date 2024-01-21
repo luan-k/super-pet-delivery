@@ -6,6 +6,7 @@
 
 .wkode-page-admin-main {
   background: #1a1b1e;
+  transition: all 0.3s;
 }
 .list-clients-header {
   @apply grid grid-cols-2;
@@ -16,5 +17,4 @@
 
 .wk-admin-page-wrapper {
   align-self: flex-end;
-  @apply w-11/12;
 }

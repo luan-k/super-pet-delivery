@@ -361,9 +361,9 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
 
   return (
     <>
-      <div className='list-clients__sorting-wrapper grid grid-cols-6 w-11/12 ml-auto mb-6 items-center'>
+      <div className='list-clients__sorting-wrapper grid grid-cols-6  ml-auto mb-6 items-center'>
         <input
-          className='text-black text-2xl pl-6 py-2 rounded-2xl w-11/12'
+          className='text-black text-2xl pl-6 py-2 rounded-2xl '
           type='text'
           id='search'
           value={search}
@@ -372,7 +372,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
         />
         <div className='flex justify-center'>
           <button
-            className='wk-btn wk-btn--bg wk-btn--yellow w-11/12 text-xl disabled:opacity-70 disabled:bg-yellow-900 disabled:hover:bg-yellow-900 disabled:border-yellow-900 disabled:hover:border-yellow-900'
+            className='wk-btn wk-btn--bg wk-btn--yellow  text-xl disabled:opacity-70 disabled:bg-yellow-900 disabled:hover:bg-yellow-900 disabled:border-yellow-900 disabled:hover:border-yellow-900'
             onClick={handleCheckAllInPage}
             disabled={allChecked}>
             {allCheckedInPage
@@ -382,7 +382,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
         </div>
         <div className='flex justify-center'>
           <button
-            className='wk-btn wk-btn--bg wk-btn--yellow w-11/12 text-xl disabled:opacity-70 disabled:bg-yellow-900 disabled:hover:bg-yellow-900 disabled:border-yellow-900 disabled:hover:border-yellow-900'
+            className='wk-btn wk-btn--bg wk-btn--yellow  text-xl disabled:opacity-70 disabled:bg-yellow-900 disabled:hover:bg-yellow-900 disabled:border-yellow-900 disabled:hover:border-yellow-900'
             onClick={handleCheckAll}
             disabled={allCheckedInPage}>
             {allChecked ? "Remover todos" : "Checar Todos"}
@@ -390,7 +390,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
         </div>
         <div className='flex justify-center'>
           <button
-            className='wk-btn wk-btn--bg wk-btn--green w-11/12 text-2xl disabled:opacity-70 disabled:bg-green-900 disabled:hover:bg-green-900 disabled:border-green-900 disabled:hover:border-green-900'
+            className='wk-btn wk-btn--bg wk-btn--green  text-2xl disabled:opacity-70 disabled:bg-green-900 disabled:hover:bg-green-900 disabled:border-green-900 disabled:hover:border-green-900'
             onClick={() => handleButtonClick("delivery")}
             disabled={
               checkedSales.length === 0 || isDeliveryLoading || isSimpleLoading
@@ -400,7 +400,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
         </div>
         <div className='flex justify-center'>
           <button
-            className='wk-btn wk-btn--bg wk-btn--green w-11/12 text-2xl disabled:opacity-70 disabled:bg-green-900 disabled:hover:bg-green-900 disabled:border-green-900 disabled:hover:border-green-900'
+            className='wk-btn wk-btn--bg wk-btn--green  text-2xl disabled:opacity-70 disabled:bg-green-900 disabled:hover:bg-green-900 disabled:border-green-900 disabled:hover:border-green-900'
             onClick={() => handleButtonClick("simple")}
             disabled={
               checkedSales.length === 0 || isDeliveryLoading || isSimpleLoading

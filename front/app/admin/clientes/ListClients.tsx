@@ -200,7 +200,7 @@ const ListClients: React.FC<ListClientsProps> = ({
 
   return (
     <>
-      <div className='list-clients__sorting-wrapper grid grid-cols-2 w-11/12 ml-auto mb-6'>
+      <div className='list-clients__sorting-wrapper grid grid-cols-2  ml-auto mb-6'>
         <input
           className='text-black text-2xl pl-6 py-2 rounded-2xl w-1/2'
           type='text'
