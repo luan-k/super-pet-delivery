@@ -16,6 +16,9 @@ import UsuariosIcon from "../../public/admin-usuarios.svg";
 export default function AdminSidebar() {
   const router = useRouter();
   const [currentRoute, setCurrentRoute] = useState("");
+  const [sidebarState, setSidebarState] = useState(
+    localStorage.getItem("sidebarState") || "wkode-admin-sidebar--open-in-hover"
+  );
   const pathname = usePathname();
   console.log(pathname);
 
@@ -23,6 +26,9 @@ export default function AdminSidebar() {
     // Update the current route when the route changes
     setCurrentRoute(pathname);
   }, [pathname]);
+  useEffect(() => {
+    localStorage.setItem("sidebarState", sidebarState);
+  }, [sidebarState]);
   console.log(currentRoute);
 
   const isActive = (href: string) => {
@@ -33,13 +39,13 @@ export default function AdminSidebar() {
   };
 
   return (
-    <div className='wkode-admin-sidebar '>
+    <div className={`wkode-admin-sidebar ${sidebarState}`}>
       <div className='wkode-admin-sidebar__menu-wrapper'>
         <Link
           className={`wkode-admin-sidebar__menu-item ${isActive("/admin")}`}
           href={"/admin"}>
           <HomeIcon />
-          {/* Home */}
+          Home
         </Link>
         <Link
           className={`wkode-admin-sidebar__menu-item ${isActive(
@@ -47,7 +53,7 @@ export default function AdminSidebar() {
           )}`}
           href={"/admin/clientes"}>
           <ClientesIcon />
-          {/*  Clientes */}
+          Clientes
         </Link>
         <Link
           className={`wkode-admin-sidebar__menu-item ${isActive(
@@ -55,7 +61,7 @@ export default function AdminSidebar() {
           )}`}
           href={"/admin/produtos"}>
           <ProdutosIcon />
-          {/* Produtos */}
+          Produtos
         </Link>
         <Link
           className={`wkode-admin-sidebar__menu-item ${isActive(
@@ -63,7 +69,7 @@ export default function AdminSidebar() {
           )}`}
           href={"/admin/vendas"}>
           <VendasIcon />
-          {/* Vendas */}
+          Vendas
         </Link>
         <Link
           className={`wkode-admin-sidebar__menu-item ${isActive(
@@ -71,7 +77,7 @@ export default function AdminSidebar() {
           )}`}
           href={"/admin/galeria"}>
           <GaleriaIcon />
-          {/* Galeria */}
+          Galeria
         </Link>
         <Link
           className={`wkode-admin-sidebar__menu-item ${isActive(
@@ -79,7 +85,7 @@ export default function AdminSidebar() {
           )}`}
           href={"/admin/usuarios"}>
           <UsuariosIcon />
-          {/* Usuarios */}
+          Usuarios
         </Link>
       </div>
     </div>

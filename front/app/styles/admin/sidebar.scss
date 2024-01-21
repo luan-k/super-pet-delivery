@@ -3,25 +3,42 @@
   font-size: 2rem;
   height: 100%;
   left: 0;
+  overflow: hidden;
   padding-top: 3.2rem;
   position: fixed;
   top: 5.2rem;
+  transition: all 0.3s;
+  width: 6.1rem;
   z-index: 998;
+  @apply font-Inter;
   &__menu {
     &-wrapper {
       margin: 0 1.8rem;
     }
   }
   &__menu-item {
-    display: block;
+    align-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    font-size: 1.6rem;
+    font-style: normal;
+    font-weight: 600;
+    gap: 2rem;
     height: 2.6rem;
+    justify-content: flex-start;
+    line-height: 145%;
     padding: 0;
     position: relative;
     transition: all 0.3s;
     width: 100%;
-    svg,
-    path {
-      transition: all 0.3s;
+    svg {
+      min-width: 2.6rem;
+      &,
+      path {
+        transition: all 0.3s;
+      }
     }
     &:not(:last-of-type) {
       margin-bottom: 1.6rem;
@@ -39,6 +56,11 @@
         fill: #0085fe;
       }
       color: #0085fe;
+    }
+  }
+  &--open-in-hover {
+    &:hover {
+      width: 25rem;
     }
   }
 }
