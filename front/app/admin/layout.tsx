@@ -1,4 +1,4 @@
-import IsAuthenticated from "../AdminHeader";
+import IsAuthenticated from "./AdminHeader";
 import AdminSidebar from "./sidebar";
 import UsersList from "./users";
 import "../styles/admin/main.scss";
