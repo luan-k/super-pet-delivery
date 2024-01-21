@@ -1,42 +1,44 @@
 .wkode-admin-sidebar {
-  background: #1a1b1e;
+  border-right: 1px solid #2c3131;
   font-size: 2rem;
+  height: 100%;
   left: 0;
-  padding-top: 4.2rem;
+  padding-top: 3.2rem;
   position: fixed;
-  top: 0px;
-  width: 10%;
+  top: 5.2rem;
   z-index: 998;
-  a {
-    align-content: center;
-    align-items: center;
-    display: flex;
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    padding-left: 1.2rem;
+  &__menu {
+    &-wrapper {
+      margin: 0 1.8rem;
+    }
+  }
+  &__menu-item {
+    display: block;
+    height: 2.6rem;
+    padding: 0;
     position: relative;
     transition: all 0.3s;
     width: 100%;
-    @apply py-6;
-    &:hover {
-      &::after {
-        width: 100%;
+    svg,
+    path {
+      transition: all 0.3s;
+    }
+    &:not(:last-of-type) {
+      margin-bottom: 1.6rem;
+    }
+    &--active {
+      svg,
+      path {
+        fill: #0085fe;
       }
+      color: #0085fe;
     }
-    &.active {
-      background-color: #001b43;
-    }
-    &::after {
-      background-color: #001b43d4;
-      content: "";
-      height: 100%;
-      left: 0;
-      position: absolute;
-      top: 0;
-      transition: all 0.2s;
-      width: 0;
-      z-index: -1;
+    &:hover {
+      svg,
+      path {
+        fill: #0085fe;
+      }
+      color: #0085fe;
     }
   }
 }
