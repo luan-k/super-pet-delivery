@@ -20,13 +20,31 @@ export default function SimpleSlider() {
     <div className='wk-slider'>
       <Slider {...settings}>
         <div>
-          <Image placeholder='blur' src={Slider1} alt='slider 1' fill={true} />
+          <Image
+            placeholder='blur'
+            src={Slider1}
+            alt='slider 1'
+            fill={true}
+            sizes='100%, auto'
+          />
         </div>
         <div>
-          <Image placeholder='blur' src={Slider2} alt='slider 2' fill={true} />
+          <Image
+            placeholder='blur'
+            src={Slider2}
+            alt='slider 2'
+            fill={true}
+            sizes='100%, auto'
+          />
         </div>
         <div>
-          <Image placeholder='blur' src={Slider3} alt='slider 3' fill={true} />
+          <Image
+            placeholder='blur'
+            src={Slider3}
+            alt='slider 3'
+            fill={true}
+            sizes='100%, auto'
+          />
         </div>
       </Slider>
     </div>
