@@ -12,6 +12,8 @@ import ProdutosIcon from "../../public/admin-produtos.svg";
 import ClientesIcon from "../../public/admin-clientes.svg";
 import GaleriaIcon from "../../public/admin-galeria.svg";
 import UsuariosIcon from "../../public/admin-usuarios.svg";
+import LockClosedIcon from "../../public/sidebar-lock.svg";
+import LockOpenIcon from "../../public/sidebar-lock-open.svg";
 
 export default function AdminSidebar() {
   const router = useRouter();
@@ -88,6 +90,25 @@ export default function AdminSidebar() {
           Usuarios
         </Link>
       </div>
+      <button
+        onClick={() => {
+          if (sidebarState === "wkode-admin-sidebar--open") {
+            setSidebarState("wkode-admin-sidebar--open-in-hover");
+          } else if (sidebarState === "wkode-admin-sidebar--open-in-hover") {
+            setSidebarState("wkode-admin-sidebar--closed");
+          } else if (sidebarState === "wkode-admin-sidebar--closed") {
+            setSidebarState("wkode-admin-sidebar--open");
+          } else {
+            setSidebarState("wkode-admin-sidebar--open-in-hover");
+          }
+        }}
+        className='wkode-admin-sidebar__menu-item wkode-admin-sidebar__menu-item--lock'>
+        {sidebarState === "wkode-admin-sidebar--open-in-hover" ? (
+          <LockOpenIcon />
+        ) : (
+          <LockClosedIcon />
+        )}
+      </button>
     </div>
   );
 }
