@@ -1,8 +1,14 @@
 "use client";
+import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import "../styles/admin/header.scss";
+import Logo from "../../public/static/images/superpet.png";
+import userPic from "../../public/static/images/User.png";
+import GearIcon from "../../public/gear.svg";
+import ArrowDown from "../../public/arrow-down.svg";
 
 export default function IsAuthenticated() {
   const router = useRouter();
@@ -44,12 +50,30 @@ export default function IsAuthenticated() {
     };
 
     fetchData();
-  }, []);
+  }, [router]);
 
   return (
     <>
       <div className='wkode-admin-header'>
-        <h1 className='text-3xl text-right'>Olá {username}</h1>
+        <div className='wkode-admin-header__logo'>
+          <Link href='/admin/'>
+            <Image src={Logo} alt='Logo' width={55} height={61} />
+          </Link>
+        </div>
+        <div className='wkode-admin-header__right'>
+          <Link href='/admin/config'>
+            <GearIcon />
+          </Link>
+          <div className='wkode-admin-header__user'>
+            <Link href={`/admin/usuarios/${username}`}>
+              <Image src={userPic} alt='user image' width={35} height={35} />
+            </Link>
+            <div className='wkode-admin-header__user-name-wrapper'>
+              {username}
+              <ArrowDown />
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
