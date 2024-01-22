@@ -1,6 +1,6 @@
 .wk-btn {
   @apply text-center  text-white;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   border-style: solid;
   border-width: 3px;
   font-weight: 600;
@@ -27,8 +27,8 @@
     @apply bg-yellow-700 border-yellow-700;
   }
   &--blue {
-    background-color: #001b43;
-    border-color: #001b43;
+    background-color: #0085fe;
+    border-color: #0085fe;
   }
   &--green {
     @apply bg-green-700 border-green-700;
