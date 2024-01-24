@@ -87,6 +87,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
     console.log(checkedSales);
   }, [checkedSales]);
 
+  // this can stay
   const handleButtonClick = async (TypeOfPdf: string): Promise<void> => {
     if (TypeOfPdf === "delivery") {
       setIsDeliveryLoading(true);
@@ -150,6 +151,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
     }
   };
 
+  // this is needed right here.
   const fetchSales = async (
     pageId: number,
     pageSize: number,
@@ -180,10 +182,6 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
       if (response.ok) {
         const data: ListSalesResponse = await response.json();
         setListSalesResponse(data);
-
-        // Fetch client names for each sale
-        const clientIds = data.sales.map((sale) => sale.client_id);
-        await fetchClientNames(clientIds);
       } else {
         console.error("Failed to fetch sales");
       }
@@ -191,40 +189,6 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
       console.error("Error:", error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchClientNames = async (clientIds: number[]) => {
-    try {
-      const token = Cookies.get("access_token");
-      const promises = clientIds.map(async (clientId) => {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients/${clientId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.ok) {
-          const data: Client = await response.json();
-          setClientNames((prevClientNames) => ({
-            ...prevClientNames,
-            [clientId]: data.full_name,
-          }));
-        } else {
-          console.error(
-            `Failed to fetch client name for client ID: ${clientId}`
-          );
-        }
-      });
-
-      await Promise.all(promises);
-    } catch (error) {
-      console.error("Error:", error);
     }
   };
 
@@ -239,6 +203,7 @@ const ListSales: React.FC<ListSalesProps> = ({ className }) => {
 
   const totalPages = Math.ceil(listSalesResponse.total / salesPerPage);
 
+  // this can be a component
   const renderPaginationButtons = () => {
     const maxButtonsToShow = 7;
     const buttons: JSX.Element[] = [];
