@@ -10,7 +10,7 @@ interface Sale {
   client_id: number;
   client_name: string;
   product: string;
-  price: number;
+  price: string;
   observation: string;
   created_at: string;
 }
@@ -75,22 +75,39 @@ export default function ListSales({ className }: ListSalesProps) {
   }, []);
 
   const tableConfig: TableConfig = {
+    topClasses: "wk-table--sales",
+    interact: {
+      edit: true,
+      duplicate: true,
+      delete: true,
+      report: true,
+    },
     columns: [
       {
         title: "Produto",
         key: "product",
         sortable: true,
         width: 20,
-        items: listSalesResponse.map(
-          (sale) => `[ ${sale.id.toString().padStart(3, "0")} ] ${sale.product}`
-        ),
+        items: listSalesResponse.map((sale) => (
+          <>
+            <span className='text-wk-main-yellow'> [ </span>
+            {sale.id.toString().padStart(3, "0")}
+            <span className='text-wk-main-yellow'> ] </span>
+            {sale.product}
+          </>
+        )),
       },
       {
         title: "Preço",
         key: "price",
         sortable: true,
         width: 20,
-        items: listSalesResponse.map((sale) => sale.price),
+        items: listSalesResponse.map((sale) => (
+          <>
+            <span className='text-wk-main-blue font-semibold'>R$ </span>
+            {parseFloat(sale.price).toFixed(2).replace(".", ",")}
+          </>
+        )),
       },
       {
         title: "Observação",
