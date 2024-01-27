@@ -2,6 +2,7 @@ import EditIcon from "../../../public/admin-edit.svg";
 import DuplicateIcon from "../../../public/admin-duplicate.svg";
 import DeleteIcon from "../../../public/admin-delete.svg";
 import ReportIcon from "../../../public/admin-report.svg";
+import Link from "next/link";
 
 export interface TableColumn {
   title: string;
@@ -13,7 +14,7 @@ export interface TableColumn {
 }
 
 export interface InteractConfig {
-  edit?: boolean;
+  edit?: boolean | string[];
   duplicate?: boolean;
   delete?: boolean;
   report?: boolean;
@@ -60,7 +61,11 @@ export default function WkTable({
               {column.title}
             </th>
           ))}
-          <th className='wk-table__header wk-table__header--interact'></th>
+          {config.interact ? (
+            <th className='wk-table__header wk-table__header--interact'></th>
+          ) : (
+            ""
+          )}
         </tr>
 
         {config.columns[0].items.map((item, index) => (
@@ -84,22 +89,46 @@ export default function WkTable({
                 {column.items[index]}
               </td>
             ))}
-            <td className='wk-table__td wk-table__td--interact'>
-              <div className='wk-table__td--interact__wrapper'>
-                <a className=''>
-                  <ReportIcon />
-                </a>
-                <a className=''>
-                  <EditIcon />
-                </a>
-                <a className=''>
-                  <DuplicateIcon />
-                </a>
-                <a className=''>
-                  <DeleteIcon />
-                </a>
-              </div>
-            </td>
+            {config.interact ? (
+              <td className='wk-table__td wk-table__td--interact'>
+                <div className='wk-table__td--interact__wrapper'>
+                  {config.interact.report ? (
+                    <a className=''>
+                      <ReportIcon />
+                    </a>
+                  ) : (
+                    ""
+                  )}
+                  {config.interact.edit ? (
+                    Array.isArray(config.interact.edit) ? (
+                      <Link href={config.interact.edit[index]}>
+                        <EditIcon />
+                      </Link>
+                    ) : (
+                      ""
+                    )
+                  ) : (
+                    ""
+                  )}
+                  {config.interact.duplicate ? (
+                    <a className=''>
+                      <DuplicateIcon />
+                    </a>
+                  ) : (
+                    ""
+                  )}
+                  {config.interact.delete ? (
+                    <a className=''>
+                      <DeleteIcon />
+                    </a>
+                  ) : (
+                    ""
+                  )}
+                </div>
+              </td>
+            ) : (
+              ""
+            )}
           </tr>
         ))}
       </tbody>

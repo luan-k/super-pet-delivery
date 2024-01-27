@@ -71,13 +71,13 @@ export default function ListSales({ className }: ListSalesProps) {
   };
 
   useEffect(() => {
-    fetchSales(1, 10, null, null, "");
+    fetchSales(1, 15, null, null, "");
   }, []);
 
   const tableConfig: TableConfig = {
     topClasses: "wk-table--sales",
     interact: {
-      edit: true,
+      edit: listSalesResponse.map((sale) => `/admin/vendas/${sale.id}`),
       duplicate: true,
       delete: true,
       report: true,
