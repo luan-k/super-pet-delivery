@@ -80,8 +80,7 @@ export default function ListSales({ className }: ListSalesProps) {
     fetchSales(1, 15, null, null, "");
   }, []);
 
-  async function handleDelete(e: FormEvent, itemId: number): Promise<void> {
-    e.preventDefault();
+  async function handleDelete(itemId: number): Promise<void> {
     const token = Cookies.get("access_token");
 
     try {
@@ -115,7 +114,7 @@ export default function ListSales({ className }: ListSalesProps) {
     topClasses: "wk-table--sales",
     interact: {
       edit: listSalesResponse.map((sale) => `/admin/vendas/${sale.id}`),
-      duplicate: true,
+      duplicate: false,
       delete: {
         eventFunction: handleDelete,
         items: listSalesResponse.map((sale) => sale.id),

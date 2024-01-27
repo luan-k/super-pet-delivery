@@ -4,6 +4,7 @@ import DeleteIcon from "../../../public/admin-delete.svg";
 import ReportIcon from "../../../public/admin-report.svg";
 import Link from "next/link";
 import { FormEvent } from "react";
+import ModalAreYouSure from "./ModalAreYouSure";
 
 export interface TableColumn {
   title: string;
@@ -22,7 +23,7 @@ export interface InteractConfig {
 }
 
 export interface deleteConfig {
-  eventFunction: (e: FormEvent, id: number) => void;
+  eventFunction: (id: number) => void;
   items: number[];
 }
 
@@ -124,17 +125,10 @@ export default function WkTable({
                     ""
                   )}
                   {config.interact && config.interact.delete ? (
-                    <button
-                      onClick={(e) =>
-                        config.interact &&
-                        config.interact.delete &&
-                        config.interact.delete.eventFunction(
-                          e,
-                          config.interact.delete.items[index]
-                        )
-                      }>
-                      <DeleteIcon />
-                    </button>
+                    <ModalAreYouSure
+                      deleteFunction={config.interact.delete.eventFunction}
+                      deleteIndex={config.interact.delete.items[index]}
+                    />
                   ) : (
                     ""
                   )}
