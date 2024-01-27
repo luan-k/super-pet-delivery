@@ -3,6 +3,7 @@ import DuplicateIcon from "../../../public/admin-duplicate.svg";
 import DeleteIcon from "../../../public/admin-delete.svg";
 import ReportIcon from "../../../public/admin-report.svg";
 import Link from "next/link";
+import { FormEvent } from "react";
 
 export interface TableColumn {
   title: string;
@@ -16,8 +17,13 @@ export interface TableColumn {
 export interface InteractConfig {
   edit?: boolean | string[];
   duplicate?: boolean;
-  delete?: boolean;
+  delete?: deleteConfig;
   report?: boolean;
+}
+
+export interface deleteConfig {
+  eventFunction: (e: FormEvent, id: number) => void;
+  items: number[];
 }
 
 export interface TableConfig {
@@ -117,10 +123,18 @@ export default function WkTable({
                   ) : (
                     ""
                   )}
-                  {config.interact.delete ? (
-                    <a className=''>
+                  {config.interact && config.interact.delete ? (
+                    <button
+                      onClick={(e) =>
+                        config.interact &&
+                        config.interact.delete &&
+                        config.interact.delete.eventFunction(
+                          e,
+                          config.interact.delete.items[index]
+                        )
+                      }>
                       <DeleteIcon />
-                    </a>
+                    </button>
                   ) : (
                     ""
                   )}

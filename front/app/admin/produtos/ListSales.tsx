@@ -1,9 +1,15 @@
 "use client";
-import React, { useEffect, useState, MouseEventHandler } from "react";
+import React, {
+  useEffect,
+  useState,
+  MouseEventHandler,
+  FormEvent,
+} from "react";
 import Cookies from "js-cookie";
 import { useContext } from "react";
 import WkTable from "../components/WkTable";
 import { TableConfig, TableColumn } from "../components/WkTable";
+import { toast } from "react-toastify";
 
 interface Sale {
   id: number;
@@ -74,12 +80,46 @@ export default function ListSales({ className }: ListSalesProps) {
     fetchSales(1, 15, null, null, "");
   }, []);
 
+  async function handleDelete(e: FormEvent, itemId: number): Promise<void> {
+    e.preventDefault();
+    const token = Cookies.get("access_token");
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales/${itemId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        console.log("Sale Deleted successfully!");
+        fetchSales(1, 15, null, null, "");
+        toast.success("Venda deletada com sucesso!");
+      } else {
+        console.error("Failed to delete sale");
+        console.log(response.json());
+        toast.error("Houve um erro ao deletar a venda!");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
   const tableConfig: TableConfig = {
     topClasses: "wk-table--sales",
     interact: {
       edit: listSalesResponse.map((sale) => `/admin/vendas/${sale.id}`),
       duplicate: true,
-      delete: true,
+      delete: {
+        eventFunction: handleDelete,
+        items: listSalesResponse.map((sale) => sale.id),
+      },
       report: true,
     },
     columns: [
