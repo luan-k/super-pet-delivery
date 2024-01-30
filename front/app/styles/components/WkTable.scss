@@ -26,8 +26,20 @@
         width: 1.2rem;
       }
       &--up {
+        &--active {
+          svg,
+          path {
+            fill: #ffffff;
+          }
+        }
       }
       &--down {
+        &--active {
+          svg,
+          path {
+            fill: #ffffff;
+          }
+        }
       }
     }
     &-row {

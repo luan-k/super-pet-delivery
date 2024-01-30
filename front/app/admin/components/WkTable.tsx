@@ -43,6 +43,13 @@ export interface TableConfig {
   interact?: InteractConfig;
   totalNumberOfItems: number;
   pages?: PagesConfig;
+  sortInfo?: SortInfo;
+}
+
+export interface SortInfo {
+  field: string | null;
+  direction: string | null;
+  handleSort: (field: string) => void;
 }
 
 interface ListItemsResponse {
@@ -72,15 +79,37 @@ export default function WkTable({ config, className }: ListItemsResponse) {
               <th
                 key={column.key}
                 className={`wk-table__header wk-table__header--${column.key} ${
-                  column.sortable ? "cursor-pointer" : ""
+                  column.sortable
+                    ? "cursor-pointer wk-table__header--sortable"
+                    : ""
                 }`}
+                onClick={() =>
+                  column.sortable &&
+                  config.sortInfo &&
+                  config.sortInfo.handleSort(column.key)
+                }
                 style={{ width: `${column.width}%` }}>
                 <div className='wk-table__header--wrapper'>
                   {column.title}
                   {column.sortable ? (
-                    <span className='wk-table__header--sortable'>
-                      <BiSolidUpArrow className='wk-table__header--sortable--up' />
-                      <BiSolidDownArrow className='wk-table__header--sortable--down' />
+                    <span className={`wk-table__header--sortable `}>
+                      <BiSolidUpArrow
+                        className={`wk-table__header--sortable--up ${
+                          config.sortInfo?.field === column.key &&
+                          (config.sortInfo?.direction === "asc"
+                            ? "wk-table__header--sortable--up--active"
+                            : "")
+                        } }`}
+                      />
+                      <BiSolidDownArrow
+                        className={`wk-table__header--sortable--down ${
+                          config.sortInfo?.field === column.key &&
+                          (config.sortInfo?.direction === "desc"
+                            ? "wk-table__header--sortable--down--active"
+                            : "")
+                        } }
+                        }`}
+                      />
                     </span>
                   ) : (
                     ""

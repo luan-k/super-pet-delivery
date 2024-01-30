@@ -36,6 +36,25 @@ export default function ListSales({ className }: ListSalesProps) {
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [salesPerPage, setSalesPerPage] = useState<number>(10);
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
+    null
+  );
+
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(
+        sortDirection === "asc"
+          ? "desc"
+          : sortDirection === "desc"
+          ? null
+          : "asc"
+      );
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
   const fetchSales = async (
     pageId: number,
     pageSize: number,
@@ -79,8 +98,8 @@ export default function ListSales({ className }: ListSalesProps) {
   };
 
   useEffect(() => {
-    fetchSales(currentPage, salesPerPage, null, null, "");
-  }, [currentPage, salesPerPage]);
+    fetchSales(currentPage, salesPerPage, sortField, sortDirection, "");
+  }, [currentPage, salesPerPage, sortField, sortDirection]);
 
   async function handleDelete(itemId: number): Promise<void> {
     const token = Cookies.get("access_token");
@@ -100,7 +119,7 @@ export default function ListSales({ className }: ListSalesProps) {
 
       if (response.ok) {
         console.log("Sale Deleted successfully!");
-        fetchSales(currentPage, salesPerPage, null, null, "");
+        fetchSales(currentPage, salesPerPage, sortField, sortDirection, "");
         toast.success("Venda deletada com sucesso!");
       } else {
         console.error("Failed to delete sale");
@@ -130,6 +149,11 @@ export default function ListSales({ className }: ListSalesProps) {
         setter: setCurrentPage,
       },
       salesPerPage,
+    },
+    sortInfo: {
+      field: sortField,
+      direction: sortDirection,
+      handleSort: handleSort,
     },
     columns: [
       {
