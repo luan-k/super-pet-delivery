@@ -78,6 +78,33 @@
       }
     }
   }
+  &__search-bar {
+    background: #1c1d1e;
+    border: 2px solid #2c2d2f;
+    border-radius: 0.4rem;
+    color: white;
+    font-size: 1.4rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    padding: 1rem 1.6rem 1rem 4.6rem;
+    width: 100%;
+    &::placeholder {
+      color: #666;
+    }
+    &--wrapper {
+      align-self: flex-start;
+      margin-bottom: 1.9rem;
+      margin-top: 1.7rem;
+      position: relative;
+      width: 33%;
+    }
+    &--icon {
+      left: 1rem;
+      position: absolute;
+      top: 1rem;
+    }
+  }
 }
 
 input[type="checkbox"] {

@@ -15,7 +15,7 @@ WHERE id = $1 LIMIT 1;
 
 -- name: ListSales :many
 SELECT * FROM sale
-ORDER BY id
+ORDER BY id DESC
 LIMIT $1
 OFFSET $2;
 

@@ -125,7 +125,7 @@ func (q *Queries) GetSale(ctx context.Context, id int64) (Sale, error) {
 
 const listSales = `-- name: ListSales :many
 SELECT id, client_id, client_name, product, price, observation, created_at, changed_at, pdf_generated_at FROM sale
-ORDER BY id
+ORDER BY id DESC
 LIMIT $1
 OFFSET $2
 `

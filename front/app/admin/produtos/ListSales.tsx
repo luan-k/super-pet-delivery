@@ -37,6 +37,7 @@ export default function ListSales({ className }: ListSalesProps) {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [salesPerPage, setSalesPerPage] = useState<number>(10);
   const [sortField, setSortField] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
     null
   );
@@ -98,8 +99,8 @@ export default function ListSales({ className }: ListSalesProps) {
   };
 
   useEffect(() => {
-    fetchSales(currentPage, salesPerPage, sortField, sortDirection, "");
-  }, [currentPage, salesPerPage, sortField, sortDirection]);
+    fetchSales(currentPage, salesPerPage, sortField, sortDirection, search);
+  }, [currentPage, salesPerPage, sortField, sortDirection, search]);
 
   async function handleDelete(itemId: number): Promise<void> {
     const token = Cookies.get("access_token");
@@ -119,7 +120,7 @@ export default function ListSales({ className }: ListSalesProps) {
 
       if (response.ok) {
         console.log("Sale Deleted successfully!");
-        fetchSales(currentPage, salesPerPage, sortField, sortDirection, "");
+        fetchSales(currentPage, salesPerPage, sortField, sortDirection, search);
         toast.success("Venda deletada com sucesso!");
       } else {
         console.error("Failed to delete sale");
@@ -134,11 +135,15 @@ export default function ListSales({ className }: ListSalesProps) {
   const tableConfig: TableConfig = {
     topClasses: "wk-table--sales",
     interact: {
-      edit: listSalesResponse.map((sale) => `/admin/vendas/${sale.id}`),
+      edit: listSalesResponse
+        ? listSalesResponse.map((sale) => `/admin/vendas/${sale.id}`)
+        : [],
       duplicate: false,
       delete: {
         eventFunction: handleDelete,
-        items: listSalesResponse.map((sale) => sale.id),
+        items: listSalesResponse
+          ? listSalesResponse.map((sale) => sale.id)
+          : [],
       },
       report: true,
     },
@@ -149,6 +154,10 @@ export default function ListSales({ className }: ListSalesProps) {
         setter: setCurrentPage,
       },
       salesPerPage,
+    },
+    searchBar: {
+      search: search,
+      setSearch: setSearch,
     },
     sortInfo: {
       field: sortField,
@@ -161,53 +170,63 @@ export default function ListSales({ className }: ListSalesProps) {
         key: "product",
         sortable: true,
         width: 20,
-        items: listSalesResponse.map((sale) => (
-          <>
-            <span className='text-wk-main-yellow'> [ </span>
-            {sale.id.toString().padStart(3, "0")}
-            <span className='text-wk-main-yellow'> ] </span>
-            {sale.product}
-          </>
-        )),
+        items: listSalesResponse
+          ? listSalesResponse.map((sale) => (
+              <>
+                <span className='text-wk-main-yellow'> [ </span>
+                {sale.id.toString().padStart(3, "0")}
+                <span className='text-wk-main-yellow'> ] </span>
+                {sale.product}
+              </>
+            ))
+          : [],
       },
       {
         title: "Preço",
         key: "price",
         sortable: true,
         width: 20,
-        items: listSalesResponse.map((sale) => (
-          <>
-            <span className='text-wk-main-blue font-semibold'>R$ </span>
-            {parseFloat(sale.price).toFixed(2).replace(".", ",")}
-          </>
-        )),
+        items: listSalesResponse
+          ? listSalesResponse.map((sale) => (
+              <>
+                <span className='text-wk-main-blue font-semibold'>R$ </span>
+                {parseFloat(sale.price).toFixed(2).replace(".", ",")}
+              </>
+            ))
+          : [],
       },
       {
         title: "Observação",
         key: "observation",
         sortable: false,
         width: 20,
-        items: listSalesResponse.map((sale) => sale.observation),
+        items: listSalesResponse
+          ? listSalesResponse.map((sale) => sale.observation)
+          : [],
       },
       {
         title: "Cliente",
         key: "client_name",
         sortable: true,
         width: 20,
-        items: listSalesResponse.map((sale) => sale.client_name),
+        items: listSalesResponse
+          ? listSalesResponse.map((sale) => sale.client_name)
+          : [],
       },
       {
         title: "Criado em",
         key: "created_at",
         sortable: true,
         width: 20,
-        items: listSalesResponse.map((sale) =>
-          new Date(sale.created_at).toLocaleDateString("pt-BR", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          })
-        ),
+        items: listSalesResponse
+          ? listSalesResponse.map((sale) =>
+              new Date(sale.created_at).toLocaleDateString("pt-BR", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              })
+            )
+          : [],
       },
     ],
   };

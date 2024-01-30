@@ -2,6 +2,7 @@ import EditIcon from "../../../public/admin-edit.svg";
 import DuplicateIcon from "../../../public/admin-duplicate.svg";
 import DeleteIcon from "../../../public/admin-delete.svg";
 import ReportIcon from "../../../public/admin-report.svg";
+import SearchIcon from "../../../public/admin-search.svg";
 import Link from "next/link";
 import { FormEvent } from "react";
 import ModalAreYouSure from "./ModalAreYouSure";
@@ -44,8 +45,14 @@ export interface TableConfig {
   totalNumberOfItems: number;
   pages?: PagesConfig;
   sortInfo?: SortInfo;
+  searchBar?: SearchBarConfig;
 }
 
+export interface SearchBarConfig {
+  search: string;
+  setSearch: (value: string) => void;
+  placeholder?: string;
+}
 export interface SortInfo {
   field: string | null;
   direction: string | null;
@@ -65,6 +72,23 @@ export default function WkTable({ config, className }: ListItemsResponse) {
 
   return (
     <>
+      {config.searchBar ? (
+        <div className='wk-table__search-bar--wrapper'>
+          <SearchIcon className='wk-table__search-bar--icon' />
+          <input
+            className='wk-table__search-bar'
+            type='text'
+            id='search'
+            value={config.searchBar.search}
+            onChange={(e) =>
+              config.searchBar && config.searchBar.setSearch(e.target.value)
+            }
+            placeholder={`${config.searchBar.placeholder || "Pesquisar..."}`}
+          />
+        </div>
+      ) : (
+        ""
+      )}
       <table
         className={`wk-table ${className || ""} ${config.topClasses || ""}`}>
         <tbody>
@@ -124,70 +148,78 @@ export default function WkTable({ config, className }: ListItemsResponse) {
             )}
           </tr>
 
-          {config.columns[0].items.map((item, index) => (
-            <tr
-              key={index}
-              className={`wk-table__row wk-table__row--${
-                index % 2 === 0 ? "even" : "odd"
-              }`}>
-              <td className='wk-table__td wk-table__td--checkbox'>
-                <input type='checkbox' id={`checkbox-${index}`} />
-                <label htmlFor={`checkbox-${index}`}>
-                  <span></span>
-                </label>
-              </td>
-              {config.columns.map((column) => (
-                <td
-                  key={column.key}
-                  className={`wk-table__td wk-table__td--${column.key} ${
-                    column.styles || ""
-                  }`}>
-                  {column.items[index]}
+          {config.columns[0].items.length > 0 ? (
+            config.columns[0].items.map((item, index) => (
+              <tr
+                key={index}
+                className={`wk-table__row wk-table__row--${
+                  index % 2 === 0 ? "even" : "odd"
+                }`}>
+                <td className='wk-table__td wk-table__td--checkbox'>
+                  <input type='checkbox' id={`checkbox-${index}`} />
+                  <label htmlFor={`checkbox-${index}`}>
+                    <span></span>
+                  </label>
                 </td>
-              ))}
-              {config.interact ? (
-                <td className='wk-table__td wk-table__td--interact'>
-                  <div className='wk-table__td--interact__wrapper'>
-                    {config.interact.report ? (
-                      <a className=''>
-                        <ReportIcon />
-                      </a>
-                    ) : (
-                      ""
-                    )}
-                    {config.interact.edit ? (
-                      Array.isArray(config.interact.edit) ? (
-                        <Link href={config.interact.edit[index]}>
-                          <EditIcon />
-                        </Link>
+                {config.columns.map((column) => (
+                  <td
+                    key={column.key}
+                    className={`wk-table__td wk-table__td--${column.key} ${
+                      column.styles || ""
+                    }`}>
+                    {column.items[index]}
+                  </td>
+                ))}
+                {config.interact ? (
+                  <td className='wk-table__td wk-table__td--interact'>
+                    <div className='wk-table__td--interact__wrapper'>
+                      {config.interact.report ? (
+                        <a className=''>
+                          <ReportIcon />
+                        </a>
                       ) : (
                         ""
-                      )
-                    ) : (
-                      ""
-                    )}
-                    {config.interact.duplicate ? (
-                      <a className=''>
-                        <DuplicateIcon />
-                      </a>
-                    ) : (
-                      ""
-                    )}
-                    {config.interact && config.interact.delete ? (
-                      <ModalAreYouSure
-                        deleteFunction={config.interact.delete.eventFunction}
-                        deleteIndex={config.interact.delete.items[index]}
-                      />
-                    ) : (
-                      ""
-                    )}
-                  </div>
-                </td>
-              ) : (
-                ""
-              )}
+                      )}
+                      {config.interact.edit ? (
+                        Array.isArray(config.interact.edit) ? (
+                          <Link href={config.interact.edit[index]}>
+                            <EditIcon />
+                          </Link>
+                        ) : (
+                          ""
+                        )
+                      ) : (
+                        ""
+                      )}
+                      {config.interact.duplicate ? (
+                        <a className=''>
+                          <DuplicateIcon />
+                        </a>
+                      ) : (
+                        ""
+                      )}
+                      {config.interact && config.interact.delete ? (
+                        <ModalAreYouSure
+                          deleteFunction={config.interact.delete.eventFunction}
+                          deleteIndex={config.interact.delete.items[index]}
+                        />
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                  </td>
+                ) : (
+                  ""
+                )}
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={config.columns.length + 1} className='wk-table__td'>
+                Nenhum resultado encontrado
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
 
