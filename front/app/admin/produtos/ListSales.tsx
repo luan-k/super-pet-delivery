@@ -34,6 +34,8 @@ export default function ListSales({ className }: ListSalesProps) {
   const [listSalesResponse, setListSalesResponse] = useState<Sale[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [salesPerPage, setSalesPerPage] = useState<number>(10);
   const fetchSales = async (
     pageId: number,
     pageSize: number,
@@ -77,8 +79,8 @@ export default function ListSales({ className }: ListSalesProps) {
   };
 
   useEffect(() => {
-    fetchSales(1, 15, null, null, "");
-  }, []);
+    fetchSales(currentPage, salesPerPage, null, null, "");
+  }, [currentPage, salesPerPage]);
 
   async function handleDelete(itemId: number): Promise<void> {
     const token = Cookies.get("access_token");
@@ -98,7 +100,7 @@ export default function ListSales({ className }: ListSalesProps) {
 
       if (response.ok) {
         console.log("Sale Deleted successfully!");
-        fetchSales(1, 15, null, null, "");
+        fetchSales(currentPage, salesPerPage, null, null, "");
         toast.success("Venda deletada com sucesso!");
       } else {
         console.error("Failed to delete sale");
@@ -120,6 +122,14 @@ export default function ListSales({ className }: ListSalesProps) {
         items: listSalesResponse.map((sale) => sale.id),
       },
       report: true,
+    },
+    totalNumberOfItems: totalItems,
+    pages: {
+      currentPage: {
+        value: currentPage,
+        setter: setCurrentPage,
+      },
+      salesPerPage,
     },
     columns: [
       {
@@ -180,7 +190,7 @@ export default function ListSales({ className }: ListSalesProps) {
 
   return (
     <>
-      <WkTable totalNumberOfItems={totalItems} config={tableConfig} />
+      <WkTable config={tableConfig} />
     </>
   );
 }

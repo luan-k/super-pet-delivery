@@ -9,6 +9,27 @@
   &__header {
     color: #fff;
     padding: 2.4rem;
+    &--wrapper {
+      align-content: center;
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      gap: 1rem;
+      justify-content: flex-start;
+    }
+    &--sortable {
+      svg,
+      path {
+        cursor: pointer;
+        fill: #ffffff7c;
+        height: 0.8rem;
+        width: 1.2rem;
+      }
+      &--up {
+      }
+      &--down {
+      }
+    }
     &-row {
       font-size: 1.6rem;
       font-style: normal;

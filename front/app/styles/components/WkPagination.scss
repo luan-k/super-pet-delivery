@@ -1,0 +1,54 @@
+.wk-pagination {
+  align-items: center;
+  color: #dbdbdb;
+  display: flex;
+  fill: #dbdbdb;
+  flex-direction: row;
+  font-size: 1.6rem;
+  font-style: normal;
+  font-weight: 500;
+  gap: 1.6rem;
+  justify-content: flex-start;
+  line-height: normal;
+  margin-top: 1.4rem;
+  width: 100%;
+  &__button {
+    transition: all 0.3s;
+    &--arrow {
+      transition: all 0.1s;
+      svg,
+      path {
+        fill: #dbdbdb;
+        transition: all 0.1s;
+      }
+      &--inactive {
+        color: transparent;
+        fill: transparent;
+        svg,
+        path {
+          fill: transparent;
+        }
+        &:hover {
+          color: transparent;
+          fill: transparent;
+          svg,
+          path {
+            fill: transparent;
+          }
+        }
+      }
+    }
+
+    &--active {
+      color: #0085fe;
+    }
+    &:hover {
+      color: #0085fe;
+      fill: #0085fe;
+      svg,
+      path {
+        fill: #0085fe;
+      }
+    }
+  }
+}
