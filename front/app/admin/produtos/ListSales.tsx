@@ -132,6 +132,63 @@ export default function ListSales({ className }: ListSalesProps) {
     }
   }
 
+  const singleIconClick = async (sale: number): Promise<void> => {
+    const TypeOfPdf = "delivery";
+
+    try {
+      const token = Cookies.get("access_token");
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/pdf/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // replace with your token
+          },
+          body: JSON.stringify({
+            sale_id: [sale],
+            type_of_pdf: TypeOfPdf,
+          }),
+        }
+      );
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      const date = new Date();
+      const options = {
+        timeZone: "America/Sao_Paulo",
+        hour12: false,
+      };
+      const formattedDate = date.toLocaleDateString("pt-BR");
+      const formattedTime = date
+        .toLocaleTimeString("pt-BR", options)
+        .replace(/:/g, "-");
+
+      let fileName = "";
+
+      fileName =
+        formattedDate + " " + formattedTime + "-nota-de-entrega" + ".pdf";
+
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      /*  if (TypeOfPdf === "delivery") {
+        setIsDeliveryLoading(false);
+      } else if (TypeOfPdf === "simple") {
+        setIsSimpleLoading(false);
+      } */
+    } catch (error) {
+      console.error(error);
+      /*  if (TypeOfPdf === "delivery") {
+        setIsDeliveryLoading(false);
+      } else if (TypeOfPdf === "simple") {
+        setIsSimpleLoading(false);
+      } */
+    }
+  };
+
   const tableConfig: TableConfig = {
     topClasses: "wk-table--sales",
     interact: {
@@ -145,7 +202,12 @@ export default function ListSales({ className }: ListSalesProps) {
           ? listSalesResponse.map((sale) => sale.id)
           : [],
       },
-      report: true,
+      report: {
+        eventFunction: singleIconClick,
+        items: listSalesResponse
+          ? listSalesResponse.map((sale) => sale.id)
+          : [],
+      },
     },
     totalNumberOfItems: totalItems,
     pages: {

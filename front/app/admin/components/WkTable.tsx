@@ -21,11 +21,11 @@ export interface TableColumn {
 export interface InteractConfig {
   edit?: boolean | string[];
   duplicate?: boolean;
-  delete?: deleteConfig;
-  report?: boolean;
+  delete?: buttonConfig;
+  report?: buttonConfig;
 }
 
-export interface deleteConfig {
+export interface buttonConfig {
   eventFunction: (id: number) => void;
   items: number[];
 }
@@ -173,10 +173,18 @@ export default function WkTable({ config, className }: ListItemsResponse) {
                 {config.interact ? (
                   <td className='wk-table__td wk-table__td--interact'>
                     <div className='wk-table__td--interact__wrapper'>
-                      {config.interact.report ? (
-                        <a className=''>
+                      {config.interact && config.interact.report ? (
+                        <button
+                          className=''
+                          onClick={(e) =>
+                            config.interact &&
+                            config.interact.report &&
+                            config.interact.report.eventFunction(
+                              config.interact.report.items[index]
+                            )
+                          }>
                           <ReportIcon />
-                        </a>
+                        </button>
                       ) : (
                         ""
                       )}
