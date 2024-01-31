@@ -10,6 +10,7 @@ import { useContext } from "react";
 import WkTable from "../components/WkTable";
 import { TableConfig, TableColumn } from "../components/WkTable";
 import { toast } from "react-toastify";
+import { CheckedItemsContext } from "./CheckedItemsContext";
 
 interface Sale {
   id: number;
@@ -39,9 +40,24 @@ export default function ListSales({ className }: ListSalesProps) {
   const [sortField, setSortField] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [isDocumentLoading, setIsDocumentLoading] = useState(false);
+  const { checkedItems, setCheckedItems } = useContext(CheckedItemsContext);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
     null
   );
+
+  const handleCheck = (id: number, isChecked: boolean) => {
+    if (isChecked) {
+      setCheckedItems((prevCheckedItems) => [...prevCheckedItems, id]);
+    } else {
+      setCheckedItems((prevCheckedItems) =>
+        prevCheckedItems.filter((itemId) => itemId !== id)
+      );
+    }
+  };
+
+  useEffect(() => {
+    console.log(checkedItems);
+  }, [checkedItems]);
 
   const handleSort = (field: string) => {
     if (sortField === field) {
@@ -204,6 +220,12 @@ export default function ListSales({ className }: ListSalesProps) {
           : [],
         isDocumentLoading: isDocumentLoading,
       },
+    },
+    checkbox: {
+      checkedItems: checkedItems,
+      handleCheck: handleCheck,
+      setCheckedItems: setCheckedItems,
+      items: listSalesResponse ? listSalesResponse.map((sale) => sale.id) : [],
     },
     totalNumberOfItems: totalItems,
     pages: {

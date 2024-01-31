@@ -51,8 +51,15 @@ export interface TableConfig {
   pages?: PagesConfig;
   sortInfo?: SortInfo;
   searchBar?: SearchBarConfig;
+  checkbox?: CheckboxConfig;
 }
 
+export interface CheckboxConfig {
+  checkedItems: number[];
+  setCheckedItems: (value: number[]) => void;
+  handleCheck: (id: number, isChecked: boolean) => void;
+  items?: number[];
+}
 export interface SearchBarConfig {
   search: string;
   setSearch: (value: string) => void;
@@ -98,12 +105,16 @@ export default function WkTable({ config, className }: ListItemsResponse) {
         className={`wk-table ${className || ""} ${config.topClasses || ""}`}>
         <tbody>
           <tr className='wk-table__header-row'>
-            <th className='wk-table__header wk-table__header--checkbox checkbox'>
-              <input id='tophead' type='checkbox' className='' />
-              <label htmlFor='tophead'>
-                <span></span>
-              </label>
-            </th>
+            {config.checkbox ? (
+              <th className='wk-table__header wk-table__header--checkbox checkbox'>
+                <input id='tophead' type='checkbox' className='' />
+                <label htmlFor='tophead'>
+                  <span></span>
+                </label>
+              </th>
+            ) : (
+              ""
+            )}
             {config.columns.map((column) => (
               <th
                 key={column.key}
@@ -160,12 +171,35 @@ export default function WkTable({ config, className }: ListItemsResponse) {
                 className={`wk-table__row wk-table__row--${
                   index % 2 === 0 ? "even" : "odd"
                 }`}>
-                <td className='wk-table__td wk-table__td--checkbox'>
-                  <input type='checkbox' id={`checkbox-${index}`} />
-                  <label htmlFor={`checkbox-${index}`}>
-                    <span></span>
-                  </label>
-                </td>
+                {config.checkbox ? (
+                  <td className='wk-table__td wk-table__td--checkbox'>
+                    <input
+                      type='checkbox'
+                      id={`checkbox-${
+                        config.checkbox.items && config.checkbox.items[index]
+                      }`}
+                      checked={config.checkbox.checkedItems.includes(
+                        config.checkbox.items ? config.checkbox.items[index] : 0
+                      )}
+                      onChange={(e) =>
+                        config.checkbox &&
+                        config.checkbox.items &&
+                        config.checkbox.handleCheck(
+                          config.checkbox.items[index],
+                          e.target.checked
+                        )
+                      }
+                    />
+                    <label
+                      htmlFor={`checkbox-${
+                        config.checkbox.items && config.checkbox.items[index]
+                      }`}>
+                      <span></span>
+                    </label>
+                  </td>
+                ) : (
+                  ""
+                )}
                 {config.columns.map((column) => (
                   <td
                     key={column.key}

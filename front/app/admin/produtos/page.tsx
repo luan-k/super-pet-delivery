@@ -1,12 +1,12 @@
 "use client";
 import Link from "next/link";
 import ListSales from "./ListSales";
-import { CheckedSalesContext } from "./CheckedSalesContext";
+import { CheckedItemsContext } from "./CheckedItemsContext";
 import { useState } from "react";
 import HistoryArrows from "../components/HistoryArrows";
 
 export default function Vendas() {
-  const [checkedSales, setCheckedSales] = useState<number[]>([]);
+  const [checkedItems, setCheckedItems] = useState<number[]>([]);
   return (
     <>
       <div className='list-clients-header wk-admin-page-wrapper w-full my-7 font-Inter'>
@@ -24,9 +24,9 @@ export default function Vendas() {
           </div>
         </div>
       </div>
-      <CheckedSalesContext.Provider value={{ checkedSales, setCheckedSales }}>
+      <CheckedItemsContext.Provider value={{ checkedItems, setCheckedItems }}>
         <ListSales className='' />
-      </CheckedSalesContext.Provider>
+      </CheckedItemsContext.Provider>
     </>
   );
 }
