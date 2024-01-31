@@ -76,6 +76,12 @@
         display: flex;
         gap: 0.8rem;
       }
+      &__report-button {
+        transition: all 0.3s;
+        &:disabled {
+          opacity: 0.5;
+        }
+      }
     }
   }
   &__search-bar {

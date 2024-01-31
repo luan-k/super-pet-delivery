@@ -38,6 +38,7 @@ export default function ListSales({ className }: ListSalesProps) {
   const [salesPerPage, setSalesPerPage] = useState<number>(10);
   const [sortField, setSortField] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [isDocumentLoading, setIsDocumentLoading] = useState(false);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
     null
   );
@@ -134,6 +135,7 @@ export default function ListSales({ className }: ListSalesProps) {
 
   const singleIconClick = async (sale: number): Promise<void> => {
     const TypeOfPdf = "delivery";
+    setIsDocumentLoading(true);
 
     try {
       const token = Cookies.get("access_token");
@@ -174,18 +176,11 @@ export default function ListSales({ className }: ListSalesProps) {
       link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
-      /*  if (TypeOfPdf === "delivery") {
-        setIsDeliveryLoading(false);
-      } else if (TypeOfPdf === "simple") {
-        setIsSimpleLoading(false);
-      } */
+
+      setIsDocumentLoading(false);
     } catch (error) {
       console.error(error);
-      /*  if (TypeOfPdf === "delivery") {
-        setIsDeliveryLoading(false);
-      } else if (TypeOfPdf === "simple") {
-        setIsSimpleLoading(false);
-      } */
+      setIsDocumentLoading(false);
     }
   };
 
@@ -207,6 +202,7 @@ export default function ListSales({ className }: ListSalesProps) {
         items: listSalesResponse
           ? listSalesResponse.map((sale) => sale.id)
           : [],
+        isDocumentLoading: isDocumentLoading,
       },
     },
     totalNumberOfItems: totalItems,

@@ -8,6 +8,7 @@ import { FormEvent } from "react";
 import ModalAreYouSure from "./ModalAreYouSure";
 import { BiSolidUpArrow, BiSolidDownArrow } from "react-icons/bi";
 import WkPagination from "./WkPagination";
+import { toast } from "react-toastify";
 
 export interface TableColumn {
   title: string;
@@ -22,12 +23,16 @@ export interface InteractConfig {
   edit?: boolean | string[];
   duplicate?: boolean;
   delete?: buttonConfig;
-  report?: buttonConfig;
+  report?: reportButtonConfig;
 }
 
 export interface buttonConfig {
-  eventFunction: (id: number) => void;
+  eventFunction: (id: number) => Promise<void>;
   items: number[];
+}
+
+export interface reportButtonConfig extends buttonConfig {
+  isDocumentLoading: boolean;
 }
 
 export interface PagesConfig {
@@ -175,14 +180,31 @@ export default function WkTable({ config, className }: ListItemsResponse) {
                     <div className='wk-table__td--interact__wrapper'>
                       {config.interact && config.interact.report ? (
                         <button
-                          className=''
-                          onClick={(e) =>
+                          className='wk-table__td--interact__report-button'
+                          onClick={() => {
                             config.interact &&
-                            config.interact.report &&
-                            config.interact.report.eventFunction(
-                              config.interact.report.items[index]
-                            )
-                          }>
+                              config.interact.report &&
+                              toast.promise(
+                                config.interact.report.eventFunction(
+                                  config.interact.report.items[index]
+                                ),
+                                {
+                                  pending: {
+                                    render: "Carregando documento...",
+                                    type: toast.TYPE.INFO,
+                                  },
+                                  success: {
+                                    render: "Documento carregado com sucesso!",
+                                    type: toast.TYPE.SUCCESS,
+                                  },
+                                  error: {
+                                    render: "Erro ao carregar documento.",
+                                    type: toast.TYPE.ERROR,
+                                  },
+                                }
+                              );
+                          }}
+                          disabled={config.interact.report.isDocumentLoading}>
                           <ReportIcon />
                         </button>
                       ) : (
