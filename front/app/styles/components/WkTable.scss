@@ -111,6 +111,35 @@
       top: 1rem;
     }
   }
+  &__footer {
+    background: #1a1b1e;
+    border: 3px solid #3e4748;
+    border-bottom: 0;
+    border-radius: 1.6rem 1.6rem 0rem 0rem;
+    bottom: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    left: 50%;
+    padding: 3rem;
+    position: fixed;
+    transform: translateX(-50%);
+    transition: all 0.3s;
+    width: 70%;
+    &-items-quantity {
+      align-content: center;
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      font-size: 1.8rem;
+      font-style: normal;
+      font-weight: 400;
+      gap: 0.6rem;
+      justify-content: center;
+      line-height: 145%;
+    }
+  }
 }
 
 input[type="checkbox"] {

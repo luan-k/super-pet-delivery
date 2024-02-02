@@ -200,6 +200,61 @@ export default function ListSales({ className }: ListSalesProps) {
     }
   };
 
+  // this can stay
+  const handleDocumentButtonClick = async (
+    ids: number[],
+    TypeOfPdf: string
+  ): Promise<void> => {
+    setIsDocumentLoading(true);
+    try {
+      const token = Cookies.get("access_token");
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/pdf/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // replace with your token
+          },
+          body: JSON.stringify({
+            sale_id: ids,
+            type_of_pdf: TypeOfPdf,
+          }),
+        }
+      );
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      const date = new Date();
+      const options = {
+        timeZone: "America/Sao_Paulo",
+        hour12: false,
+      };
+      const formattedDate = date.toLocaleDateString("pt-BR");
+      const formattedTime = date
+        .toLocaleTimeString("pt-BR", options)
+        .replace(/:/g, "-");
+
+      let fileName = "";
+      if (TypeOfPdf === "delivery") {
+        fileName =
+          formattedDate + " " + formattedTime + "-nota-de-entrega" + ".pdf";
+      } else if (TypeOfPdf === "simple") {
+        fileName =
+          formattedDate + " " + formattedTime + "-relatorio-de-vendas" + ".pdf";
+      }
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      setIsDocumentLoading(false);
+    } catch (error) {
+      console.error(error);
+      setIsDocumentLoading(false);
+    }
+  };
+
   const tableConfig: TableConfig = {
     topClasses: "wk-table--sales",
     interact: {
@@ -219,6 +274,7 @@ export default function ListSales({ className }: ListSalesProps) {
           ? listSalesResponse.map((sale) => sale.id)
           : [],
         isDocumentLoading: isDocumentLoading,
+        multipleFunction: handleDocumentButtonClick,
       },
     },
     checkbox: {
@@ -253,9 +309,9 @@ export default function ListSales({ className }: ListSalesProps) {
         items: listSalesResponse
           ? listSalesResponse.map((sale) => (
               <>
-                <span className='text-wk-main-yellow'> [ </span>
+                <span className='text-wk-secondary'> [ </span>
                 {sale.id.toString().padStart(3, "0")}
-                <span className='text-wk-main-yellow'> ] </span>
+                <span className='text-wk-secondary'> ] </span>
                 {sale.product}
               </>
             ))
@@ -269,7 +325,7 @@ export default function ListSales({ className }: ListSalesProps) {
         items: listSalesResponse
           ? listSalesResponse.map((sale) => (
               <>
-                <span className='text-wk-main-blue font-semibold'>R$ </span>
+                <span className='text-wk-primary font-semibold'>R$ </span>
                 {parseFloat(sale.price).toFixed(2).replace(".", ",")}
               </>
             ))

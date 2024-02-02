@@ -15,7 +15,7 @@ const config: Config = {
       },
       colors: {
         wk: {
-          primary: "#0FB9B9",
+          primary: "#0085FE",
           "primary-dark": "#165656",
           secondary: "#FBFF3A",
           "secondary-dark": "#DFE242",

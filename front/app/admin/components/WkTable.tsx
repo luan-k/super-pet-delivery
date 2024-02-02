@@ -1,8 +1,10 @@
 import EditIcon from "../../../public/admin-edit.svg";
 import DuplicateIcon from "../../../public/admin-duplicate.svg";
-import DeleteIcon from "../../../public/admin-delete.svg";
 import ReportIcon from "../../../public/admin-report.svg";
 import SearchIcon from "../../../public/admin-search.svg";
+import DeleteColor from "../../../public/admin-delete-color.svg";
+import ReportIconAlt from "../../../public/admin-report-alt.svg";
+import ArrowUp from "../../../public/admin-arrow-up.svg";
 import Link from "next/link";
 import { FormEvent } from "react";
 import ModalAreYouSure from "./ModalAreYouSure";
@@ -29,6 +31,7 @@ export interface InteractConfig {
 export interface buttonConfig {
   eventFunction: (id: number) => Promise<void>;
   items: number[];
+  multipleFunction?: (ids: number[], typeOfPdf: string) => Promise<void>;
 }
 
 export interface reportButtonConfig extends buttonConfig {
@@ -81,6 +84,42 @@ export default function WkTable({ config, className }: ListItemsResponse) {
   console.log(config);
   console.log("this is the total");
   console.log(config.totalNumberOfItems);
+
+  //helper function
+  const toasterFunction = (
+    executeFunction: Promise<unknown> | (() => Promise<unknown>)
+  ) => {
+    toast.promise(executeFunction, {
+      pending: {
+        render: "Carregando documento...",
+        type: toast.TYPE.INFO,
+      },
+      success: {
+        render: "Documento carregado com sucesso!",
+        type: toast.TYPE.SUCCESS,
+      },
+      error: {
+        render: "Erro ao carregar documento.",
+        type: toast.TYPE.ERROR,
+      },
+    });
+  };
+  const createOnClickHandler = (reportType: string) => () => {
+    if (
+      config.interact &&
+      config.interact.report &&
+      config.interact.report.multipleFunction &&
+      config.checkbox &&
+      config.checkbox.checkedItems.length > 0
+    ) {
+      toasterFunction(
+        config.interact.report.multipleFunction(
+          config.checkbox.checkedItems,
+          reportType
+        )
+      );
+    }
+  };
 
   return (
     <>
@@ -218,24 +257,10 @@ export default function WkTable({ config, className }: ListItemsResponse) {
                           onClick={() => {
                             config.interact &&
                               config.interact.report &&
-                              toast.promise(
+                              toasterFunction(
                                 config.interact.report.eventFunction(
                                   config.interact.report.items[index]
-                                ),
-                                {
-                                  pending: {
-                                    render: "Carregando documento...",
-                                    type: toast.TYPE.INFO,
-                                  },
-                                  success: {
-                                    render: "Documento carregado com sucesso!",
-                                    type: toast.TYPE.SUCCESS,
-                                  },
-                                  error: {
-                                    render: "Erro ao carregar documento.",
-                                    type: toast.TYPE.ERROR,
-                                  },
-                                }
+                                )
                               );
                           }}
                           disabled={config.interact.report.isDocumentLoading}>
@@ -297,7 +322,51 @@ export default function WkTable({ config, className }: ListItemsResponse) {
         ""
       )}
 
-      {config.checkbox ? <div className='wk-table__footer'></div> : ""}
+      {config.checkbox ? (
+        <div
+          className={`wk-table__footer  ${
+            config.checkbox.checkedItems.length === 0 ? "!-bottom-44" : ""
+          } `}>
+          <div className='wk-table__footer-items-quantity'>
+            <ArrowUp />
+            {config.checkbox.checkedItems.length}
+          </div>
+          {config.interact && config.interact.report ? (
+            <button
+              onClick={createOnClickHandler("simple")}
+              disabled={config.interact.report.isDocumentLoading}
+              className='wk-btn wk-btn--sm wk-btn--default'>
+              <ReportIconAlt />
+              Gerar Relatório de Vendas
+            </button>
+          ) : (
+            ""
+          )}
+          {config.interact && config.interact.report ? (
+            <button
+              onClick={createOnClickHandler("delivery")}
+              disabled={config.interact.report.isDocumentLoading}
+              className='wk-btn wk-btn--sm wk-btn--default'>
+              <ReportIcon />
+              Gerar Notas de Entrega
+            </button>
+          ) : (
+            ""
+          )}
+          {config.interact &&
+          config.interact.delete &&
+          config.interact.delete.multipleFunction ? (
+            <button className='wk-btn wk-btn--sm wk-btn--default'>
+              <DeleteColor />
+              Excluir selecionados
+            </button>
+          ) : (
+            ""
+          )}
+        </div>
+      ) : (
+        ""
+      )}
     </>
   );
 }
