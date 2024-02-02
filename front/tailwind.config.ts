@@ -15,10 +15,14 @@ const config: Config = {
       },
       colors: {
         wk: {
-          main: {
-            blue: "#0085FE",
-            yellow: "#FDFA00",
-          },
+          primary: "#0FB9B9",
+          "primary-dark": "#165656",
+          secondary: "#FBFF3A",
+          "secondary-dark": "#DFE242",
+          success: "#28A745",
+          error: "#DC3545",
+          warning: "#FBFF3A",
+          info: "#DFE242",
         },
       },
       fontFamily: {

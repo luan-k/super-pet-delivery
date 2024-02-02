@@ -296,6 +296,8 @@ export default function WkTable({ config, className }: ListItemsResponse) {
       ) : (
         ""
       )}
+
+      {config.checkbox ? <div className='wk-table__footer'></div> : ""}
     </>
   );
 }
