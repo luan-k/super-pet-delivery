@@ -122,6 +122,7 @@ export default function ListSales({ className }: ListSalesProps) {
       }
 
       if (search) {
+        search = search.replace(",", ".");
         url += `&search=${search}`;
       }
 
@@ -329,6 +330,7 @@ export default function ListSales({ className }: ListSalesProps) {
     searchBar: {
       search: search,
       setSearch: setSearch,
+      placeholder: "Pesquise por Produto, Descrição, etc...",
     },
     sortInfo: {
       field: sortField,

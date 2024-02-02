@@ -95,7 +95,8 @@ func (store *SortableSQLStore) SearchClients(ctx context.Context, search string,
 		LOWER(address_city) LIKE LOWER($1) OR
         LOWER(address_number) LIKE LOWER($1) OR 
         LOWER(address_neighborhood) LIKE LOWER($1) OR 
-        LOWER(address_reference) LIKE LOWER($1)`
+        LOWER(address_reference) LIKE LOWER($1) OR
+		CAST(id AS TEXT) LIKE LOWER($1)`
 
 	if sortField != "" && sortDirection != "" {
 		query += fmt.Sprintf(" ORDER BY %s %s", sortField, sortDirection)
@@ -185,7 +186,8 @@ func (store *SortableSQLStore) SearchSales(ctx context.Context, search string, p
         LOWER(product) LIKE LOWER($1) OR 
 		LOWER(client_name) LIKE LOWER($1) OR
         LOWER(observation) LIKE LOWER($1) OR
-        CAST(price AS TEXT) LIKE LOWER($1)`
+        CAST(price AS TEXT) LIKE LOWER($1) OR
+		CAST(id AS TEXT) LIKE LOWER ($1)`
 
 	if sortField != "" && sortDirection != "" {
 		query += fmt.Sprintf(" ORDER BY %s %s", sortField, sortDirection)
