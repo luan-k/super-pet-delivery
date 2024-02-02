@@ -347,6 +347,7 @@ export default function ListSales({ className }: ListSalesProps) {
       items: listSalesResponse ? listSalesResponse.map((sale) => sale.id) : [],
       handleCheckAllInPage: handleCheckAllInPage,
       allCheckedInPage: allCheckedInPage,
+      setAllCheckedInPage: setAllCheckedInPage,
     },
     totalNumberOfItems: totalItems,
     pages: {
@@ -354,7 +355,8 @@ export default function ListSales({ className }: ListSalesProps) {
         value: currentPage,
         setter: setCurrentPage,
       },
-      salesPerPage,
+      itemsPerPage: salesPerPage,
+      setItemsPerPage: setSalesPerPage,
     },
     searchBar: {
       search: search,

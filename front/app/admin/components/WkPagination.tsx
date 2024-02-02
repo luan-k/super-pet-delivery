@@ -17,7 +17,7 @@ export default function WkPagination({
   maxButtonsToShow,
   className,
 }: PaginationConfig) {
-  const totalPages = Math.ceil(totalNumberOfItems / pages.salesPerPage);
+  const totalPages = Math.ceil(totalNumberOfItems / pages.itemsPerPage);
   const buttons: JSX.Element[] = [];
 
   if (totalPages <= maxButtonsToShow) {

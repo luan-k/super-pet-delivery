@@ -55,6 +55,10 @@
       background: #364965;
       border-color: #364965;
       color: #7e8ea7;
+      svg,
+      path {
+        fill: #7e8ea7;
+      }
     }
     &:focus {
       border-color: #5cb2ff;
@@ -71,6 +75,10 @@
       &:disabled {
         border-color: #1d5990;
         color: #969696;
+        svg,
+        path {
+          fill: #969696;
+        }
         &:hover {
           background-color: transparent;
           border-color: #1d5990;
@@ -95,6 +103,10 @@
       background: #696a22;
       border-color: #696a22;
       color: #8b8658;
+      svg,
+      path {
+        fill: #8b8658;
+      }
     }
     &:focus {
       background: #fbff3a;
@@ -115,6 +127,10 @@
       &:disabled {
         border-color: #7a7b2d;
         color: #969696;
+        svg,
+        path {
+          fill: #969696;
+        }
         &:hover {
           background-color: transparent;
           border-color: #7a7b2d;
@@ -139,6 +155,10 @@
       background: #1f2122;
       border-color: #1f2122;
       color: #656565;
+      svg,
+      path {
+        fill: #656565;
+      }
     }
     &:focus {
       background: #1f2122;
@@ -160,6 +180,10 @@
       &:disabled {
         border-color: #1f2122;
         color: #656565;
+        svg,
+        path {
+          fill: #656565;
+        }
         &:hover {
           background-color: transparent;
           border-color: #1f2122;

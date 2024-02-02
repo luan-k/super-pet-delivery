@@ -5,6 +5,7 @@ import SearchIcon from "../../../public/admin-search.svg";
 import DeleteColor from "../../../public/admin-delete-color.svg";
 import ReportIconAlt from "../../../public/admin-report-alt.svg";
 import ArrowUp from "../../../public/admin-arrow-up.svg";
+import { CheckIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { FormEvent } from "react";
 import ModalAreYouSure from "./ModalAreYouSure";
@@ -46,7 +47,8 @@ export interface PagesConfig {
     value: number;
     setter: (value: number) => void;
   };
-  salesPerPage: number;
+  itemsPerPage: number;
+  setItemsPerPage: (value: number) => void;
 }
 
 export interface TableConfig {
@@ -73,6 +75,7 @@ export interface CheckboxConfig {
   items?: number[];
   handleCheckAllInPage?: (currentPageProp: number) => void;
   allCheckedInPage?: number[];
+  setAllCheckedInPage?: (value: number[]) => void;
 }
 export interface SearchBarConfig {
   search: string;
@@ -162,6 +165,7 @@ export default function WkTable({ config, className }: ListItemsResponse) {
                 config.checkbox.allCheckedInPage &&
                 config.checkbox.allCheckedInPage.length > 0
               }>
+              <CheckIcon className='' />
               {config.checkAll.allChecked ? "Desmarcar todos" : "Marcar todos"}
             </button>
           </div>
@@ -372,11 +376,29 @@ export default function WkTable({ config, className }: ListItemsResponse) {
       </table>
 
       {config.pages ? (
-        <WkPagination
-          totalNumberOfItems={config.totalNumberOfItems}
-          pages={config.pages}
-          maxButtonsToShow={7}
-        />
+        <div className='wk-pagination-wrapper'>
+          <WkPagination
+            totalNumberOfItems={config.totalNumberOfItems}
+            pages={config.pages}
+            maxButtonsToShow={7}
+          />
+          <input
+            className='wk-pagination__clients-per-page-input'
+            type='number'
+            id='clientsPerPage'
+            value={config.pages.itemsPerPage}
+            onChange={(e) => {
+              if (config.pages) {
+                config.pages.setItemsPerPage(Number(e.target.value));
+              }
+              if (config.checkbox && config.checkbox.setAllCheckedInPage) {
+                config.checkbox.setAllCheckedInPage([]);
+              }
+            }}
+            min={5}
+            max={100}
+          />
+        </div>
       ) : (
         ""
       )}
