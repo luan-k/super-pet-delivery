@@ -11,6 +11,9 @@ import ModalAreYouSure from "./ModalAreYouSure";
 import { BiSolidUpArrow, BiSolidDownArrow } from "react-icons/bi";
 import WkPagination from "./WkPagination";
 import { toast } from "react-toastify";
+export interface checkedInPageConfig {
+  whichPages: number[];
+}
 
 export interface TableColumn {
   title: string;
@@ -62,6 +65,8 @@ export interface CheckboxConfig {
   setCheckedItems: (value: number[]) => void;
   handleCheck: (id: number, isChecked: boolean) => void;
   items?: number[];
+  handleCheckAllInPage?: (currentPageProp: number) => void;
+  allCheckedInPage?: number[];
 }
 export interface SearchBarConfig {
   search: string;
@@ -146,7 +151,26 @@ export default function WkTable({ config, className }: ListItemsResponse) {
           <tr className='wk-table__header-row'>
             {config.checkbox ? (
               <th className='wk-table__header wk-table__header--checkbox checkbox'>
-                <input id='tophead' type='checkbox' className='' />
+                <input
+                  id='tophead'
+                  type='checkbox'
+                  className=''
+                  onChange={() =>
+                    config.checkbox &&
+                    config.checkbox.handleCheckAllInPage &&
+                    config.checkbox.handleCheckAllInPage(
+                      config.pages?.currentPage.value || 1
+                    )
+                  }
+                  checked={
+                    config.checkbox &&
+                    config.checkbox.allCheckedInPage &&
+                    config.checkbox.allCheckedInPage.includes(
+                      config.pages?.currentPage.value || 1
+                    )
+                  }
+                />
+
                 <label htmlFor='tophead'>
                   <span></span>
                 </label>

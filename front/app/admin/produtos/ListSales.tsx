@@ -8,7 +8,11 @@ import React, {
 import Cookies from "js-cookie";
 import { useContext } from "react";
 import WkTable from "../components/WkTable";
-import { TableConfig, TableColumn } from "../components/WkTable";
+import {
+  TableConfig,
+  TableColumn,
+  checkedInPageConfig,
+} from "../components/WkTable";
 import { toast } from "react-toastify";
 import { CheckedItemsContext } from "./CheckedItemsContext";
 
@@ -41,6 +45,7 @@ export default function ListSales({ className }: ListSalesProps) {
   const [search, setSearch] = useState("");
   const [isDocumentLoading, setIsDocumentLoading] = useState(false);
   const { checkedItems, setCheckedItems } = useContext(CheckedItemsContext);
+  const [allCheckedInPage, setAllCheckedInPage] = useState<number[]>([]);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
     null
   );
@@ -55,9 +60,37 @@ export default function ListSales({ className }: ListSalesProps) {
     }
   };
 
+  const handleCheckAllInPage = (currentPageProp: number) => {
+    setAllCheckedInPage((prevAllCheckedInPage) => {
+      if (prevAllCheckedInPage.includes(currentPageProp)) {
+        // If the number is already in the array, filter it out
+        const newCheckedInPage = prevAllCheckedInPage.filter(
+          (page) => page !== currentPageProp
+        );
+        // Uncheck all sales on the current page
+        setCheckedItems((prevCheckedSales) =>
+          prevCheckedSales.filter(
+            (saleId) => !listSalesResponse.find((sale) => sale.id === saleId)
+          )
+        );
+        return newCheckedInPage;
+      } else {
+        // If the number is not in the array, add it
+        const newCheckedInPage = [...prevAllCheckedInPage, currentPageProp];
+        // Check all sales on the current page
+        const allSaleIds = listSalesResponse.map((sale) => sale.id);
+        setCheckedItems((prevCheckedSales) => [
+          ...new Set([...prevCheckedSales, ...allSaleIds]),
+        ]);
+        return newCheckedInPage;
+      }
+    });
+  };
+
   useEffect(() => {
     console.log(checkedItems);
-  }, [checkedItems]);
+    console.log(allCheckedInPage);
+  }, [checkedItems, allCheckedInPage]);
 
   const handleSort = (field: string) => {
     if (sortField === field) {
@@ -282,6 +315,8 @@ export default function ListSales({ className }: ListSalesProps) {
       handleCheck: handleCheck,
       setCheckedItems: setCheckedItems,
       items: listSalesResponse ? listSalesResponse.map((sale) => sale.id) : [],
+      handleCheckAllInPage: handleCheckAllInPage,
+      allCheckedInPage: allCheckedInPage,
     },
     totalNumberOfItems: totalItems,
     pages: {
