@@ -46,6 +46,7 @@ export default function ListSales({ className }: ListSalesProps) {
   const [isDocumentLoading, setIsDocumentLoading] = useState(false);
   const { checkedItems, setCheckedItems } = useContext(CheckedItemsContext);
   const [allCheckedInPage, setAllCheckedInPage] = useState<number[]>([]);
+  const [allChecked, setAllChecked] = useState(false);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
     null
   );
@@ -85,6 +86,30 @@ export default function ListSales({ className }: ListSalesProps) {
         return newCheckedInPage;
       }
     });
+  };
+
+  const handleCheckAll = async () => {
+    const token = Cookies.get("access_token");
+
+    if (allChecked) {
+      setCheckedItems([]);
+    } else {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales/all`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      console.log("all sales");
+      console.log(data);
+      setCheckedItems(data);
+    }
+    setAllChecked(!allChecked);
   };
 
   useEffect(() => {
@@ -311,6 +336,10 @@ export default function ListSales({ className }: ListSalesProps) {
         multipleFunction: handleDocumentButtonClick,
       },
     },
+    checkAll: {
+      handleCheckAll: handleCheckAll,
+      allChecked: allChecked,
+    },
     checkbox: {
       checkedItems: checkedItems,
       handleCheck: handleCheck,
@@ -330,7 +359,7 @@ export default function ListSales({ className }: ListSalesProps) {
     searchBar: {
       search: search,
       setSearch: setSearch,
-      placeholder: "Pesquise por Produto, Descrição, etc...",
+      placeholder: "Pesquise por Produto, Preço, Observação, etc...",
     },
     sortInfo: {
       field: sortField,

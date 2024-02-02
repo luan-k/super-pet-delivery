@@ -58,6 +58,12 @@ export interface TableConfig {
   sortInfo?: SortInfo;
   searchBar?: SearchBarConfig;
   checkbox?: CheckboxConfig;
+  checkAll?: CheckedAllConfig;
+}
+
+export interface CheckedAllConfig {
+  handleCheckAll: () => void;
+  allChecked: boolean;
 }
 
 export interface CheckboxConfig {
@@ -128,23 +134,42 @@ export default function WkTable({ config, className }: ListItemsResponse) {
 
   return (
     <>
-      {config.searchBar ? (
-        <div className='wk-table__search-bar--wrapper'>
-          <SearchIcon className='wk-table__search-bar--icon' />
-          <input
-            className='wk-table__search-bar'
-            type='text'
-            id='search'
-            value={config.searchBar.search}
-            onChange={(e) =>
-              config.searchBar && config.searchBar.setSearch(e.target.value)
-            }
-            placeholder={`${config.searchBar.placeholder || "Pesquisar..."}`}
-          />
-        </div>
-      ) : (
-        ""
-      )}
+      <div className='wk-table__sorting-header'>
+        {config.searchBar ? (
+          <div className='wk-table__search-bar--wrapper'>
+            <SearchIcon className='wk-table__search-bar--icon' />
+            <input
+              className='wk-table__search-bar'
+              type='text'
+              id='search'
+              value={config.searchBar.search}
+              onChange={(e) =>
+                config.searchBar && config.searchBar.setSearch(e.target.value)
+              }
+              placeholder={`${config.searchBar.placeholder || "Pesquisar..."}`}
+            />
+          </div>
+        ) : (
+          ""
+        )}
+        {config.checkAll ? (
+          <div className='wk-table__buttons--wrapper'>
+            <button
+              className='wk-btn wk-btn--sm wk-btn--default'
+              onClick={config.checkAll.handleCheckAll}
+              disabled={
+                config.checkbox &&
+                config.checkbox.allCheckedInPage &&
+                config.checkbox.allCheckedInPage.length > 0
+              }>
+              {config.checkAll.allChecked ? "Desmarcar todos" : "Marcar todos"}
+            </button>
+          </div>
+        ) : (
+          ""
+        )}
+      </div>
+
       <table
         className={`wk-table ${className || ""} ${config.topClasses || ""}`}>
         <tbody>
@@ -154,7 +179,11 @@ export default function WkTable({ config, className }: ListItemsResponse) {
                 <input
                   id='tophead'
                   type='checkbox'
-                  className=''
+                  className={`${
+                    config.checkAll && config.checkAll.allChecked
+                      ? "cursor-default"
+                      : ""
+                  }`}
                   onChange={() =>
                     config.checkbox &&
                     config.checkbox.handleCheckAllInPage &&
@@ -169,10 +198,16 @@ export default function WkTable({ config, className }: ListItemsResponse) {
                       config.pages?.currentPage.value || 1
                     )
                   }
+                  disabled={config.checkAll && config.checkAll.allChecked}
                 />
 
                 <label htmlFor='tophead'>
-                  <span></span>
+                  <span
+                    className={`${
+                      config.checkAll && config.checkAll.allChecked
+                        ? "!cursor-default !opacity-30"
+                        : ""
+                    }`}></span>
                 </label>
               </th>
             ) : (
