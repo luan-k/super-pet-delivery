@@ -118,6 +118,7 @@ func (server *Server) setupRouter() {
 	authRoutes.GET("/sales/:id", server.getSale)
 	authRoutes.GET("/sales", server.listSale)
 	authRoutes.GET("/sales/all", server.listAllSales)
+	authRoutes.POST("/sales/by_date", server.GetSalesByDate)
 	authRoutes.PUT("/sales/:id", server.updateSale)
 	authRoutes.DELETE("/sales/:id", server.deleteSale)
 

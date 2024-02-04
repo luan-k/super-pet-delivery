@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 )
 
 const countSales = `-- name: CountSales :one
@@ -121,6 +122,40 @@ func (q *Queries) GetSale(ctx context.Context, id int64) (Sale, error) {
 		&i.PdfGeneratedAt,
 	)
 	return i, err
+}
+
+const getSalesByDate = `-- name: GetSalesByDate :many
+SELECT id FROM sale
+WHERE created_at BETWEEN $1 AND $2
+ORDER BY id
+`
+
+type GetSalesByDateParams struct {
+	CreatedAt   time.Time `json:"created_at"`
+	CreatedAt_2 time.Time `json:"created_at_2"`
+}
+
+func (q *Queries) GetSalesByDate(ctx context.Context, arg GetSalesByDateParams) ([]int64, error) {
+	rows, err := q.db.QueryContext(ctx, getSalesByDate, arg.CreatedAt, arg.CreatedAt_2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []int64{}
+	for rows.Next() {
+		var id int64
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listSales = `-- name: ListSales :many

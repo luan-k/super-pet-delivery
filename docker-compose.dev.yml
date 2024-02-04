@@ -27,6 +27,7 @@ services:
     volumes:
       - ./api:/app/app/api
       - ./util:/app/app/util
+      - ./db:/app/app/db
   gotenberg:
     container_name: pdf-generator
     image: gotenberg/gotenberg:7

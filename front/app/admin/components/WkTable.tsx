@@ -5,13 +5,16 @@ import SearchIcon from "../../../public/admin-search.svg";
 import DeleteColor from "../../../public/admin-delete-color.svg";
 import ReportIconAlt from "../../../public/admin-report-alt.svg";
 import ArrowUp from "../../../public/admin-arrow-up.svg";
+import DateIcon from "../../../public/admin-date.svg";
 import { CheckIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import ModalAreYouSure from "./ModalAreYouSure";
 import { BiSolidUpArrow, BiSolidDownArrow } from "react-icons/bi";
 import WkPagination from "./WkPagination";
 import { toast } from "react-toastify";
+import WkDatePicker from "./WkDatePicker";
+import WkButton from "./WkButton";
 export interface checkedInPageConfig {
   whichPages: number[];
 }
@@ -61,6 +64,7 @@ export interface TableConfig {
   searchBar?: SearchBarConfig;
   checkbox?: CheckboxConfig;
   checkAll?: CheckedAllConfig;
+  dateRange?: { getItemsFromDateRange: (from: string, to: string) => void };
 }
 
 export interface CheckedAllConfig {
@@ -135,6 +139,8 @@ export default function WkTable({ config, className }: ListItemsResponse) {
     }
   };
 
+  const [isWindowOpen, setIsWindowOpen] = useState(false);
+
   return (
     <>
       <div className='wk-table__sorting-header'>
@@ -157,17 +163,27 @@ export default function WkTable({ config, className }: ListItemsResponse) {
         )}
         {config.checkAll ? (
           <div className='wk-table__buttons--wrapper'>
-            <button
+            <WkButton
               className='wk-btn wk-btn--sm wk-btn--default'
-              onClick={config.checkAll.handleCheckAll}
-              disabled={
-                config.checkbox &&
-                config.checkbox.allCheckedInPage &&
-                config.checkbox.allCheckedInPage.length > 0
-              }>
+              onClick={config.checkAll.handleCheckAll}>
               <CheckIcon className='' />
-              {config.checkAll.allChecked ? "Desmarcar todos" : "Marcar todos"}
-            </button>
+              {config.checkAll.allChecked ||
+              (config.checkbox && config.checkbox.checkedItems.length > 0)
+                ? "Desmarcar todos"
+                : "Marcar todos"}
+            </WkButton>
+          </div>
+        ) : (
+          ""
+        )}
+        {config.dateRange ? (
+          <div className='wk-table__date-range--wrapper'>
+            <WkDatePicker
+              setCheckedItems={
+                config.checkbox ? config.checkbox.setCheckedItems : () => {}
+              }
+              getItemsFromDateRange={config.dateRange.getItemsFromDateRange}
+            />
           </div>
         ) : (
           ""

@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	db "super-pet-delivery/db/sqlc"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -153,6 +154,42 @@ func (server *Server) listAllSales(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, saleIDs)
+}
+
+type GetSalesByDateRequest struct {
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+}
+
+func (server *Server) GetSalesByDate(ctx *gin.Context) {
+	var req GetSalesByDateRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	startDate, err := time.Parse(time.RFC3339, req.StartDate)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid start date format"})
+		return
+	}
+
+	endDate, err := time.Parse(time.RFC3339, req.EndDate)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid end date format"})
+		return
+	}
+
+	sales, err := server.store.GetSalesByDate(ctx, db.GetSalesByDateParams{
+		CreatedAt:   startDate,
+		CreatedAt_2: endDate,
+	})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, sales)
 }
 
 type updateSaleRequest struct {

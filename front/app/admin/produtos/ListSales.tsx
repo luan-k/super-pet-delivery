@@ -91,8 +91,12 @@ export default function ListSales({ className }: ListSalesProps) {
   const handleCheckAll = async () => {
     const token = Cookies.get("access_token");
 
-    if (allChecked) {
+    if (allChecked || checkedItems.length > 0) {
       setCheckedItems([]);
+      setAllCheckedInPage([]);
+      if (allChecked) {
+        setAllChecked(!allChecked);
+      }
     } else {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales/all`,
@@ -108,8 +112,39 @@ export default function ListSales({ className }: ListSalesProps) {
       console.log("all sales");
       console.log(data);
       setCheckedItems(data);
+      setAllChecked(!allChecked);
     }
-    setAllChecked(!allChecked);
+  };
+
+  // we send a request with a date range to the backend and receive back an array of sale ids
+  const getItemsFromDateRange = async (
+    start_date: string,
+    end_date: string
+  ) => {
+    const token = Cookies.get("access_token");
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales/by_date`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            start_date: start_date,
+            end_date: end_date,
+          }),
+        }
+      );
+      const data = await response.json();
+      console.log("date range sales");
+      console.log(data);
+      setCheckedItems(data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   useEffect(() => {
@@ -339,6 +374,9 @@ export default function ListSales({ className }: ListSalesProps) {
     checkAll: {
       handleCheckAll: handleCheckAll,
       allChecked: allChecked,
+    },
+    dateRange: {
+      getItemsFromDateRange: getItemsFromDateRange,
     },
     checkbox: {
       checkedItems: checkedItems,

@@ -23,6 +23,11 @@ OFFSET $2;
 SELECT id FROM sale
 ORDER BY id;
 
+-- name: GetSalesByDate :many
+SELECT id FROM sale
+WHERE created_at BETWEEN $1 AND $2
+ORDER BY id;
+
 -- name: CountSales :one
 SELECT COUNT(*) FROM sale;
 
