@@ -44,3 +44,10 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./front
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Deploy to EC2
+        run: |
+          aws deploy create-deployment --application-name superpet --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name superpetgroup --github-location repository=super-pet-delivery,commitId=$GITHUB_SHA
+        env:
+          BACKEND_ECR_URL: ${{ steps.login-ecr.outputs.registry }}/superpet:${{ github.sha }}
+          FRONTEND_ECR_URL: ${{ steps.login-ecr.outputs.registry }}/superpet-front:${{ github.sha }}
