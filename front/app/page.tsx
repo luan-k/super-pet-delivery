@@ -6,7 +6,7 @@ import "./styles/main.scss";
 
 export default function Home() {
   return (
-    <main className='flex min-h-screen flex-col items-center justify-center p-24'>
+    <main className='flex min-h-screen flex-col items-center justify-center p-24 this-is-a-test-for-deploy'>
       <div className='z-10 max-w-5xl w-full items-center justify-center  text-sm lg:flex'>
         <div className='flex flex-col items-center'>
           <Image src={LogoImage} alt='Logo' width={300} height={300} />
