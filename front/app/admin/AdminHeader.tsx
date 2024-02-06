@@ -18,6 +18,8 @@ export default function IsAuthenticated() {
     const token = Cookies.get("access_token");
 
     if (!token) {
+      sessionStorage.setItem("previousUrl", window.location.href);
+      console.log("this is location " + window.location.href);
       router.push("/login");
       return;
     }
@@ -41,6 +43,8 @@ export default function IsAuthenticated() {
           setUsername(data.username);
           console.log(data);
         } else {
+          sessionStorage.setItem("previousUrl", window.location.href);
+          console.log("this is location " + window.location.href);
           console.error("Failed to fetch data");
           router.push("/login");
         }
