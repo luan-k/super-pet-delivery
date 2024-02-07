@@ -432,7 +432,9 @@ export default function ListSales({ className }: ListSalesProps) {
           ? listSalesResponse.map((sale) => (
               <>
                 <span className='text-wk-primary font-semibold'>R$ </span>
-                {parseFloat(sale.price).toFixed(2).replace(".", ",")}
+                {parseFloat(sale.price).toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                })}
               </>
             ))
           : [],
