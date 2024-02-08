@@ -8,25 +8,44 @@ import SaveIcon from "../../../public/admin-save.svg";
 import Link from "next/link";
 import NumberFormat from "react-number-format";
 import { MdClear } from "react-icons/md";
-import { Client } from "./criar/page";
+import { Client } from "./fetchClients";
+import { CreateSaleRequest } from "./criar/page";
+import { EditSaleFormRequest } from "./[saleid]/page";
 
 export interface formConfigInterface {
   handleSubmit: (e: FormEvent) => void;
   searchClient: string;
   setSearchClient: React.Dispatch<React.SetStateAction<string>>;
   searchResults: Client[];
-  handleClientSelect: (client: Client) => void;
+  handleClientSelect: (
+    client: Client,
+    formData: CreateSaleRequest,
+    setFormData: (data: CreateSaleRequest) => void,
+    setSearchClient: (data: string) => void,
+    setSearchResults: (data: Client[]) => void
+  ) => void;
   formData: {
     client_id: number;
     product: string;
     price: string;
     observation: string;
   };
+  setFormData: (data: CreateSaleRequest) => void;
+  setSearchResults: (data: Client[]) => void;
   handleChange: (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    setDisplayPrice: (data: string) => void,
+    setFormData: (data: CreateSaleRequest | EditSaleFormRequest) => void,
+    formData: CreateSaleRequest | EditSaleFormRequest
   ) => void;
   displayPrice: string;
-  handlePriceChange: (value: string) => void;
+  setDisplayPrice: (data: string) => void;
+  handlePriceChange: (
+    value: string,
+    setDisplayPrice: (data: string) => void,
+    setFormData: (data: CreateSaleRequest | EditSaleFormRequest) => void,
+    formData: CreateSaleRequest | EditSaleFormRequest
+  ) => void;
   submitButtonText: string;
 }
 
@@ -59,7 +78,11 @@ export default function SaleForm({
         event.preventDefault();
         if (selectedResultIndex !== null) {
           formConfig.handleClientSelect(
-            formConfig.searchResults[selectedResultIndex]
+            formConfig.searchResults[selectedResultIndex],
+            formConfig.formData,
+            formConfig.setFormData,
+            formConfig.setSearchClient,
+            formConfig.setSearchResults
           );
         }
         break;
@@ -100,7 +123,15 @@ export default function SaleForm({
                         className={
                           index === selectedResultIndex ? "selected" : ""
                         }
-                        onClick={() => formConfig.handleClientSelect(client)}>
+                        onClick={() =>
+                          formConfig.handleClientSelect(
+                            client,
+                            formConfig.formData,
+                            formConfig.setFormData,
+                            formConfig.setSearchClient,
+                            formConfig.setSearchResults
+                          )
+                        }>
                         <span> [ </span>
                         {client.id.toString().padStart(3, "0")} <span> ] </span>{" "}
                         {client.full_name}
@@ -118,7 +149,14 @@ export default function SaleForm({
                 type='text'
                 name='product'
                 value={formConfig.formData.product}
-                onChange={formConfig.handleChange}
+                onChange={(e) =>
+                  formConfig.handleChange(
+                    e,
+                    formConfig.setDisplayPrice,
+                    formConfig.setFormData,
+                    formConfig.formData
+                  )
+                }
                 placeholder='Ex: Areia para gatos'
               />
             </label>
@@ -130,7 +168,12 @@ export default function SaleForm({
               <NumberFormat
                 value={formConfig.displayPrice}
                 onValueChange={(values: any) => {
-                  formConfig.handlePriceChange(values.value);
+                  formConfig.handlePriceChange(
+                    values.value,
+                    formConfig.setDisplayPrice,
+                    formConfig.setFormData,
+                    formConfig.formData
+                  );
                 }}
                 thousandSeparator='.'
                 decimalSeparator=','
@@ -145,7 +188,14 @@ export default function SaleForm({
               <textarea
                 name='observation'
                 value={formConfig.formData.observation}
-                onChange={formConfig.handleChange}
+                onChange={(e) =>
+                  formConfig.handleChange(
+                    e,
+                    formConfig.setDisplayPrice,
+                    formConfig.setFormData,
+                    formConfig.formData
+                  )
+                }
               />
             </label>
           </div>

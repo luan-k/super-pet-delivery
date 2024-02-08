@@ -7,31 +7,78 @@ import React from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { formConfigInterface } from "../form";
+import fetchClients, { Client, ListClientResponse } from "../fetchClients";
+import { EditSaleFormRequest } from "../[saleid]/page";
 
-interface CreateSaleRequest {
+export interface CreateSaleRequest {
   client_id: number;
   product: string;
   price: string;
   observation: string;
 }
 
-export interface ListClientResponse {
-  total: number;
-  clients: Client[];
-}
+// Add a new function to handle when a client is selected from the search results
+export const handleClientSelect = (
+  client: Client,
+  formData: CreateSaleRequest,
+  setFormData: (data: CreateSaleRequest | EditSaleFormRequest) => void,
+  setSearchClient: (data: string) => void,
+  setSearchResults: (data: Client[]) => void
+) => {
+  setFormData({
+    ...formData,
+    client_id: client.id,
+  });
+  setSearchClient(
+    `[ ${client.id.toString().padStart(3, "0")} ] ${client.full_name}`
+  );
+  setSearchResults([]); // clear the search results
+};
 
-export interface Client {
-  id: number;
-  full_name: string;
-  phone_whatsapp: string;
-  phone_line: string;
-  pet_name: string;
-  pet_breed: string;
-  address_street: string;
-  address_number: string;
-  address_neighborhood: string;
-  address_reference: string;
-}
+export const handleChange = (
+  e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  setDisplayPrice: (data: string) => void,
+  setFormData: (data: CreateSaleRequest | EditSaleFormRequest) => void,
+  formData: CreateSaleRequest | EditSaleFormRequest
+) => {
+  const { name, value } = e.target;
+
+  let newValue: string | number;
+
+  if (name === "client_id") {
+    newValue = value !== "" ? +value : 0;
+  } else if (name === "price") {
+    newValue = value.replace(/\D/g, ""); // remove non-digits
+    newValue = (parseInt(newValue) / 100).toFixed(2); // divide by 100 and fix 2 decimal places
+    setDisplayPrice(newValue.replace(".", ",")); // replace dot with comma
+    newValue = parseFloat(newValue); // convert back to number
+  } else {
+    newValue = value;
+  }
+
+  setFormData({
+    ...formData,
+    [name]: newValue,
+  });
+};
+export const handlePriceChange = (
+  value: string,
+  setDisplayPrice: (data: string) => void,
+  setFormData: (data: CreateSaleRequest | EditSaleFormRequest) => void,
+  formData: CreateSaleRequest | EditSaleFormRequest
+) => {
+  let newValue: string | number;
+
+  newValue = value.replace(/\D/g, ""); // remove non-digits
+  newValue = (parseInt(newValue) / 100).toFixed(2); // divide by 100 and fix 2 decimal places
+  setDisplayPrice(newValue.replace(".", ",")); // replace dot with comma
+  //newValue = parseFloat(newValue); // convert back to number
+
+  setFormData({
+    ...formData,
+    price: newValue,
+  });
+};
 
 export default function CreateSale() {
   const router = useRouter();
@@ -52,105 +99,21 @@ export default function CreateSale() {
   const [searchClient, setSearchClient] = useState("");
   const [searchResults, setSearchResults] = useState<Client[]>([]);
 
-  const fetchClients = async (
-    pageId: number,
-    pageSize: number,
-    sortField: string | null,
-    sortDirection: "asc" | "desc" | null,
-    search?: string
-  ) => {
-    try {
-      const token = Cookies.get("access_token");
-      let url =
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients?page_id=${pageId}&page_size=${pageSize}` +
-        (sortField && sortDirection
-          ? `&sort_field=${sortField}&sort_direction=${sortDirection}`
-          : "");
-
-      // Add the search parameter to the URL if it's provided
-      if (search) {
-        url += `&search=${search}`;
-      }
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setLoading(true);
-
-      if (response.ok) {
-        const data: ListClientResponse = await response.json();
-        setListClientResponse(data);
-        setSearchResults(data.clients);
-        console.log(data);
-        setLoading(false);
-      } else {
-        console.error("Failed to fetch clients");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  // Add a new function to handle when a client is selected from the search results
-  const handleClientSelect = (client: Client) => {
-    setFormData({
-      ...formData,
-      client_id: client.id,
-    });
-    setSearchClient(
-      `[ ${client.id.toString().padStart(3, "0")} ] ${client.full_name}`
-    );
-    setSearchResults([]); // clear the search results
-  };
-
   useEffect(() => {
     if (searchClient) {
-      fetchClients(1, 10, null, null, searchClient);
+      fetchClients(
+        1,
+        10,
+        null,
+        null,
+        setListClientResponse,
+        setSearchResults,
+        searchClient
+      );
     } else {
       setSearchResults([]); // clear the search results if the input is empty
     }
   }, [searchClient]);
-
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-
-    let newValue: string | number;
-
-    if (name === "client_id") {
-      newValue = value !== "" ? +value : 0;
-    } else if (name === "price") {
-      newValue = value.replace(/\D/g, ""); // remove non-digits
-      newValue = (parseInt(newValue) / 100).toFixed(2); // divide by 100 and fix 2 decimal places
-      setDisplayPrice(newValue.replace(".", ",")); // replace dot with comma
-      newValue = parseFloat(newValue); // convert back to number
-    } else {
-      newValue = value;
-    }
-
-    setFormData({
-      ...formData,
-      [name]: newValue,
-    });
-  };
-  const handlePriceChange = (value: string) => {
-    let newValue: string | number;
-
-    newValue = value.replace(/\D/g, ""); // remove non-digits
-    newValue = (parseInt(newValue) / 100).toFixed(2); // divide by 100 and fix 2 decimal places
-    setDisplayPrice(newValue.replace(".", ",")); // replace dot with comma
-    //newValue = parseFloat(newValue); // convert back to number
-
-    setFormData({
-      ...formData,
-      price: newValue,
-    });
-  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -195,7 +158,10 @@ export default function CreateSale() {
     setSearchClient,
     searchResults,
     handleClientSelect,
+    setFormData,
     formData,
+    setSearchResults,
+    setDisplayPrice,
     handleChange,
     displayPrice,
     handlePriceChange,
