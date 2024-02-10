@@ -27,6 +27,7 @@ type Querier interface {
 	DeleteImage(ctx context.Context, id int64) error
 	DeleteProduct(ctx context.Context, id int64) error
 	DeleteSale(ctx context.Context, id int64) error
+	DeleteSales(ctx context.Context, dollar_1 []int32) error
 	DeleteUser(ctx context.Context, id int64) error
 	DisassociateProductFromCategory(ctx context.Context, arg DisassociateProductFromCategoryParams) (ProductCategory, error)
 	DisassociateProductFromImage(ctx context.Context, arg DisassociateProductFromImageParams) (ProductImage, error)

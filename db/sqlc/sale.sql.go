@@ -8,6 +8,8 @@ package db
 import (
 	"context"
 	"time"
+
+	"github.com/lib/pq"
 )
 
 const countSales = `-- name: CountSales :one
@@ -71,6 +73,16 @@ WHERE id = $1
 
 func (q *Queries) DeleteSale(ctx context.Context, id int64) error {
 	_, err := q.db.ExecContext(ctx, deleteSale, id)
+	return err
+}
+
+const deleteSales = `-- name: DeleteSales :exec
+DELETE FROM sale
+WHERE id = ANY($1::int[])
+`
+
+func (q *Queries) DeleteSales(ctx context.Context, dollar_1 []int32) error {
+	_, err := q.db.ExecContext(ctx, deleteSales, pq.Array(dollar_1))
 	return err
 }
 

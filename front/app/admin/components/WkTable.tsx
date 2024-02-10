@@ -31,7 +31,7 @@ export interface TableColumn {
 export interface InteractConfig {
   edit?: boolean | string[];
   duplicate?: boolean;
-  delete?: buttonConfig;
+  delete?: deleteButtonConfig;
   report?: reportButtonConfig;
 }
 
@@ -39,6 +39,14 @@ export interface buttonConfig {
   eventFunction: (id: number) => Promise<void>;
   items: number[];
   multipleFunction?: (ids: number[], typeOfPdf: string) => Promise<void>;
+}
+
+export interface deleteButtonConfig extends buttonConfig {
+  isAssociated?: {
+    isAssociated: boolean;
+    message: string;
+  };
+  multipleFunction?: (ids: number[]) => Promise<void>;
 }
 
 export interface reportButtonConfig extends buttonConfig {
@@ -370,6 +378,7 @@ export default function WkTable({ config, className }: ListItemsResponse) {
                         <ModalAreYouSure
                           deleteFunction={config.interact.delete.eventFunction}
                           deleteIndex={config.interact.delete.items[index]}
+                          isAssociated={config.interact.delete.isAssociated}
                         />
                       ) : (
                         ""
@@ -453,10 +462,13 @@ export default function WkTable({ config, className }: ListItemsResponse) {
           {config.interact &&
           config.interact.delete &&
           config.interact.delete.multipleFunction ? (
-            <button className='wk-btn wk-btn--sm wk-btn--default'>
-              <DeleteColor />
-              Excluir selecionados
-            </button>
+            <ModalAreYouSure
+              deleteMultiple={config.interact.delete.multipleFunction}
+              deleteMultipleIds={config.checkbox.checkedItems}
+              buttonStyle='wk-btn wk-btn--sm wk-btn--default'
+              ButtonIcon={DeleteColor}
+              buttonText='Excluir selecionados'
+            />
           ) : (
             ""
           )}
@@ -467,3 +479,20 @@ export default function WkTable({ config, className }: ListItemsResponse) {
     </>
   );
 }
+/* 
+
+<button
+              className='wk-btn wk-btn--sm wk-btn--default'
+              onClick={() =>
+                config.interact &&
+                config.interact.delete &&
+                config.interact.delete.multipleFunction &&
+                config.checkbox &&
+                config.interact.delete.multipleFunction(
+                  config.checkbox.checkedItems
+                )
+              }>
+              <DeleteColor />
+              Excluir selecionados
+            </button>
+*/

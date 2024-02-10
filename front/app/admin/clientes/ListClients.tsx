@@ -102,7 +102,7 @@ export default function ListClients() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clientes/${itemId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients/${itemId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -122,11 +122,11 @@ export default function ListClients() {
           sortDirection,
           search
         );
-        toast.success("Venda deletada com sucesso!");
+        toast.success("Cliente deletada com sucesso!");
       } else {
         console.error("Failed to delete sale");
         console.log(response.json());
-        toast.error("Houve um erro ao deletar a venda!");
+        toast.error("Houve um erro ao deletar o Cliente!");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -145,6 +145,10 @@ export default function ListClients() {
         items: listClientResponse
           ? listClientResponse.map((sale) => sale.id)
           : [],
+        isAssociated: {
+          isAssociated: true,
+          message: "are you sure you want to delete this client?",
+        },
       },
     },
     totalNumberOfItems: totalItems,

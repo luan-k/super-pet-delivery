@@ -243,6 +243,41 @@ export default function ListSales({ className }: ListSalesProps) {
     }
   }
 
+  async function handleDeleteMultiple(items: number[]): Promise<void> {
+    const token = Cookies.get("access_token");
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales/delete`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            IDs: items,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Sales Deleted successfully!");
+        fetchSales(currentPage, salesPerPage, sortField, sortDirection, search);
+        toast.success("Vendas deletadas com sucesso!");
+        setCheckedItems([]);
+        setAllCheckedInPage([]);
+      } else {
+        console.error("Failed to delete sales");
+        console.log(response.json());
+        toast.error("Houve um erro ao deletar as vendas!");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
   const singleIconClick = async (sale: number): Promise<void> => {
     const TypeOfPdf = "delivery";
     setIsDocumentLoading(true);
@@ -361,6 +396,7 @@ export default function ListSales({ className }: ListSalesProps) {
         items: listSalesResponse
           ? listSalesResponse.map((sale) => sale.id)
           : [],
+        multipleFunction: handleDeleteMultiple,
       },
       report: {
         eventFunction: singleIconClick,

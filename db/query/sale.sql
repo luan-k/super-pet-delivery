@@ -45,3 +45,7 @@ RETURNING *;
 -- name: DeleteSale :exec
 DELETE FROM sale
 WHERE id = $1;
+
+-- name: DeleteSales :exec
+DELETE FROM sale
+WHERE id = ANY($1::int[]);

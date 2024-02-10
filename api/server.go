@@ -117,8 +117,10 @@ func (server *Server) setupRouter() {
 	authRoutes.GET("/sales", server.listSale)
 	authRoutes.GET("/sales/all", server.listAllSales)
 	authRoutes.POST("/sales/by_date", server.GetSalesByDate)
+	authRoutes.GET("/sales/by_client/:client_id", server.GetSalesByClientID)
 	authRoutes.PUT("/sales/:id", server.updateSale)
 	authRoutes.DELETE("/sales/:id", server.deleteSale)
+	authRoutes.DELETE("/sales/delete", server.deleteSales)
 
 	authRoutes.POST("/pdf/", server.createPdf)
 	//authRoutes.GET("/pdf/", server.getPdf)
