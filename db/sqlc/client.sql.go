@@ -34,7 +34,7 @@ INSERT INTO client (
     address_reference
 ) VALUES (
     $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-) RETURNING id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_city, address_number, address_neighborhood, address_reference
+) RETURNING id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_city, address_number, address_neighborhood, address_reference, created_at, changed_at
 `
 
 type CreateClientParams struct {
@@ -76,6 +76,8 @@ func (q *Queries) CreateClient(ctx context.Context, arg CreateClientParams) (Cli
 		&i.AddressNumber,
 		&i.AddressNeighborhood,
 		&i.AddressReference,
+		&i.CreatedAt,
+		&i.ChangedAt,
 	)
 	return i, err
 }
@@ -91,7 +93,7 @@ func (q *Queries) DeleteClient(ctx context.Context, id int64) error {
 }
 
 const getClient = `-- name: GetClient :one
-SELECT id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_city, address_number, address_neighborhood, address_reference FROM client
+SELECT id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_city, address_number, address_neighborhood, address_reference, created_at, changed_at FROM client
 WHERE id = $1 LIMIT 1
 `
 
@@ -110,6 +112,8 @@ func (q *Queries) GetClient(ctx context.Context, id int64) (Client, error) {
 		&i.AddressNumber,
 		&i.AddressNeighborhood,
 		&i.AddressReference,
+		&i.CreatedAt,
+		&i.ChangedAt,
 	)
 	return i, err
 }
@@ -153,8 +157,8 @@ func (q *Queries) GetSalesByClientID(ctx context.Context, clientID int64) ([]Sal
 }
 
 const listClients = `-- name: ListClients :many
-SELECT id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_city, address_number, address_neighborhood, address_reference FROM client
-ORDER BY id
+SELECT id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_city, address_number, address_neighborhood, address_reference, created_at, changed_at FROM client
+ORDER BY id DESC
 LIMIT $1
 OFFSET $2
 `
@@ -185,6 +189,8 @@ func (q *Queries) ListClients(ctx context.Context, arg ListClientsParams) ([]Cli
 			&i.AddressNumber,
 			&i.AddressNeighborhood,
 			&i.AddressReference,
+			&i.CreatedAt,
+			&i.ChangedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -213,7 +219,7 @@ SET
     address_neighborhood = COALESCE($10, address_neighborhood),
     address_reference = COALESCE($11, address_reference)
 WHERE id = $1
-RETURNING id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_city, address_number, address_neighborhood, address_reference
+RETURNING id, full_name, phone_whatsapp, phone_line, pet_name, pet_breed, address_street, address_city, address_number, address_neighborhood, address_reference, created_at, changed_at
 `
 
 type UpdateClientParams struct {
@@ -257,6 +263,8 @@ func (q *Queries) UpdateClient(ctx context.Context, arg UpdateClientParams) (Cli
 		&i.AddressNumber,
 		&i.AddressNeighborhood,
 		&i.AddressReference,
+		&i.CreatedAt,
+		&i.ChangedAt,
 	)
 	return i, err
 }

@@ -17,17 +17,19 @@ type Category struct {
 }
 
 type Client struct {
-	ID                  int64  `json:"id"`
-	FullName            string `json:"full_name"`
-	PhoneWhatsapp       string `json:"phone_whatsapp"`
-	PhoneLine           string `json:"phone_line"`
-	PetName             string `json:"pet_name"`
-	PetBreed            string `json:"pet_breed"`
-	AddressStreet       string `json:"address_street"`
-	AddressCity         string `json:"address_city"`
-	AddressNumber       string `json:"address_number"`
-	AddressNeighborhood string `json:"address_neighborhood"`
-	AddressReference    string `json:"address_reference"`
+	ID                  int64     `json:"id"`
+	FullName            string    `json:"full_name"`
+	PhoneWhatsapp       string    `json:"phone_whatsapp"`
+	PhoneLine           string    `json:"phone_line"`
+	PetName             string    `json:"pet_name"`
+	PetBreed            string    `json:"pet_breed"`
+	AddressStreet       string    `json:"address_street"`
+	AddressCity         string    `json:"address_city"`
+	AddressNumber       string    `json:"address_number"`
+	AddressNeighborhood string    `json:"address_neighborhood"`
+	AddressReference    string    `json:"address_reference"`
+	CreatedAt           time.Time `json:"created_at"`
+	ChangedAt           time.Time `json:"changed_at"`
 }
 
 type Image struct {
