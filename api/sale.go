@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	db "super-pet-delivery/db/sqlc"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -155,6 +156,71 @@ func (server *Server) listAllSales(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, saleIDs)
 }
 
+type GetSalesByDateRequest struct {
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+}
+
+func (server *Server) GetSalesByDate(ctx *gin.Context) {
+	var req GetSalesByDateRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	startDate, err := time.Parse(time.RFC3339, req.StartDate)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid start date format"})
+		return
+	}
+
+	endDate, err := time.Parse(time.RFC3339, req.EndDate)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid end date format"})
+		return
+	}
+
+	sales, err := server.store.GetSalesByDate(ctx, db.GetSalesByDateParams{
+		CreatedAt:   startDate,
+		CreatedAt_2: endDate,
+	})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, sales)
+}
+
+type GetSalesByClientIDRequest struct {
+	ClientID int64 `uri:"client_id" binding:"required,min=1"`
+}
+
+func (server *Server) GetSalesByClientID(ctx *gin.Context) {
+	var req GetSalesByClientIDRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	sales, err := server.store.GetSalesByClientID(ctx, req.ClientID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	// count number of sales
+	total := int64(len(sales))
+
+	// Extract IDs from sales
+	saleIDs := make([]int64, len(sales))
+	for i, sale := range sales {
+		saleIDs[i] = sale.ID
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"total": total, "sales": saleIDs})
+}
+
 type updateSaleRequest struct {
 	ClientID    int64  `json:"client_id"`
 	Product     string `json:"product"`
@@ -259,4 +325,25 @@ func (server *Server) deleteSale(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, "Sale deleted successfully")
+}
+
+type deleteSalesRequest struct {
+	IDs []int32 `json:"ids" binding:"required,dive,min=1"`
+}
+
+func (server *Server) deleteSales(ctx *gin.Context) {
+	var req deleteSalesRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	// Delete existing sales
+	err := server.store.DeleteSales(ctx, req.IDs)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, "Sales deleted successfully")
 }

@@ -7,6 +7,9 @@ package db
 
 import (
 	"context"
+	"time"
+
+	"github.com/lib/pq"
 )
 
 const countSales = `-- name: CountSales :one
@@ -73,6 +76,16 @@ func (q *Queries) DeleteSale(ctx context.Context, id int64) error {
 	return err
 }
 
+const deleteSales = `-- name: DeleteSales :exec
+DELETE FROM sale
+WHERE id = ANY($1::int[])
+`
+
+func (q *Queries) DeleteSales(ctx context.Context, dollar_1 []int32) error {
+	_, err := q.db.ExecContext(ctx, deleteSales, pq.Array(dollar_1))
+	return err
+}
+
 const getAllSaleIDs = `-- name: GetAllSaleIDs :many
 SELECT id FROM sale
 ORDER BY id
@@ -123,9 +136,43 @@ func (q *Queries) GetSale(ctx context.Context, id int64) (Sale, error) {
 	return i, err
 }
 
+const getSalesByDate = `-- name: GetSalesByDate :many
+SELECT id FROM sale
+WHERE created_at BETWEEN $1 AND $2
+ORDER BY id
+`
+
+type GetSalesByDateParams struct {
+	CreatedAt   time.Time `json:"created_at"`
+	CreatedAt_2 time.Time `json:"created_at_2"`
+}
+
+func (q *Queries) GetSalesByDate(ctx context.Context, arg GetSalesByDateParams) ([]int64, error) {
+	rows, err := q.db.QueryContext(ctx, getSalesByDate, arg.CreatedAt, arg.CreatedAt_2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []int64{}
+	for rows.Next() {
+		var id int64
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listSales = `-- name: ListSales :many
 SELECT id, client_id, client_name, product, price, observation, created_at, changed_at, pdf_generated_at FROM sale
-ORDER BY id
+ORDER BY id DESC
 LIMIT $1
 OFFSET $2
 `

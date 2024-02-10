@@ -4,6 +4,7 @@ import "../styles/components/main.scss";
 import Image from "next/image";
 import LogoImage from "../../public/static/images/superpet.png";
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function LoginPage() {
   return (
@@ -15,10 +16,10 @@ export default function LoginPage() {
       />
       <Image
         src={LogoImage}
-        width={250}
-        height={250}
+        width={100}
+        height={100}
         alt='Logo da empresa Superpet'
-        className='mb-9'
+        className='mb-16'
       />
       <LoginForm />
     </main>

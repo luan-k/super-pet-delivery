@@ -271,6 +271,20 @@ func (mr *MockStoreMockRecorder) DeleteSale(arg0, arg1 interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSale", reflect.TypeOf((*MockStore)(nil).DeleteSale), arg0, arg1)
 }
 
+// DeleteSales mocks base method.
+func (m *MockStore) DeleteSales(arg0 context.Context, arg1 []int32) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteSales", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteSales indicates an expected call of DeleteSales.
+func (mr *MockStoreMockRecorder) DeleteSales(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSales", reflect.TypeOf((*MockStore)(nil).DeleteSales), arg0, arg1)
+}
+
 // DeleteUser mocks base method.
 func (m *MockStore) DeleteUser(arg0 context.Context, arg1 int64) error {
 	m.ctrl.T.Helper()
@@ -418,6 +432,21 @@ func (m *MockStore) GetSalesByClientID(arg0 context.Context, arg1 int64) ([]db.S
 func (mr *MockStoreMockRecorder) GetSalesByClientID(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSalesByClientID", reflect.TypeOf((*MockStore)(nil).GetSalesByClientID), arg0, arg1)
+}
+
+// GetSalesByDate mocks base method.
+func (m *MockStore) GetSalesByDate(arg0 context.Context, arg1 db.GetSalesByDateParams) ([]int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSalesByDate", arg0, arg1)
+	ret0, _ := ret[0].([]int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSalesByDate indicates an expected call of GetSalesByDate.
+func (mr *MockStoreMockRecorder) GetSalesByDate(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSalesByDate", reflect.TypeOf((*MockStore)(nil).GetSalesByDate), arg0, arg1)
 }
 
 // GetSession mocks base method.

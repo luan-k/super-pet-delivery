@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	db "super-pet-delivery/db/sqlc"
@@ -245,7 +246,7 @@ func (server *Server) updateClient(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, client)
 }
 
-type deleteClientRequest struct {
+/* type deleteClientRequest struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
 
@@ -270,6 +271,99 @@ func (server *Server) deleteClient(ctx *gin.Context) {
 	// delete existing client
 	err = server.store.DeleteClient(ctx, req.ID)
 	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, "Client deleted successfully")
+}
+*/
+
+type deleteClientRequest struct {
+	ID int64 `uri:"id" binding:"required,min=1"`
+}
+type deleteClientRequestBody struct {
+	NewClientID int64 `json:"new_client_id"`
+}
+
+func (server *Server) deleteClient(ctx *gin.Context) {
+	var req deleteClientRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		log.Println("Error binding URI:", err)
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	log.Println("Request:", req)
+
+	client, err := server.store.GetClient(ctx, req.ID)
+	if err != nil {
+		log.Println("Error getting client by ID:", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	if client.ID <= 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Client does not exist."})
+		return
+	}
+
+	// Check if client is associated with any sales
+	sales, err := server.store.GetSalesByClientID(ctx, req.ID)
+	if err != nil {
+		log.Println("Error getting sales by client ID:", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	log.Println("Sales:", sales)
+
+	if len(sales) > 0 {
+		var body deleteClientRequestBody
+		if err := ctx.ShouldBindJSON(&body); err != nil {
+			log.Println("Error binding JSON:", err)
+			ctx.JSON(http.StatusBadRequest, errorResponse(err))
+			return
+		}
+		log.Println("Body:", body)
+
+		newClient, err := server.store.GetClient(ctx, body.NewClientID)
+		if err != nil {
+			log.Println("Error getting new client by ID:", err)
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+
+		// If sales are associated, check if a new client ID is provided in the request body
+		if body.NewClientID != 0 && body.NewClientID != req.ID {
+			// Update the sales' client to the new client ID
+			for _, s := range sales {
+				arg := db.UpdateSaleParams{
+					ID:          s.ID,
+					ClientID:    body.NewClientID,
+					ClientName:  newClient.FullName,
+					Product:     s.Product,
+					Price:       s.Price,
+					Observation: s.Observation,
+				}
+				sale, err := server.store.UpdateSale(ctx, arg)
+				log.Println("Sale:", sale)
+				if err != nil {
+					log.Println("Error updating sale:", err)
+					ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+					return
+				}
+			}
+		} else {
+			// If no new client ID is provided, return an error indicating sales are associated
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Client has associated sales. Provide a new client ID to reassign sales."})
+			return
+		}
+	}
+
+	// delete existing client
+	err = server.store.DeleteClient(ctx, req.ID)
+	if err != nil {
+		log.Println("Error deleting client:", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}

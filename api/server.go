@@ -53,8 +53,6 @@ func NewServer(config util.Config, store db.SortableStore) (*Server, error) {
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://54.94.135.147")
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://superpetdelivery.com.br")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Cookie, cookie, Cookies, cookies, accept, origin, Cache-Control, X-Requested-With, Cookie")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
@@ -118,8 +116,11 @@ func (server *Server) setupRouter() {
 	authRoutes.GET("/sales/:id", server.getSale)
 	authRoutes.GET("/sales", server.listSale)
 	authRoutes.GET("/sales/all", server.listAllSales)
+	authRoutes.POST("/sales/by_date", server.GetSalesByDate)
+	authRoutes.GET("/sales/by_client/:client_id", server.GetSalesByClientID)
 	authRoutes.PUT("/sales/:id", server.updateSale)
 	authRoutes.DELETE("/sales/:id", server.deleteSale)
+	authRoutes.DELETE("/sales/delete", server.deleteSales)
 
 	authRoutes.POST("/pdf/", server.createPdf)
 	//authRoutes.GET("/pdf/", server.getPdf)

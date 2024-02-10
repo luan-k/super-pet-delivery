@@ -1,0 +1,1 @@
+ALTER TABLE "client" ADD COLUMN "created_at" timestamptz NOT NULL DEFAULT (now() AT TIME ZONE 'America/Sao_Paulo'), ADD COLUMN "changed_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z';

@@ -24,7 +24,7 @@ WHERE client_id = $1;
 
 -- name: ListClients :many
 SELECT * FROM client
-ORDER BY id
+ORDER BY id DESC
 LIMIT $1
 OFFSET $2;
 

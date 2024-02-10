@@ -15,12 +15,17 @@ WHERE id = $1 LIMIT 1;
 
 -- name: ListSales :many
 SELECT * FROM sale
-ORDER BY id
+ORDER BY id DESC
 LIMIT $1
 OFFSET $2;
 
 -- name: GetAllSaleIDs :many
 SELECT id FROM sale
+ORDER BY id;
+
+-- name: GetSalesByDate :many
+SELECT id FROM sale
+WHERE created_at BETWEEN $1 AND $2
 ORDER BY id;
 
 -- name: CountSales :one
@@ -40,3 +45,7 @@ RETURNING *;
 -- name: DeleteSale :exec
 DELETE FROM sale
 WHERE id = $1;
+
+-- name: DeleteSales :exec
+DELETE FROM sale
+WHERE id = ANY($1::int[]);

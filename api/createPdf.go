@@ -187,7 +187,6 @@ func (server *Server) createPdf(ctx *gin.Context) {
 			</head>
 			<body>
 				<div class="center">
-					<img style="width: 90px;" src="img.png" />
 					<h1 style="margin: 5px; font-size: 21px;">NOTA DE ENTREGA</h1>
 				</div>
 				<table>
@@ -295,7 +294,6 @@ func (server *Server) createPdf(ctx *gin.Context) {
 			</head>
 			<body>
 				<div class="center">
-					<img style="width: 90px;" src="img.png" />
 					<h1 style="margin: 5px; font-size: 21px;">RELATÓRIO DE VENDAS</h1>
 				</div>
 				<table>
@@ -362,7 +360,7 @@ func (server *Server) createPdf(ctx *gin.Context) {
 	fmt.Println(htmlBuffer.String())
 
 	// Introduce a delay (e.g., 1 second) before starting the Gotenberg command
-	time.Sleep(3 * time.Second)
+	time.Sleep(1 * time.Second)
 
 	// Get the current time
 	currentTime := time.Now()
