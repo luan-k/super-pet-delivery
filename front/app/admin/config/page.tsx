@@ -1,8 +1,6 @@
-import ActionAlert from "./components/ActionAlert";
-import "../styles/components/main.scss";
-import HistoryArrows from "./components/HistoryArrows";
+import HistoryArrows from "../components/HistoryArrows";
 
-export default function Dashboard() {
+export default function Config() {
   return (
     <>
       <div className='list-clients-header wk-admin-page-wrapper w-full my-7 font-Inter'>
