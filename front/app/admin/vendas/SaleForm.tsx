@@ -8,7 +8,7 @@ import SaveIcon from "../../../public/admin-save.svg";
 import Link from "next/link";
 import NumberFormat from "react-number-format";
 import { MdClear } from "react-icons/md";
-import { Client } from "./fetchClients";
+import { Client } from "../fetchClients";
 import { CreateSaleRequest } from "./criar/page";
 import { EditSaleFormRequest } from "./[saleid]/page";
 

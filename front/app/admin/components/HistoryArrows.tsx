@@ -15,7 +15,7 @@ export default function HistoryArrows() {
   };
 
   return (
-    <div className='grid grid-cols-2 h-full'>
+    <div className='grid grid-cols-2 h-full gap-2'>
       <button onClick={goToPreviousPage}>
         <BackwardArrow />
       </button>

@@ -1,13 +1,13 @@
 "use client";
 import { useRouter } from "next/navigation";
 import HistoryArrows from "../../components/HistoryArrows";
-import SaleForm from "../form";
+import SaleForm from "../SaleForm";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import React from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
-import { formConfigInterface } from "../form";
-import fetchClients, { Client, ListClientResponse } from "../fetchClients";
+import { formConfigInterface } from "../SaleForm";
+import fetchClients, { Client, ListClientResponse } from "../../fetchClients";
 import { EditSaleFormRequest } from "../[saleid]/page";
 
 export interface CreateSaleRequest {

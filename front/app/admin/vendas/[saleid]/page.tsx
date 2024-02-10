@@ -1,11 +1,11 @@
 "use client";
 import { toast } from "react-toastify";
 import HistoryArrows from "../../components/HistoryArrows";
-import SaleForm, { formConfigInterface } from "../form";
+import SaleForm, { formConfigInterface } from "../SaleForm";
 import { usePathname } from "next/navigation";
 import Cookies from "js-cookie";
 import { ChangeEvent, useEffect, useState } from "react";
-import fetchClients, { Client, ListClientResponse } from "../fetchClients";
+import fetchClients, { Client, ListClientResponse } from "../../fetchClients";
 import {
   handleChange,
   handleClientSelect,
