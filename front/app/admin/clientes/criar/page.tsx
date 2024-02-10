@@ -23,7 +23,7 @@ export interface CreateClientRequest {
   address_reference: string;
 }
 
-export const handleChange = (
+const handleChange = (
   e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   setFormData: (data: CreateClientRequest | EditClientFormRequest) => void,
   formData: CreateClientRequest | EditClientFormRequest
