@@ -69,7 +69,6 @@ export default function ListClients() {
       }
 
       if (search) {
-        search = search.replace(",", ".");
         url += `&search=${search}`;
       }
       const response = await fetch(url, {

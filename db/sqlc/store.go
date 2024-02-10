@@ -68,7 +68,7 @@ func (store *SortableSQLStore) ListClientsSorted(ctx context.Context, arg ListCl
 	var clients []Client
 	for rows.Next() {
 		var client Client
-		if err := rows.Scan(&client.ID, &client.FullName, &client.PhoneWhatsapp, &client.PhoneLine, &client.PetName, &client.PetBreed, &client.AddressStreet, &client.AddressCity, &client.AddressNumber, &client.AddressNeighborhood, &client.AddressReference); err != nil {
+		if err := rows.Scan(&client.ID, &client.FullName, &client.PhoneWhatsapp, &client.PhoneLine, &client.PetName, &client.PetBreed, &client.AddressStreet, &client.AddressCity, &client.AddressNumber, &client.AddressNeighborhood, &client.AddressReference, &client.CreatedAt, &client.ChangedAt); err != nil {
 			return nil, err
 		}
 		clients = append(clients, client)
@@ -113,7 +113,7 @@ func (store *SortableSQLStore) SearchClients(ctx context.Context, search string,
 	var clients []Client
 	for rows.Next() {
 		var c Client
-		if err = rows.Scan(&c.ID, &c.FullName, &c.PhoneWhatsapp, &c.PhoneLine, &c.PetName, &c.PetBreed, &c.AddressStreet, &c.AddressCity, &c.AddressNumber, &c.AddressNeighborhood, &c.AddressReference); err != nil {
+		if err = rows.Scan(&c.ID, &c.FullName, &c.PhoneWhatsapp, &c.PhoneLine, &c.PetName, &c.PetBreed, &c.AddressStreet, &c.AddressCity, &c.AddressNumber, &c.AddressNeighborhood, &c.AddressReference, &c.CreatedAt, &c.ChangedAt); err != nil {
 			return nil, err
 		}
 		clients = append(clients, c)
