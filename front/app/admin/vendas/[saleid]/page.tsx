@@ -6,11 +6,7 @@ import { usePathname } from "next/navigation";
 import Cookies from "js-cookie";
 import { ChangeEvent, useEffect, useState } from "react";
 import fetchClients, { Client, ListClientResponse } from "../../fetchClients";
-import {
-  handleChange,
-  handleClientSelect,
-  handlePriceChange,
-} from "../criar/page";
+import { CreateSaleRequest, handleChangeType } from "../criar/page";
 import NumberFormat from "react-number-format";
 
 export interface EditSaleFormRequest {
@@ -47,6 +43,42 @@ export default function EditSale() {
       total: 0,
       clients: [],
     });
+  const handlePriceChange = (
+    value: string,
+    setDisplayPrice: (data: string) => void,
+    setFormData: (data: CreateSaleRequest | EditSaleFormRequest) => void,
+    formData: CreateSaleRequest | EditSaleFormRequest
+  ) => {
+    let newValue: string | number;
+
+    newValue = value.replace(/\D/g, ""); // remove non-digits
+    newValue = (parseInt(newValue) / 100).toFixed(2); // divide by 100 and fix 2 decimal places
+    setDisplayPrice(newValue.replace(".", ",")); // replace dot with comma
+    //newValue = parseFloat(newValue); // convert back to number
+
+    setFormData({
+      ...formData,
+      price: newValue,
+    });
+  };
+
+  // Add a new function to handle when a client is selected from the search results
+  const handleClientSelect = (
+    client: Client,
+    formData: CreateSaleRequest,
+    setFormData: (data: CreateSaleRequest | EditSaleFormRequest) => void,
+    setSearchClient: (data: string) => void,
+    setSearchResults: (data: Client[]) => void
+  ) => {
+    setFormData({
+      ...formData,
+      client_id: client.id,
+    });
+    setSearchClient(
+      `[ ${client.id.toString().padStart(3, "0")} ] ${client.full_name}`
+    );
+    setSearchResults([]); // clear the search results
+  };
 
   useEffect(() => {
     if (searchClient) {
@@ -149,6 +181,33 @@ export default function EditSale() {
       setDisplayPrice(newValue.replace(".", ","));
     }
   }, [currentSale]);
+
+  const handleChange: handleChangeType = (
+    e,
+    setDisplayPrice,
+    setFormData,
+    formData
+  ) => {
+    const { name, value } = e.target;
+
+    let newValue: string | number;
+
+    if (name === "client_id") {
+      newValue = value !== "" ? +value : 0;
+    } else if (name === "price") {
+      newValue = value.replace(/\D/g, ""); // remove non-digits
+      newValue = (parseInt(newValue) / 100).toFixed(2); // divide by 100 and fix 2 decimal places
+      setDisplayPrice(newValue.replace(".", ",")); // replace dot with comma
+      newValue = parseFloat(newValue); // convert back to number
+    } else {
+      newValue = value;
+    }
+
+    setFormData({
+      ...formData,
+      [name]: newValue,
+    });
+  };
 
   const formConfig: formConfigInterface = {
     handleSubmit,

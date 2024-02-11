@@ -8,7 +8,7 @@ import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { formConfigInterface } from "../ClientForm";
 import fetchClients, { Client, ListClientResponse } from "../../fetchClients";
-import { handleChange } from "../criar/page";
+import { CreateClientRequest } from "../criar/page";
 
 export interface EditClientFormRequest {
   full_name: string;
@@ -46,6 +46,17 @@ export default function EditClient() {
     address_neighborhood: "",
     address_reference: "",
   });
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    setFormData: (data: CreateClientRequest | EditClientFormRequest) => void,
+    formData: CreateClientRequest | EditClientFormRequest
+  ) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   useEffect(() => {
     const fetchClientDetails = async () => {

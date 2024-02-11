@@ -18,7 +18,7 @@ export interface CreateSaleRequest {
 }
 
 // Add a new function to handle when a client is selected from the search results
-export const handleClientSelect = (
+const handleClientSelect = (
   client: Client,
   formData: CreateSaleRequest,
   setFormData: (data: CreateSaleRequest | EditSaleFormRequest) => void,
@@ -35,11 +35,18 @@ export const handleClientSelect = (
   setSearchResults([]); // clear the search results
 };
 
-export const handleChange = (
+export type handleChangeType = (
   e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   setDisplayPrice: (data: string) => void,
   setFormData: (data: CreateSaleRequest | EditSaleFormRequest) => void,
   formData: CreateSaleRequest | EditSaleFormRequest
+) => void;
+
+const handleChange: handleChangeType = (
+  e,
+  setDisplayPrice,
+  setFormData,
+  formData
 ) => {
   const { name, value } = e.target;
 
@@ -61,7 +68,7 @@ export const handleChange = (
     [name]: newValue,
   });
 };
-export const handlePriceChange = (
+const handlePriceChange = (
   value: string,
   setDisplayPrice: (data: string) => void,
   setFormData: (data: CreateSaleRequest | EditSaleFormRequest) => void,

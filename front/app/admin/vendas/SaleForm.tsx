@@ -1,9 +1,5 @@
 "use client";
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
-import ModalDialogClientsList from "../components/ModalDialogClientsList";
-import { toast } from "react-toastify";
 import SaveIcon from "../../../public/admin-save.svg";
 import Link from "next/link";
 import NumberFormat from "react-number-format";
