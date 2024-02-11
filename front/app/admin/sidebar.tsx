@@ -22,16 +22,10 @@ type AdminSidebarProps = {
 export default function AdminSidebar({ onStateChange }: AdminSidebarProps) {
   const router = useRouter();
   const [currentRoute, setCurrentRoute] = useState("");
-  const [sidebarState, setSidebarState] = useState(() => {
-    if (typeof window !== "undefined") {
-      return (
-        localStorage.getItem("sidebarState") ||
-        "wkode-admin-sidebar--open-in-hover"
-      );
-    } else {
-      return "wkode-admin-sidebar--open-in-hover";
-    }
-  });
+  const [sidebarState, setSidebarState] = useState(
+    localStorage.getItem("sidebarState") || "wkode-admin-sidebar--open-in-hover"
+  );
+
   const pathname = usePathname();
   console.log(pathname);
 
