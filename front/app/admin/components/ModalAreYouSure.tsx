@@ -52,14 +52,12 @@ export default function ModalAreYouSure({
       );
 
       if (response.ok) {
-        console.log("Sales Fetched successfully!");
         const data = await response.json();
         setTotalNumberOfAssociatedSales(data.total);
         setItemsIdsArray(data.sales);
-        console.log(data);
       } else {
         console.error("Failed to delete sale");
-        console.log(response.json());
+
         toast.error("Houve um erro ao deletar a venda!");
       }
     } catch (error) {
@@ -87,12 +85,10 @@ export default function ModalAreYouSure({
       );
 
       if (response.ok) {
-        console.log("Sales Deleted successfully!");
-
         toast.success("Vendas deletadas com sucesso!");
       } else {
         console.error("Failed to delete sales");
-        console.log(response.json());
+
         toast.error("Houve um erro ao deletar as vendas!");
       }
     } catch (error) {

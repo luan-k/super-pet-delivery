@@ -63,7 +63,6 @@ export default function CreateClient() {
     e.preventDefault();
 
     const token = Cookies.get("access_token");
-    console.log(formData);
 
     try {
       const response = await fetch(
@@ -80,15 +79,14 @@ export default function CreateClient() {
       );
 
       if (response.ok) {
-        console.log("Client created successfully!");
         const data = await response.json();
-        console.log(data);
+
         router.push(`/admin/clientes/`); //${data.id}`);
         toast.success("Cliente criado com sucesso!");
       } else {
         console.error("Failed to create client");
         const data = await response.json();
-        console.log(data);
+
         toast.error("Houve um erro ao criar o cliente!");
       }
     } catch (error) {

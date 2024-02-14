@@ -33,7 +33,7 @@ export default function WkDatePicker({
           const from = newValue.from.toISOString();
           newValue.to.setHours(23, 59, 59, 999);
           const to = newValue.to.toISOString();
-          console.log({ from, to });
+
           getItemsFromDateRange(from, to);
         }
       }}

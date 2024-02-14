@@ -126,7 +126,6 @@ export default function CreateSale() {
     e.preventDefault();
 
     const token = Cookies.get("access_token");
-    console.log(formData);
 
     try {
       const response = await fetch(
@@ -143,15 +142,14 @@ export default function CreateSale() {
       );
 
       if (response.ok) {
-        console.log("Sale created successfully!");
         const data = await response.json();
-        console.log(data);
+
         router.push(`/admin/vendas/`); //${data.id}`);
         toast.success("Venda criada com sucesso!");
       } else {
         console.error("Failed to create sale");
         const data = await response.json();
-        console.log(data);
+
         toast.error("Houve um erro ao criar a venda!");
       }
     } catch (error) {

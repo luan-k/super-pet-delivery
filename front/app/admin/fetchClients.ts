@@ -49,7 +49,7 @@ export default async function fetchClients(
       const data: ListClientResponse = await response.json();
       setListClientResponse(data);
       setSearchResults(data.clients);
-      console.log(data);
+
       //setLoading(false);
     } else {
       console.error("Failed to fetch clients");

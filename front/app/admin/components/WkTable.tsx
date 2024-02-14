@@ -106,11 +106,6 @@ interface ListItemsResponse {
 }
 
 export default function WkTable({ config, className }: ListItemsResponse) {
-  console.log("this is the data");
-  console.log(config);
-  console.log("this is the total");
-  console.log(config.totalNumberOfItems);
-
   //helper function
   const toasterFunction = (
     executeFunction: Promise<unknown> | (() => Promise<unknown>)
