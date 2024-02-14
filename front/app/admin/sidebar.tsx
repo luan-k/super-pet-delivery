@@ -22,23 +22,23 @@ type AdminSidebarProps = {
 export default function AdminSidebar({ onStateChange }: AdminSidebarProps) {
   const router = useRouter();
   const [currentRoute, setCurrentRoute] = useState("");
-  const [sidebarState, setSidebarState] = useState(() => {
-    if (typeof window !== "undefined") {
-      return (
-        localStorage.getItem("sidebarState") ||
-        "wkode-admin-sidebar--open-in-hover"
-      );
-    } else {
-      return "wkode-admin-sidebar--open-in-hover";
-    }
-  });
+  const [sidebarState, setSidebarState] = useState("");
   const pathname = usePathname();
-  console.log(pathname);
 
   useEffect(() => {
     // Update the current route when the route changes
     setCurrentRoute(pathname);
   }, [pathname]);
+
+  useEffect(() => {
+    // Update sidebarState from localStorage after component has mounted
+    if (typeof window !== "undefined") {
+      const storedSidebarState = localStorage.getItem("sidebarState");
+      if (storedSidebarState) {
+        setSidebarState(storedSidebarState);
+      }
+    }
+  }, [setSidebarState]);
 
   useEffect(() => {
     localStorage.setItem("sidebarState", sidebarState);
