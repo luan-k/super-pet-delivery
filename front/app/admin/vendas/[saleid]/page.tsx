@@ -113,7 +113,7 @@ export default function EditSale() {
 
         if (response.ok) {
           const data: SaleDetails = await response.json();
-          console.log(data);
+
           setCurrentSale(data);
         } else {
           console.error("Failed to fetch sales");
@@ -132,7 +132,6 @@ export default function EditSale() {
     e.preventDefault();
 
     const token = Cookies.get("access_token");
-    console.log(formData);
 
     try {
       const response = await fetch(
@@ -149,13 +148,11 @@ export default function EditSale() {
       );
 
       if (response.ok) {
-        console.log("Sale Edited successfully!");
         toast.success("Venda editada com sucesso!");
         // Add further actions or redirection upon successful creation
       } else {
         toast.error("Houve um erro ao editar a venda!");
         console.error("Failed to edit sale");
-        console.log(response.json());
       }
     } catch (error) {
       console.error("Error:", error);

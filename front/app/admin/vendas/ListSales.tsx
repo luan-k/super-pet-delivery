@@ -109,8 +109,7 @@ export default function ListSales({ className }: ListSalesProps) {
         }
       );
       const data = await response.json();
-      console.log("all sales");
-      console.log(data);
+
       setCheckedItems(data);
       setAllChecked(!allChecked);
     }
@@ -139,18 +138,14 @@ export default function ListSales({ className }: ListSalesProps) {
         }
       );
       const data = await response.json();
-      console.log("date range sales");
-      console.log(data);
+
       setCheckedItems(data);
     } catch (error) {
       console.error("Error:", error);
     }
   };
 
-  useEffect(() => {
-    console.log(checkedItems);
-    console.log(allCheckedInPage);
-  }, [checkedItems, allCheckedInPage]);
+  useEffect(() => {}, [checkedItems, allCheckedInPage]);
 
   const handleSort = (field: string) => {
     if (sortField === field) {
@@ -198,7 +193,6 @@ export default function ListSales({ className }: ListSalesProps) {
         const data: ListSalesResponse = await response.json();
         setListSalesResponse(data.sales);
         setTotalItems(data.total);
-        console.log(data);
       } else {
         console.error("Failed to fetch sales");
       }
@@ -230,12 +224,11 @@ export default function ListSales({ className }: ListSalesProps) {
       );
 
       if (response.ok) {
-        console.log("Sale Deleted successfully!");
         fetchSales(currentPage, salesPerPage, sortField, sortDirection, search);
         toast.success("Venda deletada com sucesso!");
       } else {
         console.error("Failed to delete sale");
-        console.log(response.json());
+
         toast.error("Houve um erro ao deletar a venda!");
       }
     } catch (error) {
@@ -263,14 +256,13 @@ export default function ListSales({ className }: ListSalesProps) {
       );
 
       if (response.ok) {
-        console.log("Sales Deleted successfully!");
         fetchSales(currentPage, salesPerPage, sortField, sortDirection, search);
         toast.success("Vendas deletadas com sucesso!");
         setCheckedItems([]);
         setAllCheckedInPage([]);
       } else {
         console.error("Failed to delete sales");
-        console.log(response.json());
+
         toast.error("Houve um erro ao deletar as vendas!");
       }
     } catch (error) {

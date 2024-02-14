@@ -114,7 +114,6 @@ export default function ListClients() {
       );
 
       if (response.ok) {
-        console.log("Client Deleted successfully!");
         fetchClients(
           currentPage,
           clientsPerPage,
@@ -125,7 +124,7 @@ export default function ListClients() {
         toast.success("Cliente deletada com sucesso!");
       } else {
         console.error("Failed to delete sale");
-        console.log(response.json());
+
         toast.error("Houve um erro ao deletar o Cliente!");
       }
     } catch (error) {
