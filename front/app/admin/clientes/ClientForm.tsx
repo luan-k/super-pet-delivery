@@ -176,24 +176,6 @@ export default function ClientForm({
               />
             </label>
           </div>
-          <div className=' col-span-2'>
-            <label>
-              <h4 className=''>Cidade</h4>
-              <input
-                type='text'
-                name='address_city'
-                value={formConfig.formData.address_city}
-                onChange={(e) =>
-                  formConfig.handleChange(
-                    e,
-                    formConfig.setFormData,
-                    formConfig.formData
-                  )
-                }
-                placeholder='Ex: Palhoça'
-              />
-            </label>
-          </div>
           <div className='col-span-2'>
             <label>
               <h4 className=''>Bairro</h4>
@@ -209,6 +191,24 @@ export default function ClientForm({
                   )
                 }
                 placeholder='Ex: Bela Vista'
+              />
+            </label>
+          </div>
+          <div className=' col-span-2'>
+            <label>
+              <h4 className=''>Cidade</h4>
+              <input
+                type='text'
+                name='address_city'
+                value={formConfig.formData.address_city}
+                onChange={(e) =>
+                  formConfig.handleChange(
+                    e,
+                    formConfig.setFormData,
+                    formConfig.formData
+                  )
+                }
+                placeholder='Ex: Palhoça'
               />
             </label>
           </div>
