@@ -1,6 +1,6 @@
 "use client";
 import SaleIcon from "../../public/latest-sales.svg";
-import UserIcon from "../../public/latest-client.svg";
+import ClientIcon from "../../public/latest-client.svg";
 import PlusIcon from "../../public/admin-plus.svg";
 import "../styles/components/main.scss";
 import HistoryArrows from "./components/HistoryArrows";
@@ -10,6 +10,8 @@ import DashboardWidget, {
 import { TableConfig } from "./components/WkTable";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import { Client, ListClientResponse } from "./fetchClients";
+import NumberFormat from "react-number-format";
 
 interface Sale {
   id: number;
@@ -28,10 +30,10 @@ interface ListSalesResponse {
 
 export default function Dashboard() {
   const [listSalesResponse, setListSalesResponse] = useState<Sale[]>([]);
+  const [listClientsResponse, setListClientsResponse] = useState<Client[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [isDocumentLoading, setIsDocumentLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [salesPerPage, setSalesPerPage] = useState<number>(10);
   const [sortField, setSortField] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
     null
@@ -78,6 +80,46 @@ export default function Dashboard() {
       //setLoading(false);
     }
   };
+
+  async function fetchClients(
+    pageId: number,
+    pageSize: number,
+    sortField: string | null,
+    sortDirection: "asc" | "desc" | null,
+    search?: string
+  ): Promise<void> {
+    try {
+      const token = Cookies.get("access_token");
+      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients?page_id=${pageId}&page_size=${pageSize}`;
+
+      if (sortField && sortDirection) {
+        url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
+      }
+
+      if (search) {
+        url += `&search=${search}`;
+      }
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data: ListClientResponse = await response.json();
+        setListClientsResponse(data.clients);
+        setTotalItems(data.total);
+      } else {
+        console.error("Failed to fetch clients");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      //setLoading(false);
+    }
+  }
 
   const singleIconClick = async (sale: number): Promise<void> => {
     const TypeOfPdf = "delivery";
@@ -148,10 +190,19 @@ export default function Dashboard() {
   useEffect(() => {
     fetchSales(currentPage, 5, sortField, sortDirection, "");
   }, [currentPage, sortField, sortDirection]);
+  useEffect(() => {
+    fetchClients(currentPage, 5, sortField, sortDirection, "");
+  }, [currentPage, sortField, sortDirection]);
 
   const salesButton: DashboardWidgetProps["button"] = {
-    text: "Ver todas as vendas",
-    href: "/admin/sales",
+    text: "Nova venda",
+    href: "/admin/vendas/criar",
+    icon: PlusIcon,
+  };
+
+  const clientsButton: DashboardWidgetProps["button"] = {
+    text: "Novo cliente",
+    href: "/admin/clientes/criar",
     icon: PlusIcon,
   };
 
@@ -171,14 +222,6 @@ export default function Dashboard() {
       },
     },
     totalNumberOfItems: totalItems,
-    pages: {
-      currentPage: {
-        value: currentPage,
-        setter: setCurrentPage,
-      },
-      itemsPerPage: salesPerPage,
-      setItemsPerPage: setSalesPerPage,
-    },
     sortInfo: {
       field: sortField,
       direction: sortDirection,
@@ -189,7 +232,7 @@ export default function Dashboard() {
         title: "Produto",
         key: "product",
         sortable: true,
-        width: 20,
+        width: 30,
         items: listSalesResponse
           ? listSalesResponse.map((sale) => (
               <>
@@ -205,7 +248,7 @@ export default function Dashboard() {
         title: "Preço",
         key: "price",
         sortable: true,
-        width: 20,
+        width: 25,
         items: listSalesResponse
           ? listSalesResponse.map((sale) => (
               <>
@@ -221,7 +264,7 @@ export default function Dashboard() {
         title: "Cliente",
         key: "client_name",
         sortable: true,
-        width: 20,
+        width: 25,
         items: listSalesResponse
           ? listSalesResponse.map((sale) => sale.client_name)
           : [],
@@ -230,7 +273,7 @@ export default function Dashboard() {
         title: "Criado em",
         key: "created_at",
         sortable: true,
-        width: 20,
+        width: 30,
         items: listSalesResponse
           ? listSalesResponse.map((sale) =>
               new Date(sale.created_at).toLocaleDateString("pt-BR", {
@@ -243,6 +286,85 @@ export default function Dashboard() {
       },
     ],
   };
+
+  const latestClients: TableConfig = {
+    topClasses: "wk-table--clients",
+    interact: {
+      edit: listClientsResponse
+        ? listClientsResponse.map((client) => `/admin/clientes/${client.id}`)
+        : [],
+      duplicate: false,
+    },
+    totalNumberOfItems: totalItems,
+    sortInfo: {
+      field: sortField,
+      direction: sortDirection,
+      handleSort: handleSort,
+    },
+    columns: [
+      {
+        title: "Nome",
+        key: "full_name",
+        sortable: true,
+        width: 25,
+        items: listClientsResponse
+          ? listClientsResponse.map((client) => (
+              <>
+                <span className='text-wk-secondary'> [ </span>
+                {client.id.toString().padStart(3, "0")}
+                <span className='text-wk-secondary'> ] </span>
+                {client.full_name}
+              </>
+            ))
+          : [],
+      },
+      {
+        title: "Whatsapp",
+        key: "phone_whatsapp",
+        sortable: false,
+        width: 25,
+        items: listClientsResponse
+          ? listClientsResponse.map((client) => (
+              <NumberFormat
+                key={client.id}
+                value={client.phone_whatsapp}
+                displayType={"text"}
+                format='(##) #####-####'
+              />
+            ))
+          : [],
+      },
+      {
+        title: "Nome Pet",
+        key: "pet_name",
+        sortable: true,
+        width: 25,
+        items: listClientsResponse
+          ? listClientsResponse.map((client) => client.pet_name)
+          : [],
+      },
+      {
+        title: "Endereço",
+        key: "address_street",
+        sortable: false,
+        width: 25,
+        items: listClientsResponse
+          ? listClientsResponse.map((client) => client.address_street)
+          : [],
+      },
+    ],
+  };
+
+  const widgetLink = {
+    link: "/admin/vendas",
+    text: "Ver todas as vendas",
+  };
+
+  const widgetLinkClients = {
+    link: "/admin/clientes",
+    text: "Ver todos os clientes",
+  };
+
   return (
     <>
       <div className='list-clients-header wk-admin-page-wrapper w-full my-7 font-Inter'>
@@ -252,13 +374,20 @@ export default function Dashboard() {
         <div className='title-wrapper grid grid-cols-2 mt-7 mb-14'>
           <h1 className='text-5xl font-semibold '>Dashboard</h1>
         </div>
-        <div className='wk-dashboard h-full w-full grid grid-cols-2'>
+        <div className='wk-dashboard h-full w-full grid grid-cols-2 gap-12'>
           <DashboardWidget
-            icon={SaleIcon}
+            Icon={SaleIcon}
             title='Ultimas Vendas'
             button={salesButton}
             table={latestSales}
-            widgetLink='/admin/vendas'
+            widgetLink={widgetLink}
+          />
+          <DashboardWidget
+            Icon={ClientIcon}
+            title='Ultimos Clientes'
+            button={clientsButton}
+            table={latestClients}
+            widgetLink={widgetLinkClients}
           />
         </div>
       </div>

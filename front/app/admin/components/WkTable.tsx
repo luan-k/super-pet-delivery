@@ -474,20 +474,3 @@ export default function WkTable({ config, className }: ListItemsResponse) {
     </>
   );
 }
-/* 
-
-<button
-              className='wk-btn wk-btn--sm wk-btn--default'
-              onClick={() =>
-                config.interact &&
-                config.interact.delete &&
-                config.interact.delete.multipleFunction &&
-                config.checkbox &&
-                config.interact.delete.multipleFunction(
-                  config.checkbox.checkedItems
-                )
-              }>
-              <DeleteColor />
-              Excluir selecionados
-            </button>
-*/
