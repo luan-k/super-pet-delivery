@@ -35,10 +35,21 @@ func (server *Server) createProduct(ctx *gin.Context) {
 		productImages = req.Images
 	}
 
+	user, err := server.store.GetUser(ctx, req.UserID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
 	arg := db.CreateProductParams{
 		Name:        req.Name,
 		Description: req.Description,
 		UserID:      req.UserID,
+		Username:    user.Username,
 		Price:       productPrice,
 		Images:      productImages,
 	}
@@ -155,6 +166,16 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 		return
 	}
 
+	user, err := server.store.GetUser(ctx, req.UserID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
 	// Update only the fields that are provided in the request
 	if req.Name != "" {
 		existingProduct.Name = req.Name
@@ -177,6 +198,7 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 		Name:        existingProduct.Name,
 		Description: existingProduct.Description,
 		UserID:      existingProduct.UserID,
+		Username:    user.Username,
 		Price:       existingProduct.Price,
 		Images:      existingProduct.Images,
 	}

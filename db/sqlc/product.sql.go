@@ -16,17 +16,19 @@ INSERT INTO products (
     name,
     description,
     user_id,
+    username,
     price,
     images
 ) VALUES (
-    $1, $2, $3, $4, $5
-) RETURNING id, name, description, user_id, price, images
+    $1, $2, $3, $4, $5, $6
+) RETURNING id, name, description, user_id, price, images, username
 `
 
 type CreateProductParams struct {
 	Name        string   `json:"name"`
 	Description string   `json:"description"`
 	UserID      int64    `json:"user_id"`
+	Username    string   `json:"username"`
 	Price       string   `json:"price"`
 	Images      []string `json:"images"`
 }
@@ -36,6 +38,7 @@ func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (P
 		arg.Name,
 		arg.Description,
 		arg.UserID,
+		arg.Username,
 		arg.Price,
 		pq.Array(arg.Images),
 	)
@@ -47,6 +50,7 @@ func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (P
 		&i.UserID,
 		&i.Price,
 		pq.Array(&i.Images),
+		&i.Username,
 	)
 	return i, err
 }
@@ -62,7 +66,7 @@ func (q *Queries) DeleteProduct(ctx context.Context, id int64) error {
 }
 
 const getProduct = `-- name: GetProduct :one
-SELECT id, name, description, user_id, price, images FROM products 
+SELECT id, name, description, user_id, price, images, username FROM products 
 WHERE id = $1 LIMIT 1
 `
 
@@ -76,12 +80,13 @@ func (q *Queries) GetProduct(ctx context.Context, id int64) (Product, error) {
 		&i.UserID,
 		&i.Price,
 		pq.Array(&i.Images),
+		&i.Username,
 	)
 	return i, err
 }
 
 const listProducts = `-- name: ListProducts :many
-SELECT id, name, description, user_id, price, images FROM products 
+SELECT id, name, description, user_id, price, images, username FROM products 
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -108,6 +113,7 @@ func (q *Queries) ListProducts(ctx context.Context, arg ListProductsParams) ([]P
 			&i.UserID,
 			&i.Price,
 			pq.Array(&i.Images),
+			&i.Username,
 		); err != nil {
 			return nil, err
 		}
@@ -123,7 +129,7 @@ func (q *Queries) ListProducts(ctx context.Context, arg ListProductsParams) ([]P
 }
 
 const listProductsByCategory = `-- name: ListProductsByCategory :many
-SELECT p.id, p.name, p.description, p.user_id, p.price, p.images
+SELECT p.id, p.name, p.description, p.user_id, p.price, p.images, p.username
 FROM products p
 JOIN product_categories pc ON p.id = pc.product_id
 WHERE pc.category_id = $1
@@ -154,6 +160,7 @@ func (q *Queries) ListProductsByCategory(ctx context.Context, arg ListProductsBy
 			&i.UserID,
 			&i.Price,
 			pq.Array(&i.Images),
+			&i.Username,
 		); err != nil {
 			return nil, err
 		}
@@ -169,7 +176,7 @@ func (q *Queries) ListProductsByCategory(ctx context.Context, arg ListProductsBy
 }
 
 const listProductsByUser = `-- name: ListProductsByUser :many
-SELECT id, name, description, user_id, price, images FROM products
+SELECT id, name, description, user_id, price, images, username FROM products
 WHERE user_id = $1
 ORDER BY id
 `
@@ -190,6 +197,7 @@ func (q *Queries) ListProductsByUser(ctx context.Context, userID int64) ([]Produ
 			&i.UserID,
 			&i.Price,
 			pq.Array(&i.Images),
+			&i.Username,
 		); err != nil {
 			return nil, err
 		}
@@ -210,10 +218,11 @@ SET
     name = COALESCE($2, name),
     description = COALESCE($3, description),
     user_id = COALESCE($4, user_id),
-    price = COALESCE($5, price),
-    images = COALESCE($6, images)
+    username = COALESCE($5, username),
+    price = COALESCE($6, price),
+    images = COALESCE($7, images)
 WHERE id = $1
-RETURNING id, name, description, user_id, price, images
+RETURNING id, name, description, user_id, price, images, username
 `
 
 type UpdateProductParams struct {
@@ -221,6 +230,7 @@ type UpdateProductParams struct {
 	Name        string   `json:"name"`
 	Description string   `json:"description"`
 	UserID      int64    `json:"user_id"`
+	Username    string   `json:"username"`
 	Price       string   `json:"price"`
 	Images      []string `json:"images"`
 }
@@ -231,6 +241,7 @@ func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (P
 		arg.Name,
 		arg.Description,
 		arg.UserID,
+		arg.Username,
 		arg.Price,
 		pq.Array(arg.Images),
 	)
@@ -242,6 +253,7 @@ func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (P
 		&i.UserID,
 		&i.Price,
 		pq.Array(&i.Images),
+		&i.Username,
 	)
 	return i, err
 }

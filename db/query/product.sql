@@ -3,10 +3,11 @@ INSERT INTO products (
     name,
     description,
     user_id,
+    username,
     price,
     images
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, $4, $5, $6
 ) RETURNING *;
 
 -- name: GetProduct :one
@@ -39,8 +40,9 @@ SET
     name = COALESCE($2, name),
     description = COALESCE($3, description),
     user_id = COALESCE($4, user_id),
-    price = COALESCE($5, price),
-    images = COALESCE($6, images)
+    username = COALESCE($5, username),
+    price = COALESCE($6, price),
+    images = COALESCE($7, images)
 WHERE id = $1
 RETURNING *;
 
