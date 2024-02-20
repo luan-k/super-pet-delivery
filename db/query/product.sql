@@ -34,6 +34,9 @@ ORDER BY p.id
 LIMIT $2
 OFFSET $3;
 
+-- name: CountProducts :one
+SELECT COUNT(*) FROM products;
+
 -- name: UpdateProduct :one
 UPDATE  products 
 SET 

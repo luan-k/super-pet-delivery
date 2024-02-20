@@ -89,9 +89,17 @@ func (server *Server) getProduct(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, product)
 }
 
+type listProductResponse struct {
+	Total    int64        `json:"total"`
+	Products []db.Product `json:"products"`
+}
+
 type listProductRequest struct {
-	PageID   int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
+	PageID        int32  `form:"page_id" binding:"required,min=1"`
+	PageSize      int32  `form:"page_size" binding:"required,min=5,max=10"`
+	SortField     string `form:"sort_field" binding:""`
+	SortDirection string `form:"sort_direction" binding:""`
+	Search        string `form:"search" binding:""`
 }
 
 func (server *Server) listProduct(ctx *gin.Context) {
@@ -106,13 +114,38 @@ func (server *Server) listProduct(ctx *gin.Context) {
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
 
-	products, err := server.store.ListProducts(ctx, arg)
+	total, err := server.store.CountProducts(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, products)
+	var products []db.Product
+	// Check if sort fields and search are provided
+	if req.SortField != "" && req.SortDirection != "" && req.Search != "" {
+		// Fetch the paginated products with sorting and search
+		products, err = server.store.SearchProducts(ctx, req.Search, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection)
+	} else if req.SortField != "" && req.SortDirection != "" {
+		// Fetch the paginated products with sorting
+		products, err = server.store.ListProductsSorted(ctx, arg, req.SortField, req.SortDirection)
+	} else if req.Search != "" {
+		// Fetch the paginated products with search
+		products, err = server.store.SearchProducts(ctx, req.Search, int(req.PageID), int(req.PageSize), "", "")
+	} else {
+		// Fetch the paginated products without sorting or search
+		products, err = server.store.ListProducts(ctx, arg)
+	}
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	response := listProductResponse{
+		Total:    total,
+		Products: products,
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }
 
 type listProductsByUserRequest struct {

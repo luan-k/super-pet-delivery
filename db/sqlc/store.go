@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
+	"github.com/lib/pq"
 )
 
 type Store interface {
@@ -16,6 +18,8 @@ type SortableStore interface {
 	SearchClients(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Client, error)
 	ListSalesSorted(ctx context.Context, arg ListSalesParams, sortField string, sortDirection string) ([]Sale, error)
 	SearchSales(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Sale, error)
+	ListProductsSorted(ctx context.Context, arg ListProductsParams, sortField string, sortDirection string) ([]Product, error)
+	SearchProducts(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Product, error)
 }
 
 // Store provides all functions to execute db queries and transaction
@@ -215,4 +219,82 @@ func (store *SortableSQLStore) SearchSales(ctx context.Context, search string, p
 	}
 
 	return sales, nil
+}
+
+func (store *SortableSQLStore) ListProductsSorted(ctx context.Context, arg ListProductsParams, sortField string, sortDirection string) ([]Product, error) {
+	// Define a map of valid sort fields and directions
+	validSortFields := map[string]bool{"name": true, "description": true, "price": true, "username": true}
+	validSortDirections := map[string]bool{"asc": true, "desc": true}
+
+	// Validate the sort field and direction
+	if !validSortFields[sortField] {
+		return nil, fmt.Errorf("invalid sort field: %s", sortField)
+	}
+	if !validSortDirections[sortDirection] {
+		return nil, fmt.Errorf("invalid sort direction: %s", sortDirection)
+	}
+
+	// Create the SQL query
+	query := fmt.Sprintf("SELECT * FROM products ORDER BY %s %s LIMIT $1 OFFSET $2", sortField, sortDirection)
+
+	// Execute the query
+	rows, err := store.db.QueryContext(ctx, query, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// Scan the results into a Product slice
+	var products []Product
+	for rows.Next() {
+		var product Product
+		if err := rows.Scan(&product.ID, &product.Name, &product.Description, &product.UserID, &product.Price, pq.Array(&product.Images), &product.Username); err != nil {
+			return nil, err
+		}
+		products = append(products, product)
+	}
+
+	// Check for errors from iterating over rows
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return products, nil
+}
+
+func (store *SortableSQLStore) SearchProducts(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Product, error) {
+	offset := (pageId - 1) * pageSize
+
+	query := `SELECT * FROM products WHERE 
+        LOWER(name) LIKE LOWER($1) OR 
+        LOWER(description) LIKE LOWER($1) OR 
+        LOWER(price) LIKE LOWER($1) OR 
+        LOWER(username) LIKE LOWER($1)`
+
+	if sortField != "" && sortDirection != "" {
+		query += fmt.Sprintf(" ORDER BY %s %s", sortField, sortDirection)
+	}
+
+	query += " LIMIT $2 OFFSET $3"
+
+	rows, err := store.db.QueryContext(ctx, query, "%"+search+"%", pageSize, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var products []Product
+	for rows.Next() {
+		var p Product
+		if err = rows.Scan(&p.ID, &p.Name, &p.Description, &p.UserID, &p.Price, pq.Array(&p.Images), &p.Username); err != nil {
+			return nil, err
+		}
+		products = append(products, p)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return products, nil
 }
