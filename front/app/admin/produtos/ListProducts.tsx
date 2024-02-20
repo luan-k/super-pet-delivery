@@ -129,7 +129,7 @@ export default function ListProducts() {
         title: "Nome",
         key: "name",
         sortable: true,
-        width: 80,
+        width: 60,
         items: listProductResponse
           ? listProductResponse.map((product) => (
               <>
@@ -139,6 +139,20 @@ export default function ListProducts() {
                 {product.name}
               </>
             ))
+          : [],
+      },
+      {
+        title: "Preço",
+        key: "price",
+        sortable: true,
+        width: 20,
+        items: listProductResponse
+          ? listProductResponse.map((product) =>
+              product.price.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })
+            )
           : [],
       },
       {
