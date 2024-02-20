@@ -29,9 +29,6 @@ export default function ListClients() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [sortField, setSortField] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [isDocumentLoading, setIsDocumentLoading] = useState(false);
-  const [allCheckedInPage, setAllCheckedInPage] = useState<number[]>([]);
-  const [allChecked, setAllChecked] = useState(false);
   const [clientsPerPage, setClientsPerPage] = useState<number>(20);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
     null
