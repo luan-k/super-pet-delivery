@@ -1,13 +1,21 @@
 "use client";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import WkTable, { TableConfig } from "../components/WkTable";
 
 export interface Product {
+  id: number;
   name: string;
   description: string;
   userId: number;
   price: number;
   images: string[];
+  created_at: string;
+}
+
+interface ListProductResponse {
+  total: number;
+  products: Product[];
 }
 
 export default function ListProducts() {
@@ -16,10 +24,8 @@ export default function ListProducts() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [sortField, setSortField] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [clientsPerPage, setClientsPerPage] = useState<number>(20);
-  const [listProductsResponse, setListProductsResponse] = useState<Product[]>(
-    []
-  );
+  const [productsPerPage, setProductsPerPage] = useState<number>(20);
+  const [listProductResponse, setListProductResponse] = useState<Product[]>([]);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
     null
   );
@@ -41,22 +47,22 @@ export default function ListProducts() {
 
   async function fetchProducts(
     pageId: number,
-    pageSize: number
-    /* sortField: string | null,
+    pageSize: number,
+    sortField: string | null,
     sortDirection: "asc" | "desc" | null,
-    search?: string */
+    search?: string
   ): Promise<void> {
     try {
       const token = Cookies.get("access_token");
       let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/products?page_id=${pageId}&page_size=${pageSize}`;
 
-      /*  if (sortField && sortDirection) {
+      if (sortField && sortDirection) {
         url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
       }
 
       if (search) {
         url += `&search=${search}`;
-      } */
+      }
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -67,12 +73,12 @@ export default function ListProducts() {
 
       if (response.ok) {
         //const data: ListProductResponse = await response.json();
-        const data: Product[] = await response.json();
-        setListProductsResponse(data);
+        const data: ListProductResponse = await response.json();
+        setListProductResponse(data.products);
         console.log(data);
-        //setTotalItems(data.total);
+        setTotalItems(data.total);
       } else {
-        console.error("Failed to fetch clients");
+        console.error("Failed to fetch products");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -82,12 +88,86 @@ export default function ListProducts() {
   }
 
   useEffect(() => {
-    fetchProducts(1, 10);
-  }, []);
+    fetchProducts(
+      currentPage,
+      productsPerPage,
+      sortField,
+      sortDirection,
+      search
+    );
+  }, [currentPage, productsPerPage, sortField, sortDirection, search]);
+
+  const tableConfig: TableConfig = {
+    topClasses: "wk-table--sales",
+    interact: {
+      edit: listProductResponse
+        ? listProductResponse.map((product) => `/admin/produtos/${product.id}`)
+        : [],
+      duplicate: false,
+    },
+    totalNumberOfItems: totalItems,
+    pages: {
+      currentPage: {
+        value: currentPage,
+        setter: setCurrentPage,
+      },
+      itemsPerPage: productsPerPage,
+      setItemsPerPage: setProductsPerPage,
+    },
+    searchBar: {
+      search: search,
+      setSearch: setSearch,
+      placeholder: "Pesquise por Nome, Descrição, etc...",
+    },
+    sortInfo: {
+      field: sortField,
+      direction: sortDirection,
+      handleSort: handleSort,
+    },
+    columns: [
+      {
+        title: "Nome",
+        key: "name",
+        sortable: true,
+        width: 80,
+        items: listProductResponse
+          ? listProductResponse.map((product) => (
+              <>
+                <span className='text-wk-secondary'> [ </span>
+                {product.id.toString().padStart(3, "0")}
+                <span className='text-wk-secondary'> ] </span>
+                {product.name}
+              </>
+            ))
+          : [],
+      },
+      {
+        title: "Criado em",
+        key: "created_at",
+        sortable: true,
+        width: 20,
+        items: listProductResponse
+          ? listProductResponse.map(
+              (product) =>
+                new Date(product.created_at).toLocaleString("pt-BR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                }) +
+                " às " +
+                new Date(product.created_at).toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+            )
+          : [],
+      },
+    ],
+  };
 
   return (
-    <div>
-      <h1>Produtos</h1>
-    </div>
+    <>
+      <WkTable config={tableConfig} />
+    </>
   );
 }

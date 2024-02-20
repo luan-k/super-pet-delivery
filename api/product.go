@@ -96,7 +96,7 @@ type listProductResponse struct {
 
 type listProductRequest struct {
 	PageID        int32  `form:"page_id" binding:"required,min=1"`
-	PageSize      int32  `form:"page_size" binding:"required,min=5,max=10"`
+	PageSize      int32  `form:"page_size" binding:"required,min=5,max=100"`
 	SortField     string `form:"sort_field" binding:""`
 	SortDirection string `form:"sort_direction" binding:""`
 	Search        string `form:"search" binding:""`

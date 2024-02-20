@@ -41,13 +41,15 @@ type Image struct {
 }
 
 type Product struct {
-	ID          int64    `json:"id"`
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	UserID      int64    `json:"user_id"`
-	Price       string   `json:"price"`
-	Images      []string `json:"images"`
-	Username    string   `json:"username"`
+	ID          int64     `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	UserID      int64     `json:"user_id"`
+	Price       string    `json:"price"`
+	Images      []string  `json:"images"`
+	Username    string    `json:"username"`
+	CreatedAt   time.Time `json:"created_at"`
+	ChangedAt   time.Time `json:"changed_at"`
 }
 
 type ProductCategory struct {
