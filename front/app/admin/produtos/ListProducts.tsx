@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import WkTable, { TableConfig } from "../components/WkTable";
+import { toast } from "react-toastify";
 
 export interface Product {
   id: number;
@@ -97,6 +98,41 @@ export default function ListProducts() {
     );
   }, [currentPage, productsPerPage, sortField, sortDirection, search]);
 
+  async function handleDelete(itemId: number): Promise<void> {
+    const token = Cookies.get("access_token");
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/products/${itemId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        fetchProducts(
+          currentPage,
+          productsPerPage,
+          sortField,
+          sortDirection,
+          search
+        );
+        toast.success("Produto deletado com sucesso!");
+      } else {
+        console.error("Failed to delete product");
+
+        toast.error("Houve um erro ao deletar o Produto!");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
   const tableConfig: TableConfig = {
     topClasses: "wk-table--sales",
     interact: {
@@ -104,6 +140,16 @@ export default function ListProducts() {
         ? listProductResponse.map((product) => `/admin/produtos/${product.id}`)
         : [],
       duplicate: false,
+      delete: {
+        eventFunction: handleDelete,
+        items: listProductResponse
+          ? listProductResponse.map((product) => product.id)
+          : [],
+        isAssociated: {
+          isAssociated: true,
+          message: "Tem certeza que quer deletar esse produto?",
+        },
+      },
     },
     totalNumberOfItems: totalItems,
     pages: {
