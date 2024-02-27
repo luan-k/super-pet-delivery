@@ -14,8 +14,88 @@ CREATE TABLE "products" (
   "name" varchar NOT NULL,
   "description" varchar NOT NULL,
   "user_id" bigint NOT NULL,
-  "price" varchar NOT NULL DEFAULT '',
-  "images" varchar[] NOT NULL DEFAULT '{}'
+  "username" varchar NOT NULL DEFAULT '',
+  "price" float NOT NULL,
+  "images" varchar[] NOT NULL DEFAULT '{}',
+  "created_at" timestamptz NOT NULL DEFAULT (now() AT TIME ZONE 'America/Sao_Paulo'),
+  "changed_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z'
 );
 
 ALTER TABLE "products" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+
+CREATE TABLE "categories" (
+  "id" BIGSERIAL PRIMARY KEY,
+  "name" varchar NOT NULL,
+  "description" varchar NOT NULL
+);
+
+CREATE TABLE "product_categories" (
+  "product_id" bigint NOT NULL,
+  "category_id" bigint NOT NULL,
+  CONSTRAINT unique_product_category UNIQUE (product_id, category_id)
+);
+
+ALTER TABLE "product_categories" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id");
+
+ALTER TABLE "product_categories" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id");
+
+CREATE TABLE "client" (
+  "id" BIGSERIAL PRIMARY KEY,
+  "full_name" varchar NOT NULL,
+  "phone_whatsapp" varchar NOT NULL,
+  "phone_line" varchar NOT NULL,
+  "pet_name" varchar NOT NULL,
+  "pet_breed" varchar NOT NULL,
+  "address_street" varchar NOT NULL,
+  "address_city" varchar NOT NULL,
+  "address_number" varchar NOT NULL,
+  "address_neighborhood" varchar NOT NULL,
+  "address_reference" varchar NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now() AT TIME ZONE 'America/Sao_Paulo'),
+  "changed_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z'
+);
+
+CREATE TABLE "sale" (
+  "id" BIGSERIAL PRIMARY KEY,
+  "client_id" BIGSERIAL NOT NULL,
+  "client_name" varchar NOT NULL,
+  "product" varchar NOT NULL,
+  "price" float NOT NULL,
+  "observation" varchar NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now() AT TIME ZONE 'America/Sao_Paulo'),
+  "changed_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
+  "pdf_generated_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z'
+);
+
+ALTER TABLE "sale" ADD FOREIGN KEY ("client_id") REFERENCES "client" ("id");
+
+CREATE TABLE "sessions" (
+  "id" uuid PRIMARY KEY,
+  "username" varchar NOT NULL,
+  "refresh_token" varchar NOT NULL,
+  "user_agent" varchar NOT NULL,
+  "client_ip" varchar NOT NULL,
+  "is_blocked" boolean NOT NULL DEFAULT false,
+  "expires_at" timestamptz NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now())
+);
+
+ALTER TABLE "sessions" ADD FOREIGN KEY ("username") REFERENCES "users" ("username");
+
+CREATE TABLE "images" (
+  "id" BIGSERIAL PRIMARY KEY,
+  "name" varchar NOT NULL,
+  "description" varchar NOT NULL,
+  "alt" varchar NOT NULL,
+  "image_path" varchar NOT NULL
+);
+
+CREATE TABLE "product_images" (
+  "product_id" bigint NOT NULL,
+  "image_id" bigint NOT NULL,
+  CONSTRAINT unique_product_image UNIQUE (product_id, image_id)
+);
+
+ALTER TABLE "product_images" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id");
+
+ALTER TABLE "product_images" ADD FOREIGN KEY ("image_id") REFERENCES "images" ("id");
