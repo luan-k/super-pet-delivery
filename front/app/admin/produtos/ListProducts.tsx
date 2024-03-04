@@ -9,7 +9,8 @@ export interface Product {
   name: string;
   description: string;
   userId: number;
-  price: number;
+  price: string;
+  sku: string;
   images: string[];
   created_at: string;
 }
@@ -145,10 +146,6 @@ export default function ListProducts() {
         items: listProductResponse
           ? listProductResponse.map((product) => product.id)
           : [],
-        isAssociated: {
-          isAssociated: true,
-          message: "Tem certeza que quer deletar esse produto?",
-        },
       },
     },
     totalNumberOfItems: totalItems,
@@ -175,7 +172,7 @@ export default function ListProducts() {
         title: "Nome",
         key: "name",
         sortable: true,
-        width: 60,
+        width: 30,
         items: listProductResponse
           ? listProductResponse.map((product) => (
               <>
@@ -188,17 +185,28 @@ export default function ListProducts() {
           : [],
       },
       {
+        title: "SKU",
+        key: "sku",
+        sortable: true,
+        width: 30,
+        items: listProductResponse
+          ? listProductResponse.map((product) => product.sku)
+          : [],
+      },
+      {
         title: "Preço",
         key: "price",
         sortable: true,
         width: 20,
         items: listProductResponse
-          ? listProductResponse.map((product) =>
-              product.price.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })
-            )
+          ? listProductResponse.map((product) => (
+              <>
+                <span className='text-wk-primary font-semibold'>R$ </span>
+                {parseFloat(product.price).toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                })}
+              </>
+            ))
           : [],
       },
       {

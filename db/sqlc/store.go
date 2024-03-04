@@ -223,7 +223,7 @@ func (store *SortableSQLStore) SearchSales(ctx context.Context, search string, p
 
 func (store *SortableSQLStore) ListProductsSorted(ctx context.Context, arg ListProductsParams, sortField string, sortDirection string) ([]Product, error) {
 	// Define a map of valid sort fields and directions
-	validSortFields := map[string]bool{"name": true, "description": true, "price": true, "username": true}
+	validSortFields := map[string]bool{"name": true, "description": true, "price": true, "username": true, "sku": true}
 	validSortDirections := map[string]bool{"asc": true, "desc": true}
 
 	// Validate the sort field and direction
@@ -248,7 +248,7 @@ func (store *SortableSQLStore) ListProductsSorted(ctx context.Context, arg ListP
 	var products []Product
 	for rows.Next() {
 		var product Product
-		if err := rows.Scan(&product.ID, &product.Name, &product.Description, &product.UserID, &product.Price, pq.Array(&product.Images), &product.Username, &product.CreatedAt, &product.ChangedAt); err != nil {
+		if err := rows.Scan(&product.ID, &product.Name, &product.Description, &product.UserID, &product.Username, &product.Price, &product.Sku, pq.Array(&product.Images), &product.CreatedAt, &product.ChangedAt); err != nil {
 			return nil, err
 		}
 		products = append(products, product)
@@ -265,11 +265,12 @@ func (store *SortableSQLStore) ListProductsSorted(ctx context.Context, arg ListP
 func (store *SortableSQLStore) SearchProducts(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Product, error) {
 	offset := (pageId - 1) * pageSize
 
-	query := `SELECT * FROM products WHERE 
-        LOWER(name) LIKE LOWER($1) OR 
-        LOWER(description) LIKE LOWER($1) OR 
-        LOWER(price) LIKE LOWER($1) OR 
-        LOWER(username) LIKE LOWER($1)`
+	query := `SELECT * FROM products WHERE
+        LOWER(name) LIKE LOWER($1) OR
+        LOWER(description) LIKE LOWER($1) OR
+        CAST(price AS TEXT) LIKE LOWER($1) OR
+        LOWER(username) LIKE LOWER($1) OR
+		LOWER(sku) LIKE LOWER($1)`
 
 	if sortField != "" && sortDirection != "" {
 		query += fmt.Sprintf(" ORDER BY %s %s", sortField, sortDirection)
@@ -286,7 +287,7 @@ func (store *SortableSQLStore) SearchProducts(ctx context.Context, search string
 	var products []Product
 	for rows.Next() {
 		var p Product
-		if err = rows.Scan(&p.ID, &p.Name, &p.Description, &p.UserID, &p.Price, pq.Array(&p.Images), &p.Username, &p.CreatedAt, &p.ChangedAt); err != nil {
+		if err = rows.Scan(&p.ID, &p.Name, &p.Description, &p.UserID, &p.Username, &p.Price, &p.Sku, pq.Array(&p.Images), &p.CreatedAt, &p.ChangedAt); err != nil {
 			return nil, err
 		}
 		products = append(products, p)

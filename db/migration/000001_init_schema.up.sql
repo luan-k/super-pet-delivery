@@ -16,6 +16,7 @@ CREATE TABLE "products" (
   "user_id" bigint NOT NULL,
   "username" varchar NOT NULL DEFAULT '',
   "price" float NOT NULL,
+  "sku" varchar NOT NULL DEFAULT '',
   "images" varchar[] NOT NULL DEFAULT '{}',
   "created_at" timestamptz NOT NULL DEFAULT (now() AT TIME ZONE 'America/Sao_Paulo'),
   "changed_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z'

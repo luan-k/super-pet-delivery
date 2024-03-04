@@ -15,7 +15,7 @@ export default function Produtos() {
           <div className='wk-btn__wrapper ml-auto gap-6 '>
             <Link
               className='wk-btn wk-btn--primary wk-btn--md'
-              href={"/admin/clientes/criar"}>
+              href={"/admin/produtos/criar"}>
               <PlusIcon />
               Novo Produto
             </Link>

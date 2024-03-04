@@ -45,9 +45,10 @@ type Product struct {
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	UserID      int64     `json:"user_id"`
-	Price       string    `json:"price"`
-	Images      []string  `json:"images"`
 	Username    string    `json:"username"`
+	Price       float64   `json:"price"`
+	Sku         string    `json:"sku"`
+	Images      []string  `json:"images"`
 	CreatedAt   time.Time `json:"created_at"`
 	ChangedAt   time.Time `json:"changed_at"`
 }

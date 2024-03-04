@@ -5,9 +5,10 @@ INSERT INTO products (
     user_id,
     username,
     price,
+    sku,
     images
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5, $6, $7
 ) RETURNING *;
 
 -- name: GetProduct :one
@@ -21,7 +22,7 @@ ORDER BY id;
 
 -- name: ListProducts :many
 SELECT * FROM products 
-ORDER BY id
+ORDER BY id DESC
 LIMIT $1
 OFFSET $2;
 
@@ -45,7 +46,8 @@ SET
     user_id = COALESCE($4, user_id),
     username = COALESCE($5, username),
     price = COALESCE($6, price),
-    images = COALESCE($7, images)
+    sku = COALESCE($7, sku),
+    images = COALESCE($8, images)
 WHERE id = $1
 RETURNING *;
 

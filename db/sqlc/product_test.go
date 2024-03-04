@@ -15,7 +15,7 @@ func createRandomProduct(t *testing.T) Product {
 		Name:        util.RandomFullName(),
 		Description: util.RandomDescription(),
 		UserID:      user.ID,
-		Price:       "",
+		Price:       0,
 		Images:      []string{},
 	}
 
