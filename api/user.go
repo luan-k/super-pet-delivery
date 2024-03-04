@@ -401,6 +401,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 	// Set the refresh token as an HTTP-only cookie
 	ctx.SetCookie("refresh_token", refreshToken, int(server.config.RefreshTokenDuration.Seconds()), "/", "", false, true)
 	fmt.Println("cookie successfully set")
+	ctx.SetCookie("user_id", strconv.FormatInt(user.ID, 10), int(server.config.AccessTokenDuration.Seconds()), "/", "", false, false)
 
 	rsp := loginUserResponse{
 		SessionID:            session.ID,
