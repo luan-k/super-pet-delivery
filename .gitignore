@@ -2,3 +2,7 @@
 ./images
 .images/
 images/
+./media/*
+./media
+.media/
+media/
