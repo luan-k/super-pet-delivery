@@ -38,7 +38,7 @@ func (server *Server) createImage(ctx *gin.Context) {
 	currentTime := time.Now()
 	year := currentTime.Format("2006")
 	month := currentTime.Format("01")
-	subdirectoryPath := fmt.Sprintf("./images/%s/%s", year, month)
+	subdirectoryPath := fmt.Sprintf("./media/%s/%s", year, month)
 
 	// Create the subdirectory if it doesn't exist
 	if _, err := os.Stat(subdirectoryPath); os.IsNotExist(err) {
@@ -78,7 +78,7 @@ func (server *Server) createImage(ctx *gin.Context) {
 		Name:        filename,
 		Description: "",
 		Alt:         filename,
-		ImagePath:   "/images/" + filepath.Join(year, month, filepath.Base(filePath)), // Store the relative path to the image
+		ImagePath:   "/media/" + filepath.Join(year, month, filepath.Base(filePath)), // Store the relative path to the image
 	}
 
 	image, err := server.store.CreateImage(ctx, arg)
@@ -131,7 +131,7 @@ func (server *Server) getImagePath(ctx *gin.Context) {
 
 	// Construct the absolute file path based on the parameters
 	monthStr := fmt.Sprintf("%02d", req.Month) // Format with zero-padding
-	filePath := fmt.Sprintf("./images/%d/%s/%s", req.Year, monthStr, req.Filename)
+	filePath := fmt.Sprintf("./media/%d/%s/%s", req.Year, monthStr, req.Filename)
 
 	fmt.Printf("Constructed file path: %s\n", filePath)
 
@@ -146,9 +146,13 @@ func (server *Server) getImagePath(ctx *gin.Context) {
 	ctx.File(filePath)
 }
 
+type listImagesResponse struct {
+	Total  int64      `json:"total"`
+	Images []db.Image `json:"images"`
+}
 type listImageRequest struct {
 	PageID   int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
+	PageSize int32 `form:"page_size" binding:"required,min=5,max=20"`
 }
 
 func (server *Server) listImage(ctx *gin.Context) {
@@ -163,13 +167,24 @@ func (server *Server) listImage(ctx *gin.Context) {
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
 
+	total, err := server.store.CountProducts(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
 	images, err := server.store.ListImages(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, images)
+	response := listImagesResponse{
+		Total:  total,
+		Images: images,
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }
 
 type updateImageRequest struct {

@@ -18,6 +18,9 @@ ORDER BY id
 LIMIT $1
 OFFSET $2;
 
+-- name: CountImages :one
+SELECT COUNT(*) FROM images;
+
 -- name: AssociateProductWithImage :one
 INSERT INTO product_images (product_id, image_id)
 VALUES ($1, $2)

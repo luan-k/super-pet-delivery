@@ -32,6 +32,9 @@ const nextConfig = {
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
   },
+  images: {
+    domains: ["localhost", "res.cloudinary.com"],
+  },
 };
 
 module.exports = nextConfig;

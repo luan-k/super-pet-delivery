@@ -81,6 +81,21 @@ func (mr *MockStoreMockRecorder) CountClients(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountClients", reflect.TypeOf((*MockStore)(nil).CountClients), arg0)
 }
 
+// CountImages mocks base method.
+func (m *MockStore) CountImages(arg0 context.Context) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountImages", arg0)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountImages indicates an expected call of CountImages.
+func (mr *MockStoreMockRecorder) CountImages(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountImages", reflect.TypeOf((*MockStore)(nil).CountImages), arg0)
+}
+
 // CountProducts mocks base method.
 func (m *MockStore) CountProducts(arg0 context.Context) (int64, error) {
 	m.ctrl.T.Helper()

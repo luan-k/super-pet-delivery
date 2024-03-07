@@ -27,6 +27,17 @@ func (q *Queries) AssociateProductWithImage(ctx context.Context, arg AssociatePr
 	return i, err
 }
 
+const countImages = `-- name: CountImages :one
+SELECT COUNT(*) FROM images
+`
+
+func (q *Queries) CountImages(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countImages)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createImage = `-- name: CreateImage :one
 INSERT INTO images (
     name,
