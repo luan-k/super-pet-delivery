@@ -1,19 +1,101 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import React from "react";
-import { Image } from "./ImageList";
+import { FetchImagesProps, Image, fetchImages } from "./ImageList";
 import Link from "next/link";
 import SaveIcon from "../../../public/admin-save.svg";
+import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 interface SingleImageListProps {
   image: Image;
+  fetchProps: FetchImagesProps;
 }
 
-export default function SingleImageList({ image }: SingleImageListProps) {
+interface editImageRequest {
+  name: string;
+  description: string;
+  alt: string;
+}
+
+export default function SingleImageList({
+  image,
+  fetchProps,
+}: SingleImageListProps) {
   const closeRef = React.useRef<HTMLButtonElement>(null);
-  const [altText, setAltText] = React.useState(image.alt);
-  const [title, setTitle] = React.useState(image.name);
-  const [description, setDescription] = React.useState(image.description);
+  const [formData, setFormData] = React.useState<editImageRequest>({
+    name: image.name,
+    description: image.description,
+    alt: image.alt,
+  });
+
+  const handleChange = (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const token = Cookies.get("access_token");
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/${image.id}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      if (response.ok) {
+        toast.success("Imagem editada com sucesso!");
+        // Add further actions or redirection upon successful creation
+      } else {
+        toast.error("Houve um erro ao editar a Imagem!");
+        console.error("Failed to edit product");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  async function handleDelete(): Promise<void> {
+    const token = Cookies.get("access_token");
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/${image.id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        fetchImages(fetchProps);
+        toast.success("Produto deletado com sucesso!");
+      } else {
+        console.error("Failed to delete product");
+
+        toast.error("Houve um erro ao deletar o Produto!");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
 
   return (
     <Dialog.Root>
@@ -22,8 +104,6 @@ export default function SingleImageList({ image }: SingleImageListProps) {
           <img
             src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
             alt={image.alt}
-            width={300}
-            height={300}
             className='wk-image-list__image'
           />
         </div>
@@ -40,34 +120,37 @@ export default function SingleImageList({ image }: SingleImageListProps) {
               <img
                 src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
                 alt={image.alt}
-                width={300}
-                height={300}
                 className='wk-image-list__image'
               />
             </div>
             <div className='col-span-2'>
-              <form className='wk-form flex gap-7 flex-col'>
+              <form
+                className='wk-form flex gap-7 flex-col'
+                onSubmit={handleSubmit}>
                 <label>
                   <h4>Texto Alternativo</h4>
                   <input
                     type='text'
-                    value={altText}
-                    onChange={(e) => setAltText(e.target.value)}
+                    name='alt'
+                    value={formData.alt}
+                    onChange={(e) => handleChange(e)}
                   />
                 </label>
                 <label>
                   <h4>Título</h4>
                   <input
                     type='text'
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    name='name'
+                    value={formData.name}
+                    onChange={(e) => handleChange(e)}
                   />
                 </label>
                 <label>
                   <h4>Descrição</h4>
                   <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    value={formData.description}
+                    name='description'
+                    onChange={(e) => handleChange(e)}
                   />
                 </label>
                 <div className='flex text-lg gap-4'>
@@ -78,9 +161,9 @@ export default function SingleImageList({ image }: SingleImageListProps) {
                   </a>
                   <span className='opacity-50'>|</span>
                   <Dialog.Close ref={closeRef} asChild>
-                    <a href='#' className='text-red-500'>
+                    <button onClick={handleDelete} className='text-red-500'>
                       Excluir permanentemente
-                    </a>
+                    </button>
                   </Dialog.Close>
                 </div>
                 <div className='wk-form__footer'>

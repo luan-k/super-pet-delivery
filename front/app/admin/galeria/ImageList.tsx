@@ -15,9 +15,65 @@ export interface Image {
   image_path: string;
 }
 
-interface ListImageResponse {
+export interface ListImageResponse {
   total: number;
   images: Image[];
+}
+
+export type FetchImagesProps = {
+  pageId: number;
+  pageSize: number;
+  sortField: string | null;
+  sortDirection: "asc" | "desc" | null;
+  setListImageResponse: (images: Image[]) => void;
+  setTotalItems: (total: number) => void;
+  setLoading: (loading: boolean) => void;
+  search?: string;
+};
+
+export async function fetchImages({
+  pageId,
+  pageSize,
+  sortField,
+  sortDirection,
+  setListImageResponse,
+  setTotalItems,
+  setLoading,
+  search,
+}: FetchImagesProps): Promise<void> {
+  try {
+    const token = Cookies.get("access_token");
+    let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images?page_id=${pageId}&page_size=${pageSize}`;
+
+    /* if (sortField && sortDirection) {
+        url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
+      } */
+
+    /* if (search) {
+        url += `&search=${search}`;
+      } */
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      //const data: ListImageResponse = await response.json();
+      const data: ListImageResponse = await response.json();
+      setListImageResponse(data.images);
+      console.log(data);
+      setTotalItems(data.total);
+    } else {
+      console.error("Failed to fetch images");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  } finally {
+    setLoading(false);
+  }
 }
 
 export default function ImageList() {
@@ -47,50 +103,17 @@ export default function ImageList() {
     }
   };
 
-  async function fetchImages(
-    pageId: number,
-    pageSize: number,
-    sortField: string | null,
-    sortDirection: "asc" | "desc" | null,
-    search?: string
-  ): Promise<void> {
-    try {
-      const token = Cookies.get("access_token");
-      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images?page_id=${pageId}&page_size=${pageSize}`;
-
-      /* if (sortField && sortDirection) {
-        url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
-      } */
-
-      /* if (search) {
-        url += `&search=${search}`;
-      } */
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        //const data: ListImageResponse = await response.json();
-        const data: ListImageResponse = await response.json();
-        setListImageResponse(data.images);
-        console.log(data);
-        setTotalItems(data.total);
-      } else {
-        console.error("Failed to fetch images");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    fetchImages(currentPage, imagesPerPage, sortField, sortDirection, search);
+    fetchImages({
+      pageId: currentPage,
+      pageSize: imagesPerPage,
+      sortField,
+      sortDirection,
+      setListImageResponse,
+      setTotalItems,
+      setLoading,
+      search,
+    });
   }, [currentPage, imagesPerPage, sortField, sortDirection, search]);
   return (
     <>
@@ -120,7 +143,20 @@ export default function ImageList() {
         </div>
         <div className='wk-image-list__body grid grid-cols-6'>
           {listImageResponse.map((image) => (
-            <SingleImageList image={image} key={image.id} />
+            <SingleImageList
+              image={image}
+              key={image.id}
+              fetchProps={{
+                pageId: currentPage,
+                pageSize: imagesPerPage,
+                sortField,
+                sortDirection,
+                setListImageResponse,
+                setTotalItems,
+                setLoading,
+                search,
+              }}
+            />
           ))}
         </div>
       </div>

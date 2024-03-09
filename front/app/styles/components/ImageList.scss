@@ -21,6 +21,10 @@
   }
   &__item {
     cursor: pointer;
+    transition: all 0.3s;
+    &:hover {
+      opacity: 0.9;
+    }
   }
   &__image {
     border-radius: 0.4rem;
