@@ -154,8 +154,11 @@ type listImagesResponse struct {
 	Images []db.Image `json:"images"`
 }
 type listImageRequest struct {
-	PageID   int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5,max=20"`
+	PageID        int32  `form:"page_id" binding:"required,min=1"`
+	PageSize      int32  `form:"page_size" binding:"required,min=5,max=20"`
+	SortField     string `form:"sort_field" binding:""`
+	SortDirection string `form:"sort_direction" binding:""`
+	Search        string `form:"search" binding:""`
 }
 
 func (server *Server) listImage(ctx *gin.Context) {
@@ -176,7 +179,21 @@ func (server *Server) listImage(ctx *gin.Context) {
 		return
 	}
 
-	images, err := server.store.ListImages(ctx, arg)
+	var images []db.Image
+	// Check if sort fields and search are provided
+	if req.SortField != "" && req.SortDirection != "" && req.Search != "" {
+		// Fetch the paginated images with sorting and search
+		images, err = server.store.SearchImages(ctx, req.Search, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection)
+	} else if req.SortField != "" && req.SortDirection != "" {
+		// Fetch the paginated images with sorting
+		images, err = server.store.ListImagesSorted(ctx, arg, req.SortField, req.SortDirection)
+	} else if req.Search != "" {
+		// Fetch the paginated images with search
+		images, err = server.store.SearchImages(ctx, req.Search, int(req.PageID), int(req.PageSize), "", "")
+	} else {
+		// Fetch the paginated images without sorting or search
+		images, err = server.store.ListImages(ctx, arg)
+	}
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

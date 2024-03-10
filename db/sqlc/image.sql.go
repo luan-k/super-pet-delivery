@@ -46,7 +46,7 @@ INSERT INTO images (
     image_path
 ) VALUES (
     $1, $2, $3, $4
-) RETURNING id, name, description, alt, image_path
+) RETURNING id, name, description, alt, image_path, created_at, changed_at
 `
 
 type CreateImageParams struct {
@@ -70,6 +70,8 @@ func (q *Queries) CreateImage(ctx context.Context, arg CreateImageParams) (Image
 		&i.Description,
 		&i.Alt,
 		&i.ImagePath,
+		&i.CreatedAt,
+		&i.ChangedAt,
 	)
 	return i, err
 }
@@ -103,7 +105,7 @@ func (q *Queries) DisassociateProductFromImage(ctx context.Context, arg Disassoc
 }
 
 const getImage = `-- name: GetImage :one
-SELECT id, name, description, alt, image_path FROM images 
+SELECT id, name, description, alt, image_path, created_at, changed_at FROM images 
 WHERE id = $1 LIMIT 1
 `
 
@@ -116,13 +118,15 @@ func (q *Queries) GetImage(ctx context.Context, id int64) (Image, error) {
 		&i.Description,
 		&i.Alt,
 		&i.ImagePath,
+		&i.CreatedAt,
+		&i.ChangedAt,
 	)
 	return i, err
 }
 
 const listImages = `-- name: ListImages :many
-SELECT id, name, description, alt, image_path FROM images 
-ORDER BY id
+SELECT id, name, description, alt, image_path, created_at, changed_at FROM images 
+ORDER BY id DESC
 LIMIT $1
 OFFSET $2
 `
@@ -147,6 +151,8 @@ func (q *Queries) ListImages(ctx context.Context, arg ListImagesParams) ([]Image
 			&i.Description,
 			&i.Alt,
 			&i.ImagePath,
+			&i.CreatedAt,
+			&i.ChangedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -162,7 +168,7 @@ func (q *Queries) ListImages(ctx context.Context, arg ListImagesParams) ([]Image
 }
 
 const listImagesByProduct = `-- name: ListImagesByProduct :many
-SELECT c.id, c.name, c.description, c.alt, c.image_path
+SELECT c.id, c.name, c.description, c.alt, c.image_path, c.created_at, c.changed_at
 FROM images c
 JOIN product_images pc ON c.id = pc.image_id
 WHERE pc.product_id = $1
@@ -184,6 +190,8 @@ func (q *Queries) ListImagesByProduct(ctx context.Context, productID int64) ([]I
 			&i.Description,
 			&i.Alt,
 			&i.ImagePath,
+			&i.CreatedAt,
+			&i.ChangedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -205,7 +213,7 @@ SET
     description = COALESCE($3, description),
     alt = COALESCE($4, alt)
 WHERE id = $1
-RETURNING id, name, description, alt, image_path
+RETURNING id, name, description, alt, image_path, created_at, changed_at
 `
 
 type UpdateImageParams struct {
@@ -229,6 +237,8 @@ func (q *Queries) UpdateImage(ctx context.Context, arg UpdateImageParams) (Image
 		&i.Description,
 		&i.Alt,
 		&i.ImagePath,
+		&i.CreatedAt,
+		&i.ChangedAt,
 	)
 	return i, err
 }

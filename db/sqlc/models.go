@@ -33,11 +33,13 @@ type Client struct {
 }
 
 type Image struct {
-	ID          int64  `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Alt         string `json:"alt"`
-	ImagePath   string `json:"image_path"`
+	ID          int64     `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Alt         string    `json:"alt"`
+	ImagePath   string    `json:"image_path"`
+	CreatedAt   time.Time `json:"created_at"`
+	ChangedAt   time.Time `json:"changed_at"`
 }
 
 type Product struct {

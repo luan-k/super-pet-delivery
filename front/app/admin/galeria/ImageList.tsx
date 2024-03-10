@@ -48,13 +48,13 @@ export async function fetchImages({
     const token = Cookies.get("access_token");
     let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images?page_id=${pageId}&page_size=${pageSize}`;
 
-    /* if (sortField && sortDirection) {
-        url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
-      } */
+    if (sortField && sortDirection) {
+      url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
+    }
 
-    /* if (search) {
-        url += `&search=${search}`;
-      } */
+    if (search) {
+      url += `&search=${search}`;
+    }
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -237,12 +237,12 @@ export default function ImageList() {
         <div className='wk-image-list__header'>
           <div className='wk-image-list__header-filter'>
             <div className='button-wrapper'>
-              <button className='filter-list'>
+              {/* <button className='filter-list'>
                 <SearchImageList />
               </button>
               <button className='filter-grid'>
                 <SearchImageGrid />
-              </button>
+              </button> */}
             </div>
           </div>
           <div className='wk-table__search-bar--wrapper'>

@@ -20,6 +20,8 @@ type SortableStore interface {
 	SearchSales(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Sale, error)
 	ListProductsSorted(ctx context.Context, arg ListProductsParams, sortField string, sortDirection string) ([]Product, error)
 	SearchProducts(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Product, error)
+	ListImagesSorted(ctx context.Context, arg ListImagesParams, sortField string, sortDirection string) ([]Image, error)
+	SearchImages(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Image, error)
 }
 
 // Store provides all functions to execute db queries and transaction
@@ -298,4 +300,82 @@ func (store *SortableSQLStore) SearchProducts(ctx context.Context, search string
 	}
 
 	return products, nil
+}
+
+func (store *SortableSQLStore) ListImagesSorted(ctx context.Context, arg ListImagesParams, sortField string, sortDirection string) ([]Image, error) {
+	// Define a map of valid sort fields and directions
+	validSortFields := map[string]bool{"name": true, "description": true, "alt": true, "image_path": true}
+	validSortDirections := map[string]bool{"asc": true, "desc": true}
+
+	// Validate the sort field and direction
+	if !validSortFields[sortField] {
+		return nil, fmt.Errorf("invalid sort field: %s", sortField)
+	}
+	if !validSortDirections[sortDirection] {
+		return nil, fmt.Errorf("invalid sort direction: %s", sortDirection)
+	}
+
+	// Create the SQL query
+	query := fmt.Sprintf("SELECT * FROM images ORDER BY %s %s LIMIT $1 OFFSET $2", sortField, sortDirection)
+
+	// Execute the query
+	rows, err := store.db.QueryContext(ctx, query, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// Scan the results into an Image slice
+	var images []Image
+	for rows.Next() {
+		var image Image
+		if err := rows.Scan(&image.ID, &image.Name, &image.Description, &image.Alt, &image.ImagePath, &image.CreatedAt, &image.ChangedAt); err != nil {
+			return nil, err
+		}
+		images = append(images, image)
+	}
+
+	// Check for errors from iterating over rows
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return images, nil
+}
+
+func (store *SortableSQLStore) SearchImages(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Image, error) {
+	offset := (pageId - 1) * pageSize
+
+	query := `SELECT * FROM images WHERE
+        LOWER(name) LIKE LOWER($1) OR
+        LOWER(description) LIKE LOWER($1) OR
+        LOWER(alt) LIKE LOWER($1) OR
+        LOWER(image_path) LIKE LOWER($1)`
+
+	if sortField != "" && sortDirection != "" {
+		query += fmt.Sprintf(" ORDER BY %s %s", sortField, sortDirection)
+	}
+
+	query += " LIMIT $2 OFFSET $3"
+
+	rows, err := store.db.QueryContext(ctx, query, "%"+search+"%", pageSize, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var images []Image
+	for rows.Next() {
+		var i Image
+		if err = rows.Scan(&i.ID, &i.Name, &i.Description, &i.Alt, &i.ImagePath, &i.CreatedAt, &i.ChangedAt); err != nil {
+			return nil, err
+		}
+		images = append(images, i)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return images, nil
 }

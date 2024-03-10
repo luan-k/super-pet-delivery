@@ -88,7 +88,9 @@ CREATE TABLE "images" (
   "name" varchar NOT NULL,
   "description" varchar NOT NULL,
   "alt" varchar NOT NULL,
-  "image_path" varchar NOT NULL
+  "image_path" varchar NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now() AT TIME ZONE 'America/Sao_Paulo'),
+  "changed_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z'
 );
 
 CREATE TABLE "product_images" (
