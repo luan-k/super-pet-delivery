@@ -96,18 +96,37 @@ export default function ImageList() {
 
   const handleDragOver = (event: React.DragEvent) => {
     event.preventDefault();
-    //setDragging(true);
   };
+
+  const handleDragEnd = () => {
+    dragEventsCounter.current = 0;
+    setDragging(false);
+  };
+
   const handleDragEnter = (event: React.DragEvent) => {
     event.preventDefault();
     dragEventsCounter.current++;
     setDragging(dragEventsCounter.current > 0);
+
+    // Add the dragend event listener to the document
+    document.addEventListener("dragend", handleDragEnd);
   };
 
   const handleDragLeave = (event: React.DragEvent) => {
     event.preventDefault();
     dragEventsCounter.current--;
     setDragging(dragEventsCounter.current > 0);
+  };
+
+  const handleDrop = (event: React.DragEvent) => {
+    event.preventDefault();
+    setDragging(false);
+    if (event.dataTransfer.files) {
+      uploadFiles(event.dataTransfer.files);
+    }
+
+    // Remove the dragend event listener from the document
+    document.removeEventListener("dragend", handleDragEnd);
   };
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -164,13 +183,13 @@ export default function ImageList() {
     }
   };
 
-  const handleDrop = (event: React.DragEvent) => {
+  /* const handleDrop = (event: React.DragEvent) => {
     event.preventDefault();
     setDragging(false);
     if (event.dataTransfer.files) {
       uploadFiles(event.dataTransfer.files);
     }
-  };
+  }; */
 
   const pagesConfig: PagesConfig = {
     currentPage: {
