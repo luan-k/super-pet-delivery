@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import SearchIcon from "../../../public/admin-search.svg";
 import SearchImageList from "../../../public/admin-images-list.svg";
 import SearchImageGrid from "../../../public/admin-images-grid.svg";
@@ -8,6 +8,7 @@ import Image from "next/image";
 import SingleImageList from "./SingleImageList";
 import WkPagination from "../components/WkPagination";
 import { PagesConfig } from "../components/WkTable";
+import React from "react";
 
 export interface Image {
   id: number;
@@ -89,6 +90,87 @@ export default function ImageList() {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
     null
   );
+  const [dragging, setDragging] = React.useState(false);
+  const dragEventsCounter = React.useRef(0);
+  const token = Cookies.get("access_token");
+
+  const handleDragOver = (event: React.DragEvent) => {
+    event.preventDefault();
+    //setDragging(true);
+  };
+  const handleDragEnter = (event: React.DragEvent) => {
+    event.preventDefault();
+    dragEventsCounter.current++;
+    setDragging(dragEventsCounter.current > 0);
+  };
+
+  const handleDragLeave = (event: React.DragEvent) => {
+    event.preventDefault();
+    dragEventsCounter.current--;
+    setDragging(dragEventsCounter.current > 0);
+  };
+
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleButtonClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    fileInputRef.current?.click();
+  };
+
+  const uploadFiles = async (files: FileList) => {
+    const formData = new FormData();
+    Array.from(files).forEach((file) => {
+      formData.append("file", file);
+    });
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("File upload failed");
+      }
+      fetchImages({
+        pageId: currentPage,
+        pageSize: imagesPerPage,
+        sortField,
+        sortDirection,
+        setListImageResponse,
+        setTotalItems,
+        setLoading,
+        search,
+      });
+
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      uploadFiles(files);
+    }
+  };
+
+  const handleDrop = (event: React.DragEvent) => {
+    event.preventDefault();
+    setDragging(false);
+    if (event.dataTransfer.files) {
+      uploadFiles(event.dataTransfer.files);
+    }
+  };
 
   const pagesConfig: PagesConfig = {
     currentPage: {
@@ -128,7 +210,11 @@ export default function ImageList() {
   }, [currentPage, imagesPerPage, sortField, sortDirection, search]);
   return (
     <>
-      <div className='wk-image-list container'>
+      <div
+        className={`wk-image-list container  ${dragging ? "dragging" : ""}`}
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}>
         <div className='wk-image-list__header'>
           <div className='wk-image-list__header-filter'>
             <div className='button-wrapper'>
@@ -175,6 +261,28 @@ export default function ImageList() {
           pages={pagesConfig}
           maxButtonsToShow={7}
         />
+        <div className='wk-image-list__drag-box'>
+          <input
+            type='file'
+            id='file'
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+            multiple
+            style={{ display: "none" }}
+          />
+
+          <label
+            htmlFor='file'
+            className={`custom-file-upload`}
+            onDrop={handleDrop}>
+            Solte arquivos aqui para enviar ou
+            <button
+              onClick={handleButtonClick}
+              className='wk-btn wk-btn--secondary wk-btn--sm'>
+              Selecionar arquivos
+            </button>
+          </label>
+        </div>
       </div>
     </>
   );
