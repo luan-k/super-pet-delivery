@@ -372,3 +372,28 @@ func (server *Server) disassociateImageWithProduct(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, image)
 }
+
+type listProductImagesRequest struct {
+	ProductID int64 `uri:"product_id" binding:"required,min=1"`
+}
+
+func (server *Server) listProductImages(ctx *gin.Context) {
+	var req listProductImagesRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	images, err := server.store.ListImagesByProduct(ctx, req.ProductID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, images)
+}

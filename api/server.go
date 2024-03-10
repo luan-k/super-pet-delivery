@@ -133,6 +133,7 @@ func (server *Server) setupRouter() {
 
 	authRoutes.POST("/link_images/:image_id/:product_id", server.associateImageWithProduct)
 	authRoutes.DELETE("/link_images/:image_id/:product_id", server.disassociateImageWithProduct)
+	authRoutes.GET("/images/by_product/:product_id", server.listProductImages)
 
 	server.router = router
 }
