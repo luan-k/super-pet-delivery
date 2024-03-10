@@ -15,80 +15,83 @@ import (
 )
 
 func (server *Server) createImage(ctx *gin.Context) {
-	// Handle file upload
-	file, err := ctx.FormFile("file")
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
+	// Handle multiple file uploads
+	form, _ := ctx.MultipartForm()
+	files := form.File["file"]
 
-	// Check if the file exists
-	if file == nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "No file uploaded"})
-		return
-	}
+	var images []db.Image
 
-	// Use the original filename for storing the image
-	filename := file.Filename
+	for _, file := range files {
+		// Check if the file exists
+		if file == nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "No file uploaded"})
+			return
+		}
 
-	// Replace backslashes with forward slashes in filename
-	filename = strings.ReplaceAll(filename, "\\", "/")
+		// Use the original filename for storing the image
+		filename := file.Filename
 
-	// Generate a subdirectory path based on the current month and year
-	currentTime := time.Now()
-	year := currentTime.Format("2006")
-	month := currentTime.Format("01")
-	subdirectoryPath := fmt.Sprintf("./media/%s/%s", year, month)
+		// Replace backslashes with forward slashes in filename
+		filename = strings.ReplaceAll(filename, "\\", "/")
 
-	// Create the subdirectory if it doesn't exist
-	if _, err := os.Stat(subdirectoryPath); os.IsNotExist(err) {
-		err := os.MkdirAll(subdirectoryPath, 0755)
+		// Generate a subdirectory path based on the current month and year
+		currentTime := time.Now()
+		year := currentTime.Format("2006")
+		month := currentTime.Format("01")
+		subdirectoryPath := fmt.Sprintf("./media/%s/%s", year, month)
+
+		// Create the subdirectory if it doesn't exist
+		if _, err := os.Stat(subdirectoryPath); os.IsNotExist(err) {
+			err := os.MkdirAll(subdirectoryPath, 0755)
+			if err != nil {
+				ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+				return
+			}
+		}
+
+		// Check if the file with the same name already exists within the subdirectory
+		filePath := filepath.Join(subdirectoryPath, filename)
+		fileExists := true
+		counter := 1
+
+		for fileExists {
+			_, err := os.Stat(filePath)
+			if os.IsNotExist(err) {
+				fileExists = false
+			} else {
+				// Append a number to the filename and check again
+				filenameWithoutExt := strings.TrimSuffix(filename, filepath.Ext(filename))
+				newFilename := fmt.Sprintf("%s_%d%s", filenameWithoutExt, counter, filepath.Ext(filename))
+				filePath = filepath.Join(subdirectoryPath, newFilename)
+				counter++
+			}
+		}
+
+		// Save the uploaded file with the unique filename
+		err := ctx.SaveUploadedFile(file, filePath)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 			return
 		}
-	}
 
-	// Check if the file with the same name already exists within the subdirectory
-	filePath := filepath.Join(subdirectoryPath, filename)
-	fileExists := true
-	counter := 1
-
-	for fileExists {
-		_, err := os.Stat(filePath)
-		if os.IsNotExist(err) {
-			fileExists = false
-		} else {
-			// Append a number to the filename and check again
-			filenameWithoutExt := strings.TrimSuffix(filename, filepath.Ext(filename))
-			newFilename := fmt.Sprintf("%s_%d%s", filenameWithoutExt, counter, filepath.Ext(filename))
-			filePath = filepath.Join(subdirectoryPath, newFilename)
-			counter++
+		arg := db.CreateImageParams{
+			Name:        filename,
+			Description: "",
+			Alt:         filename,
+			ImagePath:   "/media/" + filepath.Join(year, month, filepath.Base(filePath)), // Store the relative path to the image
 		}
+
+		image, err := server.store.CreateImage(ctx, arg)
+
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+
+		images = append(images, image)
 	}
 
-	// Save the uploaded file with the unique filename
-	err = ctx.SaveUploadedFile(file, filePath)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-
-	arg := db.CreateImageParams{
-		Name:        filename,
-		Description: "",
-		Alt:         filename,
-		ImagePath:   "/media/" + filepath.Join(year, month, filepath.Base(filePath)), // Store the relative path to the image
-	}
-
-	image, err := server.store.CreateImage(ctx, arg)
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, image)
+	ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("%d files uploaded!", len(files)), "images": images})
 }
 
 type getImageRequest struct {
@@ -167,7 +170,7 @@ func (server *Server) listImage(ctx *gin.Context) {
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
 
-	total, err := server.store.CountProducts(ctx)
+	total, err := server.store.CountImages(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

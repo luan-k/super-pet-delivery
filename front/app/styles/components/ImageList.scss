@@ -21,7 +21,9 @@
   }
   &__item {
     cursor: pointer;
+    height: 20rem;
     transition: all 0.3s;
+    width: 20rem;
     &:hover {
       opacity: 0.9;
     }
@@ -31,6 +33,9 @@
     height: 100%;
     object-fit: cover;
     width: 100%;
+    &--max-height {
+      max-height: 400px;
+    }
   }
 
   &__overlay {
@@ -69,6 +74,7 @@
     left: 50%;
     max-height: 100vh;
     max-width: 130rem;
+    overflow-y: auto;
     padding: 25px;
     padding-bottom: 10rem;
     position: fixed;
@@ -86,6 +92,43 @@
     &--taller {
       height: 33vh;
       width: 33vw;
+    }
+    .custom-file-upload {
+      align-items: center;
+      border: 4px dashed #c3c4c74a;
+      display: flex;
+      flex-direction: column;
+      font-size: 1.5rem;
+      gap: 2rem;
+      justify-content: center;
+      padding: 7rem;
+      text-align: center;
+      transition: all 0.3s;
+      &.dragging {
+        border: 4px dashed #0085fe;
+      }
+    }
+  }
+  &__uploaded {
+    li {
+      align-content: center;
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      &:not(:last-child) {
+        margin-bottom: 1rem;
+      }
+      div {
+        align-items: center;
+        display: flex;
+        gap: 3rem;
+      }
+      img {
+        height: 50px;
+        object-fit: cover;
+        width: 50px;
+      }
     }
   }
 

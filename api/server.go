@@ -127,7 +127,7 @@ func (server *Server) setupRouter() {
 	authRoutes.POST("/images", server.createImage)
 	router.GET("/images/:id", server.getImage)
 	router.GET("/media/:year/:month/:filename", server.getImagePath)
-	router.GET("/images", server.listImage)
+	authRoutes.GET("/images", server.listImage)
 	authRoutes.PUT("/images/:id", server.updateImage)
 	authRoutes.DELETE("/images/:id", server.deleteImage)
 

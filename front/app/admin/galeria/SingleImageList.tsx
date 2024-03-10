@@ -120,7 +120,7 @@ export default function SingleImageList({
               <img
                 src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
                 alt={image.alt}
-                className='wk-image-list__image'
+                className='wk-image-list__image wk-image-list__image--max-height'
               />
             </div>
             <div className='col-span-2'>
@@ -172,6 +172,12 @@ export default function SingleImageList({
                       Cancelar
                     </button>
                   </Dialog.Close>
+
+                  <Link
+                    href={`/admin/galeria/${image.id}`}
+                    className='wk-btn wk-btn--md wk-btn--secondary-outline'>
+                    Ver mais
+                  </Link>
 
                   <button
                     className='wk-btn wk-btn--md wk-btn--primary'

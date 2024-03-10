@@ -6,6 +6,8 @@ import SearchImageGrid from "../../../public/admin-images-grid.svg";
 import Cookies from "js-cookie";
 import Image from "next/image";
 import SingleImageList from "./SingleImageList";
+import WkPagination from "../components/WkPagination";
+import { PagesConfig } from "../components/WkTable";
 
 export interface Image {
   id: number;
@@ -88,6 +90,15 @@ export default function ImageList() {
     null
   );
 
+  const pagesConfig: PagesConfig = {
+    currentPage: {
+      value: currentPage,
+      setter: setCurrentPage,
+    },
+    itemsPerPage: imagesPerPage,
+    setItemsPerPage: setImagesPerPage,
+  };
+
   const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(
@@ -159,6 +170,11 @@ export default function ImageList() {
             />
           ))}
         </div>
+        <WkPagination
+          totalNumberOfItems={totalItems}
+          pages={pagesConfig}
+          maxButtonsToShow={7}
+        />
       </div>
     </>
   );
