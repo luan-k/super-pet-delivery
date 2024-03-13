@@ -69,10 +69,10 @@ export default function ListCategories() {
       });
 
       if (response.ok) {
-        const data: Array<Category> = await response.json();
-        setListCategoryResponse(data);
+        const data: ListCategoryResponse = await response.json();
+        setListCategoryResponse(data.categories);
         console.log(data);
-        setTotalItems(data.length);
+        setTotalItems(data.total);
       } else {
         console.error("Failed to fetch categories");
       }
