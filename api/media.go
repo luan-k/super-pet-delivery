@@ -119,6 +119,30 @@ func (server *Server) getImage(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, image)
 }
 
+type getImagesRequest struct {
+	IDs []int64 `json:"ids" binding:"required"`
+}
+
+func (server *Server) getImages(ctx *gin.Context) {
+	var req getImagesRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var images []db.Image
+	for _, id := range req.IDs {
+		image, err := server.store.GetImage(ctx, id)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		images = append(images, image)
+	}
+
+	ctx.JSON(http.StatusOK, images)
+}
+
 type getImagePathRequest struct {
 	Year     int64  `uri:"year" binding:"required,min=1"`
 	Month    int64  `uri:"month" binding:"required,min=1"`
@@ -396,4 +420,94 @@ func (server *Server) listProductImages(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, images)
+}
+
+type associateMultipleImagesWithProductUri struct {
+	ProductID int64 `uri:"product_id" binding:"required,min=1"`
+}
+
+type associateMultipleImagesWithProductJson struct {
+	ImageIDs []int64 `json:"image_ids" binding:"required,dive,min=1"`
+}
+
+func (server *Server) associateMultipleImagesWithProduct(ctx *gin.Context) {
+	var uri associateMultipleImagesWithProductUri
+	if err := ctx.ShouldBindUri(&uri); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var json associateMultipleImagesWithProductJson
+	if err := ctx.ShouldBindJSON(&json); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	// Get the list of currently associated images
+	currentImages, err := server.store.ListImagesByProduct(ctx, uri.ProductID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	// Create a map for quick lookup
+	currentImageMap := make(map[int64]bool)
+	for _, image := range currentImages {
+		currentImageMap[image.ID] = true
+	}
+
+	for _, imageID := range json.ImageIDs {
+		// If the image is not already associated, associate it
+		if !currentImageMap[imageID] {
+			arg := db.AssociateProductWithImageParams{
+				ImageID:   imageID,
+				ProductID: uri.ProductID,
+			}
+
+			_, err = server.store.AssociateProductWithImage(ctx, arg)
+			if err != nil {
+				ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+				return
+			}
+		}
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "success"})
+}
+
+type disassociateMultipleImagesWithProductUri struct {
+	ProductID int64 `uri:"product_id" binding:"required,min=1"`
+}
+
+type disassociateMultipleImagesWithProductJson struct {
+	ImageIDs []int64 `json:"image_ids" binding:"required,dive,min=1"`
+}
+
+func (server *Server) disassociateMultipleImagesWithProduct(ctx *gin.Context) {
+	var uri disassociateMultipleImagesWithProductUri
+	if err := ctx.ShouldBindUri(&uri); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var json disassociateMultipleImagesWithProductJson
+	if err := ctx.ShouldBindJSON(&json); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	for _, imageID := range json.ImageIDs {
+		arg := db.DisassociateProductFromImageParams{
+			ImageID:   imageID,
+			ProductID: uri.ProductID,
+		}
+
+		_, err := server.store.DisassociateProductFromImage(ctx, arg)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "success"})
 }

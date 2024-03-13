@@ -12,7 +12,7 @@ interface SingleImageListProps {
   fetchProps: FetchImagesProps;
 }
 
-interface editImageRequest {
+export interface editImageRequest {
   name: string;
   description: string;
   alt: string;

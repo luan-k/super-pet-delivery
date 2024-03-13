@@ -9,6 +9,10 @@ import { toast } from "react-toastify";
 import fetchClients, { Client, ListClientResponse } from "../../fetchClients";
 import { EditProductFormRequest } from "../[productid]/page";
 import ProductForm, { formConfigInterface } from "../ProductForm";
+import {
+  submitAssociatedImages,
+  submitAssociatedImagesProps,
+} from "../ImageModal";
 
 export interface CreateProductRequest {
   name: string;
@@ -85,6 +89,10 @@ export default function CreateProduct() {
   const [displayPrice, setDisplayPrice] = useState("0,00");
   const [searchResults, setSearchResults] = useState<Client[]>([]);
 
+  const [checkedItems, setCheckedItems] = useState<number[]>([]);
+  const [initialCheckedItems, setInitialCheckedItems] = useState<number[]>([]);
+  const [images, setImages] = useState<any[]>([]);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
@@ -107,7 +115,16 @@ export default function CreateProduct() {
 
       if (response.ok) {
         const data = await response.json();
-
+        console.log(data);
+        const currentId = data.id;
+        submitAssociatedImages({
+          currentId,
+          checkedItems,
+          initialCheckedItems,
+          setImages,
+          setCheckedItems,
+          setInitialCheckedItems,
+        });
         router.push(`/admin/produtos/`); //${data.id}`);
         toast.success("Produto criado com sucesso!");
       } else {
@@ -121,6 +138,15 @@ export default function CreateProduct() {
     }
   };
 
+  const imageDetails: submitAssociatedImagesProps = {
+    checkedItems: checkedItems,
+    images: images,
+    initialCheckedItems: initialCheckedItems,
+    setImages: setImages,
+    setCheckedItems: setCheckedItems,
+    setInitialCheckedItems: setInitialCheckedItems,
+  };
+
   const formConfig: formConfigInterface = {
     handleSubmit,
     setFormData,
@@ -130,6 +156,7 @@ export default function CreateProduct() {
     displayPrice,
     handlePriceChange,
     submitButtonText: "Criar Produto",
+    imagesDefinitions: imageDetails,
   };
   return (
     <div className='wk-admin-page__wrapper'>

@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import { ChangeEvent, useEffect, useState } from "react";
 import { CreateProductRequest, handleChangeType } from "../criar/page";
 import NumberFormat from "react-number-format";
+import { submitAssociatedImagesProps } from "../ImageModal";
 
 export interface EditProductFormRequest {
   name: string;
@@ -38,6 +39,9 @@ export default function EditProduct() {
     user_id: 0,
     sku: "",
   });
+  const [checkedItems, setCheckedItems] = useState<number[]>([]);
+  const [initialCheckedItems, setInitialCheckedItems] = useState<number[]>([]);
+  const [images, setImages] = useState<any[]>([]);
 
   const [displayPrice, setDisplayPrice] = useState("0,00");
   const handlePriceChange = (
@@ -164,6 +168,15 @@ export default function EditProduct() {
     });
   };
 
+  const imageDetails: submitAssociatedImagesProps = {
+    checkedItems: checkedItems,
+    images: images,
+    initialCheckedItems: initialCheckedItems,
+    setImages: setImages,
+    setCheckedItems: setCheckedItems,
+    setInitialCheckedItems: setInitialCheckedItems,
+  };
+
   const formConfig: formConfigInterface = {
     handleSubmit,
     formData,
@@ -173,6 +186,7 @@ export default function EditProduct() {
     setDisplayPrice,
     handlePriceChange,
     submitButtonText: "Salvar",
+    imagesDefinitions: imageDetails,
   };
   return (
     <div className='wk-admin-page__wrapper'>

@@ -126,13 +126,16 @@ func (server *Server) setupRouter() {
 
 	authRoutes.POST("/images", server.createImage)
 	router.GET("/images/:id", server.getImage)
+	router.POST("/images-multiple", server.getImages)
 	router.GET("/media/:year/:month/:filename", server.getImagePath)
 	authRoutes.GET("/images", server.listImage)
 	authRoutes.PUT("/images/:id", server.updateImage)
 	authRoutes.DELETE("/images/:id", server.deleteImage)
 
 	authRoutes.POST("/link_images/:image_id/:product_id", server.associateImageWithProduct)
+	authRoutes.POST("/link_images/multiple/:product_id", server.associateMultipleImagesWithProduct)
 	authRoutes.DELETE("/link_images/:image_id/:product_id", server.disassociateImageWithProduct)
+	authRoutes.DELETE("/link_images/multiple/:product_id", server.disassociateMultipleImagesWithProduct)
 	authRoutes.GET("/images/by_product/:product_id", server.listProductImages)
 
 	server.router = router
