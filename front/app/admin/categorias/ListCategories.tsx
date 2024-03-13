@@ -8,7 +8,6 @@ export interface Category {
   id: number;
   name: string;
   description: string;
-  created_at: string;
 }
 
 interface ListCategoryResponse {
@@ -22,7 +21,7 @@ export default function ListCategories() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [sortField, setSortField] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [categoriesPerPage, setCategoriesPerPage] = useState<number>(20);
+  const [categoriesPerPage, setCategoriesPerPage] = useState<number>(10);
   const [listCategoryResponse, setListCategoryResponse] = useState<Category[]>([]);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
     null
@@ -70,10 +69,10 @@ export default function ListCategories() {
       });
 
       if (response.ok) {
-        const data: ListCategoryResponse = await response.json();
-        setListCategoryResponse(data.categories);
+        const data: Array<Category> = await response.json();
+        setListCategoryResponse(data);
         console.log(data);
-        setTotalItems(data.total);
+        setTotalItems(data.length);
       } else {
         console.error("Failed to fetch categories");
       }
@@ -155,7 +154,7 @@ export default function ListCategories() {
     searchBar: {
       search: search,
       setSearch: setSearch,
-      placeholder: "Pesquise por Nome, Descrição, etc...",
+      placeholder: "Pesquise por Nome ou Descrição...",
     },
     sortInfo: {
       field: sortField,
@@ -172,7 +171,7 @@ export default function ListCategories() {
           ? listCategoryResponse.map((category) => (
               <>
                 <span className='text-wk-secondary'> [ </span>
-                {category.id.toString().padStart(3, "0")}
+                { category.id.toString().padStart(3, "0") }
                 <span className='text-wk-secondary'> ] </span>
                 {category.name}
               </>
@@ -183,38 +182,14 @@ export default function ListCategories() {
         title: "Descrição",
         key: "description",
         sortable: true,
-        width: 20,
+        width: 60,
         items: listCategoryResponse
-            ? listCategoryResponse.map((category) => (
-                    <>
-                        <span className='text-wk-primary font-semibold'>R$ </span>
-                        {parseFloat(category.description).toLocaleString("pt-BR", {
-                            minimumFractionDigits: 2,
-                        })}
-                    </>
-                ))
-            : [],
-      },
-      {
-        title: "Criado em",
-        key: "created_at",
-        sortable: true,
-        width: 20,
-        items: listCategoryResponse
-          ? listCategoryResponse.map(
-              (category: Category) =>
-                new Date(category.created_at).toLocaleString("pt-BR", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                }) +
-                " às " +
-                new Date(category.created_at).toLocaleTimeString("pt-BR", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-            )
-          : [],
+        ? listCategoryResponse.map((category) => (
+              <>
+                  {category.description}
+              </>
+            ))
+        : [],
       },
     ],
   };
