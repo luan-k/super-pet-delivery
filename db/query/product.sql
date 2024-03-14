@@ -3,10 +3,12 @@ INSERT INTO products (
     name,
     description,
     user_id,
+    username,
     price,
+    sku,
     images
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, $4, $5, $6, $7
 ) RETURNING *;
 
 -- name: GetProduct :one
@@ -20,7 +22,7 @@ ORDER BY id;
 
 -- name: ListProducts :many
 SELECT * FROM products 
-ORDER BY id
+ORDER BY id DESC
 LIMIT $1
 OFFSET $2;
 
@@ -33,14 +35,19 @@ ORDER BY p.id
 LIMIT $2
 OFFSET $3;
 
+-- name: CountProducts :one
+SELECT COUNT(*) FROM products;
+
 -- name: UpdateProduct :one
 UPDATE  products 
 SET 
     name = COALESCE($2, name),
     description = COALESCE($3, description),
     user_id = COALESCE($4, user_id),
-    price = COALESCE($5, price),
-    images = COALESCE($6, images)
+    username = COALESCE($5, username),
+    price = COALESCE($6, price),
+    sku = COALESCE($7, sku),
+    images = COALESCE($8, images)
 WHERE id = $1
 RETURNING *;
 

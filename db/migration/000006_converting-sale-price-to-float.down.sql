@@ -1,1 +1,0 @@
-ALTER TABLE "sale" ALTER COLUMN "price" TYPE bigint USING "price"::bigint;

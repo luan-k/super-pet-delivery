@@ -7,24 +7,37 @@ package db
 
 import (
 	"context"
+	"time"
 )
 
 const associateProductWithImage = `-- name: AssociateProductWithImage :one
-INSERT INTO product_images (product_id, image_id)
-VALUES ($1, $2)
-RETURNING product_id, image_id
+INSERT INTO product_images (product_id, image_id, "order")
+VALUES ($1, $2, $3)
+RETURNING product_id, image_id, "order"
 `
 
 type AssociateProductWithImageParams struct {
 	ProductID int64 `json:"product_id"`
 	ImageID   int64 `json:"image_id"`
+	Order     int32 `json:"order"`
 }
 
 func (q *Queries) AssociateProductWithImage(ctx context.Context, arg AssociateProductWithImageParams) (ProductImage, error) {
-	row := q.db.QueryRowContext(ctx, associateProductWithImage, arg.ProductID, arg.ImageID)
+	row := q.db.QueryRowContext(ctx, associateProductWithImage, arg.ProductID, arg.ImageID, arg.Order)
 	var i ProductImage
-	err := row.Scan(&i.ProductID, &i.ImageID)
+	err := row.Scan(&i.ProductID, &i.ImageID, &i.Order)
 	return i, err
+}
+
+const countImages = `-- name: CountImages :one
+SELECT COUNT(*) FROM images
+`
+
+func (q *Queries) CountImages(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countImages)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }
 
 const createImage = `-- name: CreateImage :one
@@ -35,7 +48,7 @@ INSERT INTO images (
     image_path
 ) VALUES (
     $1, $2, $3, $4
-) RETURNING id, name, description, alt, image_path
+) RETURNING id, name, description, alt, image_path, created_at, changed_at
 `
 
 type CreateImageParams struct {
@@ -59,6 +72,8 @@ func (q *Queries) CreateImage(ctx context.Context, arg CreateImageParams) (Image
 		&i.Description,
 		&i.Alt,
 		&i.ImagePath,
+		&i.CreatedAt,
+		&i.ChangedAt,
 	)
 	return i, err
 }
@@ -76,7 +91,7 @@ func (q *Queries) DeleteImage(ctx context.Context, id int64) error {
 const disassociateProductFromImage = `-- name: DisassociateProductFromImage :one
 DELETE FROM product_images
 WHERE product_id = $1 AND image_id = $2
-RETURNING product_id, image_id
+RETURNING product_id, image_id, "order"
 `
 
 type DisassociateProductFromImageParams struct {
@@ -87,12 +102,32 @@ type DisassociateProductFromImageParams struct {
 func (q *Queries) DisassociateProductFromImage(ctx context.Context, arg DisassociateProductFromImageParams) (ProductImage, error) {
 	row := q.db.QueryRowContext(ctx, disassociateProductFromImage, arg.ProductID, arg.ImageID)
 	var i ProductImage
-	err := row.Scan(&i.ProductID, &i.ImageID)
+	err := row.Scan(&i.ProductID, &i.ImageID, &i.Order)
+	return i, err
+}
+
+const editAssociation = `-- name: EditAssociation :one
+UPDATE product_images
+SET "order" = $3
+WHERE product_id = $1 AND image_id = $2
+RETURNING product_id, image_id, "order"
+`
+
+type EditAssociationParams struct {
+	ProductID int64 `json:"product_id"`
+	ImageID   int64 `json:"image_id"`
+	Order     int32 `json:"order"`
+}
+
+func (q *Queries) EditAssociation(ctx context.Context, arg EditAssociationParams) (ProductImage, error) {
+	row := q.db.QueryRowContext(ctx, editAssociation, arg.ProductID, arg.ImageID, arg.Order)
+	var i ProductImage
+	err := row.Scan(&i.ProductID, &i.ImageID, &i.Order)
 	return i, err
 }
 
 const getImage = `-- name: GetImage :one
-SELECT id, name, description, alt, image_path FROM images 
+SELECT id, name, description, alt, image_path, created_at, changed_at FROM images 
 WHERE id = $1 LIMIT 1
 `
 
@@ -105,13 +140,15 @@ func (q *Queries) GetImage(ctx context.Context, id int64) (Image, error) {
 		&i.Description,
 		&i.Alt,
 		&i.ImagePath,
+		&i.CreatedAt,
+		&i.ChangedAt,
 	)
 	return i, err
 }
 
 const listImages = `-- name: ListImages :many
-SELECT id, name, description, alt, image_path FROM images 
-ORDER BY id
+SELECT id, name, description, alt, image_path, created_at, changed_at FROM images 
+ORDER BY id DESC
 LIMIT $1
 OFFSET $2
 `
@@ -136,6 +173,8 @@ func (q *Queries) ListImages(ctx context.Context, arg ListImagesParams) ([]Image
 			&i.Description,
 			&i.Alt,
 			&i.ImagePath,
+			&i.CreatedAt,
+			&i.ChangedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -151,28 +190,42 @@ func (q *Queries) ListImages(ctx context.Context, arg ListImagesParams) ([]Image
 }
 
 const listImagesByProduct = `-- name: ListImagesByProduct :many
-SELECT c.id, c.name, c.description, c.alt, c.image_path
+SELECT c.id, c.name, c.description, c.alt, c.image_path, c.created_at, c.changed_at, pc."order"
 FROM images c
 JOIN product_images pc ON c.id = pc.image_id
 WHERE pc.product_id = $1
-ORDER BY c.id
+ORDER BY pc."order"
 `
 
-func (q *Queries) ListImagesByProduct(ctx context.Context, productID int64) ([]Image, error) {
+type ListImagesByProductRow struct {
+	ID          int64     `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Alt         string    `json:"alt"`
+	ImagePath   string    `json:"image_path"`
+	CreatedAt   time.Time `json:"created_at"`
+	ChangedAt   time.Time `json:"changed_at"`
+	Order       int32     `json:"order"`
+}
+
+func (q *Queries) ListImagesByProduct(ctx context.Context, productID int64) ([]ListImagesByProductRow, error) {
 	rows, err := q.db.QueryContext(ctx, listImagesByProduct, productID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Image{}
+	items := []ListImagesByProductRow{}
 	for rows.Next() {
-		var i Image
+		var i ListImagesByProductRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
 			&i.Description,
 			&i.Alt,
 			&i.ImagePath,
+			&i.CreatedAt,
+			&i.ChangedAt,
+			&i.Order,
 		); err != nil {
 			return nil, err
 		}
@@ -194,7 +247,7 @@ SET
     description = COALESCE($3, description),
     alt = COALESCE($4, alt)
 WHERE id = $1
-RETURNING id, name, description, alt, image_path
+RETURNING id, name, description, alt, image_path, created_at, changed_at
 `
 
 type UpdateImageParams struct {
@@ -218,6 +271,8 @@ func (q *Queries) UpdateImage(ctx context.Context, arg UpdateImageParams) (Image
 		&i.Description,
 		&i.Alt,
 		&i.ImagePath,
+		&i.CreatedAt,
+		&i.ChangedAt,
 	)
 	return i, err
 }

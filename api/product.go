@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"strings"
 	db "super-pet-delivery/db/sqlc"
 
 	"fmt"
@@ -16,6 +17,7 @@ type createProductRequest struct {
 	Description string   `json:"description" validate:"required"`
 	UserID      int64    `json:"user_id" validate:"required"`
 	Price       string   `json:"price"`
+	Sku         string   `json:"sku"`
 	Images      []string `json:"images"`
 }
 
@@ -26,20 +28,41 @@ func (server *Server) createProduct(ctx *gin.Context) {
 		return
 	}
 
-	productPrice := ""
+	productPrice := 0.0
 	productImages := []string{}
+	productSku := ""
+	price, err := strconv.ParseFloat(strings.Replace(req.Price, ",", ".", -1), 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
 	if req.Price != "" {
-		productPrice = req.Price
+		productPrice = price
 	}
 	if len(req.Images) > 0 {
 		productImages = req.Images
+	}
+	if req.Sku != "" {
+		productSku = req.Sku
+	}
+
+	user, err := server.store.GetUser(ctx, req.UserID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
 	arg := db.CreateProductParams{
 		Name:        req.Name,
 		Description: req.Description,
 		UserID:      req.UserID,
+		Username:    user.Username,
 		Price:       productPrice,
+		Sku:         productSku,
 		Images:      productImages,
 	}
 
@@ -78,9 +101,17 @@ func (server *Server) getProduct(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, product)
 }
 
+type listProductResponse struct {
+	Total    int64        `json:"total"`
+	Products []db.Product `json:"products"`
+}
+
 type listProductRequest struct {
-	PageID   int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
+	PageID        int32  `form:"page_id" binding:"required,min=1"`
+	PageSize      int32  `form:"page_size" binding:"required,min=5,max=100"`
+	SortField     string `form:"sort_field" binding:""`
+	SortDirection string `form:"sort_direction" binding:""`
+	Search        string `form:"search" binding:""`
 }
 
 func (server *Server) listProduct(ctx *gin.Context) {
@@ -95,13 +126,38 @@ func (server *Server) listProduct(ctx *gin.Context) {
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
 
-	products, err := server.store.ListProducts(ctx, arg)
+	total, err := server.store.CountProducts(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, products)
+	var products []db.Product
+	// Check if sort fields and search are provided
+	if req.SortField != "" && req.SortDirection != "" && req.Search != "" {
+		// Fetch the paginated products with sorting and search
+		products, err = server.store.SearchProducts(ctx, req.Search, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection)
+	} else if req.SortField != "" && req.SortDirection != "" {
+		// Fetch the paginated products with sorting
+		products, err = server.store.ListProductsSorted(ctx, arg, req.SortField, req.SortDirection)
+	} else if req.Search != "" {
+		// Fetch the paginated products with search
+		products, err = server.store.SearchProducts(ctx, req.Search, int(req.PageID), int(req.PageSize), "", "")
+	} else {
+		// Fetch the paginated products without sorting or search
+		products, err = server.store.ListProducts(ctx, arg)
+	}
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	response := listProductResponse{
+		Total:    total,
+		Products: products,
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }
 
 type listProductsByUserRequest struct {
@@ -129,6 +185,7 @@ type updateProductRequest struct {
 	Description string   `json:"description"`
 	UserID      int64    `json:"user_id"`
 	Price       string   `json:"price"`
+	Sku         string   `json:"sku"`
 	Images      []string `json:"images"`
 }
 
@@ -155,6 +212,21 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 		return
 	}
 
+	user, err := server.store.GetUser(ctx, req.UserID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	price, err := strconv.ParseFloat(strings.Replace(req.Price, ",", ".", -1), 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
 	// Update only the fields that are provided in the request
 	if req.Name != "" {
 		existingProduct.Name = req.Name
@@ -166,7 +238,10 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 		existingProduct.UserID = req.UserID
 	}
 	if req.Price != "" {
-		existingProduct.Price = req.Price
+		existingProduct.Price = price
+	}
+	if req.Sku != "" {
+		existingProduct.Sku = req.Sku
 	}
 	if len(req.Images) > 0 {
 		existingProduct.Images = req.Images
@@ -177,7 +252,9 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 		Name:        existingProduct.Name,
 		Description: existingProduct.Description,
 		UserID:      existingProduct.UserID,
+		Username:    user.Username,
 		Price:       existingProduct.Price,
+		Sku:         existingProduct.Sku,
 		Images:      existingProduct.Images,
 	}
 
