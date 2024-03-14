@@ -289,9 +289,11 @@ export default function WkTable({ config, className }: ListItemsResponse) {
             config.columns[0].items.map((item, index) => (
               <tr
                 key={index}
-                className={`wk-table__row wk-table__row--${
+                className={`wk-table__row wk-table__item-row wk-table__row--${
                   index % 2 === 0 ? "even" : "odd"
-                }`}>
+                }`}
+                onDoubleClick={() => { window.location.href = config.interact && config.interact.edit && Array.isArray(config.interact.edit) ? config.interact.edit[index] : "" } }
+                >
                 {config.checkbox ? (
                   <td className='wk-table__td wk-table__td--checkbox'>
                     <input

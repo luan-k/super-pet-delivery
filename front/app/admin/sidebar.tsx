@@ -10,6 +10,7 @@ import VendasIcon from "../../public/admin-vendas.svg";
 import ProdutosIcon from "../../public/admin-produtos.svg";
 import ClientesIcon from "../../public/admin-clientes.svg";
 import GaleriaIcon from "../../public/admin-galeria.svg";
+import CategoriasIcon from "../../public/admin-categoria.svg";
 import UsuariosIcon from "../../public/admin-usuarios.svg";
 import LockClosedIcon from "../../public/sidebar-lock.svg";
 import LockOpenIcon from "../../public/sidebar-lock-open.svg";
@@ -47,7 +48,7 @@ export default function AdminSidebar({ onStateChange }: AdminSidebarProps) {
 
   const isActive = (href: string) => {
     // Compare the current route with the link's href
-    return currentRoute === href
+    return currentRoute.includes(href) 
       ? "wkode-admin-sidebar__menu-item--active"
       : "";
   };
@@ -76,6 +77,14 @@ export default function AdminSidebar({ onStateChange }: AdminSidebarProps) {
           href={"/admin/produtos"}>
           <ProdutosIcon />
           Produtos
+        </Link>
+        <Link
+          className={`wkode-admin-sidebar__menu-item ${isActive(
+            "/admin/categorias"
+          )}`}
+          href={"/admin/categorias"}>
+          <CategoriasIcon />
+          Categorias
         </Link>
         <Link
           className={`wkode-admin-sidebar__menu-item ${isActive(

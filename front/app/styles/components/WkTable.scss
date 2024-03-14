@@ -59,6 +59,9 @@
       padding-right: 1.6rem;
     }
   }
+  &__item-row {
+    cursor: pointer;
+  }
   &__row {
     &--even {
       background-color: #1d1e22;
