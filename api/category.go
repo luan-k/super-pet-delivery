@@ -62,6 +62,11 @@ func (server *Server) getCategory(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, category)
 }
 
+type listCategoryResponse struct {
+	Total      int64         `json:"total"`
+	Categories []db.Category `json:"categories"`
+}
+
 type listCategoryRequest struct {
 	PageID   int32 `form:"page_id" binding:"required,min=1"`
 	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
@@ -69,6 +74,13 @@ type listCategoryRequest struct {
 
 func (server *Server) listCategory(ctx *gin.Context) {
 	var req listCategoryRequest
+
+	total, err := server.store.CountCategory(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
@@ -85,7 +97,12 @@ func (server *Server) listCategory(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, categories)
+	response := listCategoryResponse{
+		Total:      total,
+		Categories: categories,
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }
 
 type updateCategoryRequest struct {
