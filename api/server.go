@@ -137,6 +137,7 @@ func (server *Server) setupRouter() {
 	authRoutes.DELETE("/link_images/:image_id/:product_id", server.disassociateImageWithProduct)
 	authRoutes.DELETE("/link_images/multiple/:product_id", server.disassociateMultipleImagesWithProduct)
 	authRoutes.GET("/images/by_product/:product_id", server.listProductImages)
+	authRoutes.PUT("/images/by_product/:product_id", server.editImageOrder)
 
 	server.router = router
 }

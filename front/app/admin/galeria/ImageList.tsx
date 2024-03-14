@@ -16,6 +16,7 @@ export interface Image {
   description: string;
   alt: string;
   image_path: string;
+  order?: number;
 }
 
 export interface ListImageResponse {

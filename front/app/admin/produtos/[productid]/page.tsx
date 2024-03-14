@@ -7,7 +7,10 @@ import Cookies from "js-cookie";
 import { ChangeEvent, useEffect, useState } from "react";
 import { CreateProductRequest, handleChangeType } from "../criar/page";
 import NumberFormat from "react-number-format";
-import { submitAssociatedImagesProps } from "../ImageModal";
+import {
+  submitAssociatedImages,
+  submitAssociatedImagesProps,
+} from "../ImageModal";
 
 export interface EditProductFormRequest {
   name: string;
@@ -81,7 +84,14 @@ export default function EditProduct() {
         if (response.ok) {
           const data: ProductDetails = await response.json();
 
-          setCurrentProduct(data);
+          setCurrentProduct({
+            id: data.id,
+            name: data.name,
+            description: data.description,
+            price: data.price.toString(),
+            user_id: data.user_id,
+            sku: data.sku,
+          });
         } else {
           console.error("Failed to fetch products");
         }
@@ -95,11 +105,31 @@ export default function EditProduct() {
     fetchProductDetails();
   }, [currentId]);
 
+  const token = Cookies.get("access_token");
+
+  const updateImageOrder = async () => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/by_product/${currentId}`,
+      {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ images: images }),
+      }
+    );
+
+    if (!response.ok) {
+      console.error("Failed to update image order");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const token = Cookies.get("access_token");
-
+    console.log(formData);
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/products/${currentId}`,
@@ -117,6 +147,17 @@ export default function EditProduct() {
       if (response.ok) {
         toast.success("Venda editada com sucesso!");
         // Add further actions or redirection upon successful creation
+
+        await updateImageOrder();
+
+        submitAssociatedImages({
+          currentId,
+          checkedItems,
+          initialCheckedItems,
+          setImages,
+          setCheckedItems,
+          setInitialCheckedItems,
+        });
       } else {
         toast.error("Houve um erro ao editar a venda!");
         console.error("Failed to edit product");

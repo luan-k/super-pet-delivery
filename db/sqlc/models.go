@@ -63,6 +63,7 @@ type ProductCategory struct {
 type ProductImage struct {
 	ProductID int64 `json:"product_id"`
 	ImageID   int64 `json:"image_id"`
+	Order     int32 `json:"order"`
 }
 
 type Sale struct {

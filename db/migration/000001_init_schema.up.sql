@@ -96,6 +96,7 @@ CREATE TABLE "images" (
 CREATE TABLE "product_images" (
   "product_id" bigint NOT NULL,
   "image_id" bigint NOT NULL,
+  "order" int NOT NULL DEFAULT 0,
   CONSTRAINT unique_product_image UNIQUE (product_id, image_id)
 );
 

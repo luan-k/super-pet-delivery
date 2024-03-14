@@ -359,6 +359,21 @@ func (mr *MockStoreMockRecorder) DisassociateProductFromImage(arg0, arg1 interfa
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DisassociateProductFromImage", reflect.TypeOf((*MockStore)(nil).DisassociateProductFromImage), arg0, arg1)
 }
 
+// EditAssociation mocks base method.
+func (m *MockStore) EditAssociation(arg0 context.Context, arg1 db.EditAssociationParams) (db.ProductImage, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "EditAssociation", arg0, arg1)
+	ret0, _ := ret[0].(db.ProductImage)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// EditAssociation indicates an expected call of EditAssociation.
+func (mr *MockStoreMockRecorder) EditAssociation(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EditAssociation", reflect.TypeOf((*MockStore)(nil).EditAssociation), arg0, arg1)
+}
+
 // GetAllSaleIDs mocks base method.
 func (m *MockStore) GetAllSaleIDs(arg0 context.Context) ([]int64, error) {
 	m.ctrl.T.Helper()
@@ -600,10 +615,10 @@ func (mr *MockStoreMockRecorder) ListImages(arg0, arg1 interface{}) *gomock.Call
 }
 
 // ListImagesByProduct mocks base method.
-func (m *MockStore) ListImagesByProduct(arg0 context.Context, arg1 int64) ([]db.Image, error) {
+func (m *MockStore) ListImagesByProduct(arg0 context.Context, arg1 int64) ([]db.ListImagesByProductRow, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListImagesByProduct", arg0, arg1)
-	ret0, _ := ret[0].([]db.Image)
+	ret0, _ := ret[0].([]db.ListImagesByProductRow)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

@@ -8,6 +8,7 @@ import { EditProductFormRequest } from "./[productid]/page";
 import ImageModal, { submitAssociatedImagesProps } from "./ImageModal";
 import Cookies from "js-cookie";
 import { usePathname } from "next/navigation";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 export interface associatedImagesProps {
   currentId: string | undefined;
@@ -106,6 +107,24 @@ export default function ProductForm({
     getAssociatedImages({ setImages, currentId });
   }, [setImages, currentId]);
 
+  const onDragEnd = (result) => {
+    if (!result.destination || !document.getElementById("images") || !images)
+      return;
+
+    const items = Array.from(images);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    // Update the order property of the images
+    const updatedItems = items.map((item, index) => ({
+      ...item,
+      order: index,
+    }));
+    console.log(updatedItems);
+
+    setImages && setImages(updatedItems);
+  };
+
   return (
     <div className='wk-form'>
       <form className='' onSubmit={formConfig.handleSubmit}>
@@ -202,22 +221,44 @@ export default function ProductForm({
                 imageProps={formConfig.imagesDefinitions}
               />
             </div>
-            <div className='wk-image-box grid grid-cols-4'>
-              {images &&
-                images.map((image, index) => (
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId='images'>
+                {(provided) => (
                   <div
-                    key={index}
-                    className='wk-image-list__item'
-                    onClick={() => setSelectedResultIndex(index)}>
-                    <img
-                      src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
-                      alt={image.alt}
-                      draggable='false'
-                      className='wk-image-list__image'
-                    />
+                    id='images'
+                    className='wk-image-box'
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}>
+                    {images &&
+                      images
+                        .sort((a, b) => a.order - b.order)
+                        .map((image, index) => (
+                          <Draggable
+                            key={image.id}
+                            draggableId={String(image.id)}
+                            index={index}>
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                className='wk-image-list__item'
+                                onClick={() => setSelectedResultIndex(index)}>
+                                <img
+                                  src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
+                                  alt={image.alt}
+                                  draggable='false'
+                                  className='wk-image-list__image'
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                    {provided.placeholder}
                   </div>
-                ))}
-            </div>
+                )}
+              </Droppable>
+            </DragDropContext>
           </div>
         </div>
 

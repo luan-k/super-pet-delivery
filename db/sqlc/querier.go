@@ -33,6 +33,7 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id int64) error
 	DisassociateProductFromCategory(ctx context.Context, arg DisassociateProductFromCategoryParams) (ProductCategory, error)
 	DisassociateProductFromImage(ctx context.Context, arg DisassociateProductFromImageParams) (ProductImage, error)
+	EditAssociation(ctx context.Context, arg EditAssociationParams) (ProductImage, error)
 	GetAllSaleIDs(ctx context.Context) ([]int64, error)
 	GetCategory(ctx context.Context, id int64) (Category, error)
 	GetClient(ctx context.Context, id int64) (Client, error)
@@ -49,7 +50,7 @@ type Querier interface {
 	ListCategoriesByProduct(ctx context.Context, productID int64) ([]Category, error)
 	ListClients(ctx context.Context, arg ListClientsParams) ([]Client, error)
 	ListImages(ctx context.Context, arg ListImagesParams) ([]Image, error)
-	ListImagesByProduct(ctx context.Context, productID int64) ([]Image, error)
+	ListImagesByProduct(ctx context.Context, productID int64) ([]ListImagesByProductRow, error)
 	ListProducts(ctx context.Context, arg ListProductsParams) ([]Product, error)
 	ListProductsByCategory(ctx context.Context, arg ListProductsByCategoryParams) ([]Product, error)
 	ListProductsByUser(ctx context.Context, userID int64) ([]Product, error)

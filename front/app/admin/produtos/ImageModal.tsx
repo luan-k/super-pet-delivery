@@ -86,12 +86,21 @@ export const submitAssociatedImages = async ({
     return;
   }
 
-  const imagesToAssociate = checkedItems.filter(
-    (id) => !initialCheckedItems.includes(id)
-  );
+  const imagesToAssociate = checkedItems
+    .filter((id) => !initialCheckedItems.includes(id))
+    .map((id) => ({ id, order: checkedItems.indexOf(id) }));
   const imagesToDisassociate = initialCheckedItems.filter(
     (id) => !checkedItems.includes(id)
   );
+
+  console.log("checkedItems");
+  console.log(checkedItems);
+  console.log("initialCheckedItems");
+  console.log(initialCheckedItems);
+  console.log("imagesToAssociate");
+  console.log(imagesToAssociate);
+  console.log("imagesToDisassociate");
+  console.log(imagesToDisassociate);
 
   if (imagesToAssociate.length > 0) {
     try {
@@ -104,7 +113,7 @@ export const submitAssociatedImages = async ({
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ image_ids: imagesToAssociate }),
+          body: JSON.stringify({ images: imagesToAssociate }),
         }
       );
 

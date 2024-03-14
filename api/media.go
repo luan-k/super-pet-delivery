@@ -427,7 +427,10 @@ type associateMultipleImagesWithProductUri struct {
 }
 
 type associateMultipleImagesWithProductJson struct {
-	ImageIDs []int64 `json:"image_ids" binding:"required,dive,min=1"`
+	Images []struct {
+		ID    int64 `json:"id"`
+		Order int32 `json:"order"`
+	} `json:"images" binding:"required,dive"`
 }
 
 func (server *Server) associateMultipleImagesWithProduct(ctx *gin.Context) {
@@ -456,12 +459,13 @@ func (server *Server) associateMultipleImagesWithProduct(ctx *gin.Context) {
 		currentImageMap[image.ID] = true
 	}
 
-	for _, imageID := range json.ImageIDs {
+	for _, image := range json.Images {
 		// If the image is not already associated, associate it
-		if !currentImageMap[imageID] {
+		if !currentImageMap[image.ID] {
 			arg := db.AssociateProductWithImageParams{
-				ImageID:   imageID,
+				ImageID:   image.ID,
 				ProductID: uri.ProductID,
+				Order:     image.Order,
 			}
 
 			_, err = server.store.AssociateProductWithImage(ctx, arg)
@@ -510,4 +514,48 @@ func (server *Server) disassociateMultipleImagesWithProduct(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"status": "success"})
+}
+
+type editImageOrderUri struct {
+	ProductID int64 `uri:"product_id" binding:"required,min=1"`
+}
+
+type editImageOrderJson struct {
+	Images []struct {
+		ID    int64 `json:"id" binding:"required,min=1" `
+		Order int32 `json:"order" `
+	} `json:"images" binding:"required,dive"`
+}
+
+func (server *Server) editImageOrder(ctx *gin.Context) {
+	var uri editImageOrderUri
+	if err := ctx.ShouldBindUri(&uri); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var json editImageOrderJson
+	if err := ctx.ShouldBindJSON(&json); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var updatedRows []db.ProductImage
+	for _, image := range json.Images {
+		arg := db.EditAssociationParams{
+			ProductID: uri.ProductID,
+			ImageID:   image.ID,
+			Order:     image.Order,
+		}
+
+		updatedRow, err := server.store.EditAssociation(ctx, arg)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+
+		updatedRows = append(updatedRows, updatedRow)
+	}
+
+	ctx.JSON(http.StatusOK, updatedRows)
 }

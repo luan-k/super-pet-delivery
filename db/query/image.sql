@@ -22,8 +22,8 @@ OFFSET $2;
 SELECT COUNT(*) FROM images;
 
 -- name: AssociateProductWithImage :one
-INSERT INTO product_images (product_id, image_id)
-VALUES ($1, $2)
+INSERT INTO product_images (product_id, image_id, "order")
+VALUES ($1, $2, $3)
 RETURNING *;
 
 -- name: DisassociateProductFromImage :one
@@ -32,12 +32,17 @@ WHERE product_id = $1 AND image_id = $2
 RETURNING *;
 
 -- name: ListImagesByProduct :many
-SELECT c.*
+SELECT c.*, pc."order"
 FROM images c
 JOIN product_images pc ON c.id = pc.image_id
 WHERE pc.product_id = $1
-ORDER BY c.id;
+ORDER BY pc."order";
 
+-- name: EditAssociation :one
+UPDATE product_images
+SET "order" = $3
+WHERE product_id = $1 AND image_id = $2
+RETURNING *;
 
 -- name: UpdateImage :one
 UPDATE images 
