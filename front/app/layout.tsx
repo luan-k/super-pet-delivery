@@ -18,8 +18,10 @@ export default function RootLayout({
   return (
     <html lang='pt-BR'>
       <body className={inter.className}>
-        <Header />
-        {children}
+        <div className='overflow-x-hidden'>
+          <Header />
+          {children}
+        </div>
       </body>
     </html>
   );
