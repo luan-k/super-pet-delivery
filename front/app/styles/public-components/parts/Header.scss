@@ -1,0 +1,64 @@
+.wk-header {
+  background-color: white;
+  background-image: url("../../../../public/static/images/background-header.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  @apply py-7;
+  & &__wrapper {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  & &__nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    width: 100%;
+    width: 100%;
+    &-list {
+      align-content: center;
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      font-size: 1.8rem;
+      gap: 3rem;
+      justify-content: flex-end;
+    }
+    &-item {
+      align-items: center;
+      color: #0071bc;
+      display: flex;
+      flex-direction: row;
+      font-size: 1.8rem;
+      justify-content: center;
+      position: relative;
+      a {
+        color: #0071bc;
+        transition: color 0.3s ease;
+      }
+
+      &::after {
+        background: #0071bc;
+        bottom: -5px;
+        content: "";
+        height: 2px;
+        left: 0;
+        position: absolute;
+        transition: width 0.3s ease;
+        width: 0;
+      }
+
+      &:hover::after {
+        width: 100%;
+      }
+
+      &--active {
+        &::after {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
