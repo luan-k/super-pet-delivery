@@ -5,11 +5,13 @@ import { FaWhatsapp, FaPhoneAlt } from "react-icons/fa";
 import "./styles/main.scss";
 import "./styles/public-components/main.scss";
 import SimpleSlider from "./components/Slider";
+import Categories from "./components/Categories";
 
 export default function Home() {
   return (
     <main className='min-h-screen '>
       <SimpleSlider />
+      <Categories />
     </main>
   );
 }
