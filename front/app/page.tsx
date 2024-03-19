@@ -6,12 +6,16 @@ import "./styles/main.scss";
 import "./styles/public-components/main.scss";
 import SimpleSlider from "./components/Slider";
 import Categories from "./components/Categories";
+import Brands from "./components/Brands";
+import Testimonials from "./components/Testimonials";
 
 export default function Home() {
   return (
     <main className='min-h-screen '>
       <SimpleSlider />
       <Categories />
+      <Brands />
+      <Testimonials />
     </main>
   );
 }
