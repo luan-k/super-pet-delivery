@@ -10,13 +10,13 @@
     .wk-testimonial {
         background-size: cover;
         background-repeat: no-repeat;
-        display: flex;
-        flex-direction: column;
         gap: -3rem;
-        padding: 3rem;
         border-radius: 8px;
         position: relative;
         z-index: 1;
+        box-shadow: 1px 30px 50px -10px #31203d;
+        margin: 0 2rem;
+        width: 100%;
         
         &:nth-of-type(1) {
             background-image: url("../../../../public/static/images/TestimonialBackground1.png");
@@ -26,6 +26,17 @@
         }
         &:nth-of-type(3) {
             background-image: url("../../../../public/static/images/TestimonialBackground3.png");
+        }
+
+        &__pet {
+            width: 100%;
+            margin-bottom: -100px;
+            display: flex;
+            justify-content: center;
+
+            img {
+                width: 50%;
+            }
         }
         
         &__bg {
@@ -39,8 +50,29 @@
         &__stars {
             display: flex;
             gap: .2rem;
-            font-size: 2.2rem;
+            font-size: 1.8rem;
+            margin-top: 1rem;
             margin-bottom: 1rem;
+
+            @media screen and (min-width: 328px) {
+                font-size: 2.2rem;
+            }
+
+            @media screen and (min-width: 404px) {
+                font-size: 2.5rem;
+            }
+
+            @media screen and (min-width: 1024px) {
+                font-size: 1.8rem;
+            }
+
+            @media screen and (min-width: 1280px) {
+                font-size: 2.2rem;
+            }
+
+            @media screen and (min-width: 1685px) {
+                font-size: 2.5rem;
+            }
 
             &.color-1 {
                 color: #5c009b!important;
@@ -58,25 +90,76 @@
         &__chat {
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             position: relative;
-            height: 245px;
+            margin-top: 100px;
+            aspect-ratio: 4/3;
+
+            @media screen and (min-width: 768px) and (max-width: 1024px) {
+                padding-top: 2rem;
+            }
 
             img {
                 position: absolute;
+                left: 51.5%;
+                top: -10%;
+                transform: translateX(-50%);
+                max-width: 500%;
+                width: 90%;
+                height: auto;
                 z-index: -1;
-                left: 1.6rem;
             }
         }
 
         &__text {
-            width: 68%;
+            width: 66%;
             margin-bottom: .5rem;
+            line-height: 115%;
+
+            @media screen and (min-width: 328px) {
+                font-size: 1.2rem;
+            }
+
+            @media screen and (min-width: 404px) {
+                font-size: 1.5rem;
+            }
+
+            @media screen and (min-width: 1024px) {
+                font-size: 1rem;
+            }
+
+            @media screen and (min-width: 1280px) {
+                font-size: 1.1rem;
+            }
+
+            @media screen and (min-width: 1685px) {
+                font-size: 1.3rem;
+            }
         }
 
         &__author {
-            width: 60%;
+            padding-left: 1rem;
+
+            @media screen and (min-width: 328px) {
+                font-size: 1.2rem;
+            }
+
+            @media screen and (min-width: 404px) {
+                font-size: 1.5rem;
+            }
+
+            @media screen and (min-width: 1024px) {
+                font-size: 1rem;
+            }
+
+            @media screen and (min-width: 1280px) {
+                font-size: 1.1rem;
+            }
+
+            @media screen and (min-width: 1685px) {
+                font-size: 1.3rem;
+            }
         }
     }
 }
