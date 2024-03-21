@@ -1,0 +1,28 @@
+.wk-products {
+  @apply py-48;
+  .product-card {
+    border-radius: 1rem;
+    box-shadow: 10px 10px 40px -3px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    .product-image {
+      height: 40rem;
+      object-fit: cover;
+      width: 100%;
+      img {
+        height: 100%;
+        object-fit: cover;
+        width: 100%;
+      }
+    }
+    .product-info {
+      background-color: #f9f9f9;
+      @apply py-12 px-4;
+      .product-title {
+        @apply text-3xl text-center font-semibold;
+      }
+      .product-price {
+        @apply text-4xl text-center text-front-blue font-medium;
+      }
+    }
+  }
+}

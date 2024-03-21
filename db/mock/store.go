@@ -66,6 +66,21 @@ func (mr *MockStoreMockRecorder) AssociateProductWithImage(arg0, arg1 interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssociateProductWithImage", reflect.TypeOf((*MockStore)(nil).AssociateProductWithImage), arg0, arg1)
 }
 
+// CountCategory mocks base method.
+func (m *MockStore) CountCategory(arg0 context.Context) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountCategory", arg0)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountCategory indicates an expected call of CountCategory.
+func (mr *MockStoreMockRecorder) CountCategory(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountCategory", reflect.TypeOf((*MockStore)(nil).CountCategory), arg0)
+}
+
 // CountClients mocks base method.
 func (m *MockStore) CountClients(arg0 context.Context) (int64, error) {
 	m.ctrl.T.Helper()

@@ -8,12 +8,14 @@ import SimpleSlider from "./components/Slider";
 import Categories from "./components/Categories";
 import Brands from "./components/Brands";
 import Testimonials from "./components/Testimonials";
+import Products from "./components/Products";
 
 export default function Home() {
   return (
     <main className='min-h-screen '>
       <SimpleSlider />
       <Categories />
+      <Products />
       <Brands />
       <Testimonials />
     </main>
