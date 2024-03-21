@@ -20,6 +20,9 @@ export default function Products() {
     total: number;
     products: Product[];
   }
+  /*   interface productsWithImages extends Product {
+    images: string[];
+  } */
 
   const getAssociatedImages = async ({
     currentId,
