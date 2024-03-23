@@ -17,7 +17,7 @@ export default function QuemSomos() {
               fill={true}
             />
           </div>
-          <div className='text-2xl flex items-start flex-col gap-12'>
+          <div className='text-3xl flex items-start flex-col gap-12'>
             <h1 className='text-5xl font-semibold text-front-blue text-left'>
               Quem Somos
             </h1>
