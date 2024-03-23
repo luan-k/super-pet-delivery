@@ -18,7 +18,7 @@ export default function Header() {
 
   const isActive = (href: string) => {
     // Compare the current route with the link's href
-    return currentRoute.includes(href) ? "wk-header__nav-item--active" : "";
+    return currentRoute === href ? "wk-header__nav-item--active" : "";
   };
 
   const toggleMenu = () => {
