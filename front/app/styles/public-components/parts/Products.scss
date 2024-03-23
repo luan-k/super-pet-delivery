@@ -25,4 +25,22 @@
       }
     }
   }
+  .product-pagination {
+    align-content: center;
+    align-items: center;
+    color: black;
+    display: flex;
+    flex-direction: row;
+    font-size: 2.1rem;
+    font-weight: 400;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 4rem;
+    .wk-pagination__button {
+      &--active {
+        @apply text-front-blue;
+        font-weight: 600;
+      }
+    }
+  }
 }

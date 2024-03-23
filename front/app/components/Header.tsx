@@ -30,7 +30,10 @@ export default function Header() {
 
   return (
     <>
-      <header className='wk-header'>
+      <header
+        className={`wk-header ${
+          pathname === "/login" || pathname.startsWith("/admin") ? "hidden" : ""
+        }`}>
         <div className='wk-header__wrapper container'>
           <Link href='/'>
             <Image
