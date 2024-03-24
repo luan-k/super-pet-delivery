@@ -51,6 +51,7 @@ type Product struct {
 	Price       float64   `json:"price"`
 	Sku         string    `json:"sku"`
 	Images      []string  `json:"images"`
+	Url         string    `json:"url"`
 	CreatedAt   time.Time `json:"created_at"`
 	ChangedAt   time.Time `json:"changed_at"`
 }

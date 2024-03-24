@@ -40,6 +40,7 @@ type Querier interface {
 	GetClient(ctx context.Context, id int64) (Client, error)
 	GetImage(ctx context.Context, id int64) (Image, error)
 	GetProduct(ctx context.Context, id int64) (Product, error)
+	GetProductByURL(ctx context.Context, url string) (Product, error)
 	GetSale(ctx context.Context, id int64) (Sale, error)
 	GetSalesByClientID(ctx context.Context, clientID int64) ([]Sale, error)
 	GetSalesByDate(ctx context.Context, arg GetSalesByDateParams) ([]int64, error)

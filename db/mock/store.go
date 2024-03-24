@@ -464,6 +464,21 @@ func (mr *MockStoreMockRecorder) GetProduct(arg0, arg1 interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProduct", reflect.TypeOf((*MockStore)(nil).GetProduct), arg0, arg1)
 }
 
+// GetProductByURL mocks base method.
+func (m *MockStore) GetProductByURL(arg0 context.Context, arg1 string) (db.Product, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetProductByURL", arg0, arg1)
+	ret0, _ := ret[0].(db.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetProductByURL indicates an expected call of GetProductByURL.
+func (mr *MockStoreMockRecorder) GetProductByURL(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProductByURL", reflect.TypeOf((*MockStore)(nil).GetProductByURL), arg0, arg1)
+}
+
 // GetSale mocks base method.
 func (m *MockStore) GetSale(arg0 context.Context, arg1 int64) (db.Sale, error) {
 	m.ctrl.T.Helper()

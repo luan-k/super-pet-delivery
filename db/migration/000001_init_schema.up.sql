@@ -18,6 +18,7 @@ CREATE TABLE "products" (
   "price" float NOT NULL,
   "sku" varchar NOT NULL DEFAULT '',
   "images" varchar[] NOT NULL DEFAULT '{}',
+  "url" varchar NOT NULL DEFAULT '' UNIQUE,
   "created_at" timestamptz NOT NULL DEFAULT (now() AT TIME ZONE 'America/Sao_Paulo'),
   "changed_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z'
 );

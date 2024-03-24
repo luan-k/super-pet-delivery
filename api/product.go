@@ -7,6 +7,7 @@ import (
 
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -19,6 +20,16 @@ type createProductRequest struct {
 	Price       string   `json:"price"`
 	Sku         string   `json:"sku"`
 	Images      []string `json:"images"`
+}
+
+func sanitizeName(name string) string {
+	// Replace spaces with hyphens
+	sanitized := strings.ReplaceAll(name, " ", "-")
+	// Convert to lowercase
+	sanitized = strings.ToLower(sanitized)
+	// URL encode to handle special characters
+	sanitized = url.PathEscape(sanitized)
+	return sanitized
 }
 
 func (server *Server) createProduct(ctx *gin.Context) {
@@ -56,6 +67,22 @@ func (server *Server) createProduct(ctx *gin.Context) {
 		return
 	}
 
+	baseURL := sanitizeName(req.Name)
+	url := baseURL
+	i := 1
+	for {
+		_, err := server.store.GetProductByURL(ctx, url)
+		if err == sql.ErrNoRows {
+			break
+		}
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+		url = fmt.Sprintf("%s-%d", baseURL, i)
+		i++
+	}
+
 	arg := db.CreateProductParams{
 		Name:        req.Name,
 		Description: req.Description,
@@ -63,12 +90,38 @@ func (server *Server) createProduct(ctx *gin.Context) {
 		Username:    user.Username,
 		Price:       productPrice,
 		Sku:         productSku,
+		Url:         url,
 		Images:      productImages,
 	}
 
 	product, err := server.store.CreateProduct(ctx, arg)
 
 	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, product)
+}
+
+type getProductByURLRequest struct {
+	URL string `uri:"url" binding:"required"`
+}
+
+func (server *Server) getProductByURL(ctx *gin.Context) {
+	var req getProductByURLRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	product, err := server.store.GetProductByURL(ctx, req.URL)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -247,6 +300,25 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 		existingProduct.Images = req.Images
 	}
 
+	baseURL := sanitizeName(existingProduct.Name)
+	url := baseURL
+	i := 1
+	for {
+		product, err := server.store.GetProductByURL(ctx, url)
+		if err == sql.ErrNoRows {
+			break
+		}
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+		if product.ID == productID {
+			break
+		}
+		url = fmt.Sprintf("%s-%d", baseURL, i)
+		i++
+	}
+
 	arg := db.UpdateProductParams{
 		ID:          productID,
 		Name:        existingProduct.Name,
@@ -255,6 +327,7 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 		Username:    user.Username,
 		Price:       existingProduct.Price,
 		Sku:         existingProduct.Sku,
+		Url:         url,
 		Images:      existingProduct.Images,
 	}
 

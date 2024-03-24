@@ -89,6 +89,7 @@ func (server *Server) setupRouter() {
 	authRoutes.DELETE("/users/:id", server.deleteUser)
 
 	authRoutes.POST("/products", server.createProduct)
+	router.GET("/product/:url", server.getProductByURL)
 	router.GET("/products/:id", server.getProduct)
 	router.GET("/products", server.listProduct)
 	// ideally would be paginated as well but for now its good enough

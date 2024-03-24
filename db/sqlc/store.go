@@ -250,7 +250,7 @@ func (store *SortableSQLStore) ListProductsSorted(ctx context.Context, arg ListP
 	var products []Product
 	for rows.Next() {
 		var product Product
-		if err := rows.Scan(&product.ID, &product.Name, &product.Description, &product.UserID, &product.Username, &product.Price, &product.Sku, pq.Array(&product.Images), &product.CreatedAt, &product.ChangedAt); err != nil {
+		if err := rows.Scan(&product.ID, &product.Name, &product.Description, &product.UserID, &product.Username, &product.Price, &product.Sku, &product.Url, pq.Array(&product.Images), &product.CreatedAt, &product.ChangedAt); err != nil {
 			return nil, err
 		}
 		products = append(products, product)
@@ -289,7 +289,7 @@ func (store *SortableSQLStore) SearchProducts(ctx context.Context, search string
 	var products []Product
 	for rows.Next() {
 		var p Product
-		if err = rows.Scan(&p.ID, &p.Name, &p.Description, &p.UserID, &p.Username, &p.Price, &p.Sku, pq.Array(&p.Images), &p.CreatedAt, &p.ChangedAt); err != nil {
+		if err = rows.Scan(&p.ID, &p.Name, &p.Description, &p.UserID, &p.Username, &p.Price, &p.Sku, &p.Url, pq.Array(&p.Images), &p.CreatedAt, &p.ChangedAt); err != nil {
 			return nil, err
 		}
 		products = append(products, p)
