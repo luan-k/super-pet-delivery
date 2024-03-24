@@ -145,7 +145,7 @@ export default function EditProduct() {
       );
 
       if (response.ok) {
-        toast.success("Venda editada com sucesso!");
+        toast.success("Produto editado com sucesso!");
         // Add further actions or redirection upon successful creation
 
         await updateImageOrder();
@@ -159,7 +159,7 @@ export default function EditProduct() {
           setInitialCheckedItems,
         });
       } else {
-        toast.error("Houve um erro ao editar a venda!");
+        toast.error("Houve um erro ao editar o produto!");
         console.error("Failed to edit product");
       }
     } catch (error) {

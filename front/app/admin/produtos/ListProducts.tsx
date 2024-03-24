@@ -12,6 +12,7 @@ export interface Product {
   price: string;
   sku: string;
   images: string[];
+  url: string;
   created_at: string;
 }
 
