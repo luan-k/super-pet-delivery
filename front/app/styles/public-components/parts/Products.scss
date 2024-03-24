@@ -1,5 +1,6 @@
 .wk-products {
-  @apply py-48;
+  @apply pt-48;
+  padding-bottom: 20rem;
   .product-card {
     border-radius: 1rem;
     box-shadow: 10px 10px 40px -3px rgba(0, 0, 0, 0.12);

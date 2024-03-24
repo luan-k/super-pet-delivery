@@ -6,7 +6,7 @@ import "../styles/public-components/parts/quem-somos.scss";
 
 export default function QuemSomos() {
   return (
-    <main className='py-48 flex bg-gray-50 quem-somos'>
+    <main className='pt-48 pb-80 flex bg-gray-50 quem-somos'>
       <div className='container text-black flex items-center'>
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-24'>
           <div className='relative flex items-center quem-somos__image-wrapper'>
