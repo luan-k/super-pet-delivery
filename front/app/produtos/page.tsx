@@ -5,7 +5,9 @@ import { associatedImagesProps } from "../admin/produtos/ProductForm";
 import { FaPaw } from "react-icons/fa";
 import "../styles/public-components/parts/Header.scss";
 import "../styles/public-components/parts/Products.scss";
+import "../styles/public-components/parts/Footer.scss";
 import WkPagination from "../admin/components/WkPagination";
+import Link from "next/link";
 
 export default function Produtos() {
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -147,15 +149,18 @@ export default function Produtos() {
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 text-black gap-12'>
           {listProductResponse.map((product) => (
             <div key={product.id} className='product-card'>
-              <div className='product-image'>
-                <img src={product.images} alt={product.name} />
-              </div>
-              <div className='product-info'>
-                <p className='product-price mb-3'>
-                  R$ {parseFloat(product.price).toLocaleString("pt-BR")}
-                </p>
-                <h3 className='product-title'>{product.name}</h3>
-              </div>
+              <Link
+                href={`/produtos/${product.url}-florianopolis-sao-jose-palhoca-biguacu-santo-amaro`}>
+                <div className='product-image'>
+                  <img src={product.images} alt={product.name} />
+                </div>
+                <div className='product-info'>
+                  <p className='product-price mb-3'>
+                    R$ {parseFloat(product.price).toLocaleString("pt-BR")}
+                  </p>
+                  <h3 className='product-title'>{product.name}</h3>
+                </div>
+              </Link>
             </div>
           ))}
         </div>
