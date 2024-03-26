@@ -13,6 +13,8 @@ import {
   submitAssociatedImages,
   submitAssociatedImagesProps,
 } from "../ImageModal";
+import { Category } from "../../categorias/ListCategories";
+import { submitAssociatedCategories } from "../CategoryBox";
 
 export interface CreateProductRequest {
   name: string;
@@ -92,6 +94,11 @@ export default function CreateProduct() {
   const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const [initialCheckedItems, setInitialCheckedItems] = useState<number[]>([]);
   const [images, setImages] = useState<any[]>([]);
+  const [checkedCategories, setCheckedCategories] = useState<number[]>([]);
+  const [initialCheckedCategories, setInitialCheckedCategories] = useState<
+    number[]
+  >([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -125,6 +132,11 @@ export default function CreateProduct() {
           setCheckedItems,
           setInitialCheckedItems,
         });
+        submitAssociatedCategories(
+          currentId,
+          checkedCategories,
+          initialCheckedCategories
+        );
         router.push(`/admin/produtos/`); //${data.id}`);
         toast.success("Produto criado com sucesso!");
       } else {
@@ -147,6 +159,13 @@ export default function CreateProduct() {
     setInitialCheckedItems: setInitialCheckedItems,
   };
 
+  const categoryDetails = {
+    setCheckedItems: setCheckedCategories,
+    setInitialCheckedItems: setInitialCheckedCategories,
+    checkedItems: checkedCategories,
+    initialCheckedItems: initialCheckedCategories,
+  };
+
   const formConfig: formConfigInterface = {
     handleSubmit,
     setFormData,
@@ -157,6 +176,7 @@ export default function CreateProduct() {
     handlePriceChange,
     submitButtonText: "Criar Produto",
     imagesDefinitions: imageDetails,
+    categoriesDefinitions: categoryDetails,
   };
   return (
     <div className='wk-admin-page__wrapper'>

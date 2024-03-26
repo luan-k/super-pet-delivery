@@ -9,6 +9,7 @@ import ImageModal, { submitAssociatedImagesProps } from "./ImageModal";
 import Cookies from "js-cookie";
 import { usePathname } from "next/navigation";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import CategoryBox, { CategoryBoxProps } from "./CategoryBox";
 
 export interface associatedImagesProps {
   currentId: string | undefined;
@@ -85,6 +86,7 @@ export interface formConfigInterface {
   ) => void;
   submitButtonText: string;
   imagesDefinitions?: submitAssociatedImagesProps;
+  categoriesDefinitions?: CategoryBoxProps;
 }
 
 export default function ProductForm({
@@ -127,6 +129,13 @@ export default function ProductForm({
 
   return (
     <div className='wk-form'>
+      <div className='relative'>
+        <div className='category-wrapper'>
+          <h4 className=''>Categorias</h4>
+          <CategoryBox {...formConfig.categoriesDefinitions} />
+        </div>
+      </div>
+
       <form className='' onSubmit={formConfig.handleSubmit}>
         <h2 className='wk-form__row-title'>Informações Básicas</h2>
         <div className='wk-form__row grid grid-cols-3 gap-9 gap-y'>

@@ -11,6 +11,7 @@ import {
   submitAssociatedImages,
   submitAssociatedImagesProps,
 } from "../ImageModal";
+import { CategoryBoxProps, submitAssociatedCategories } from "../CategoryBox";
 
 export interface EditProductFormRequest {
   name: string;
@@ -46,6 +47,10 @@ export default function EditProduct() {
   const [initialCheckedItems, setInitialCheckedItems] = useState<number[]>([]);
   const [images, setImages] = useState<any[]>([]);
 
+  const [checkedCategories, setCheckedCategories] = useState<number[]>([]);
+  const [initialCheckedCategories, setInitialCheckedCategories] = useState<
+    number[]
+  >([]);
   const [displayPrice, setDisplayPrice] = useState("0,00");
   const handlePriceChange = (
     value: string,
@@ -126,6 +131,35 @@ export default function EditProduct() {
     }
   };
 
+  const fetchAssociatedCategories = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/categories/by_product/${currentId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const ids = data.map((item: any) => item.id);
+        setCheckedCategories(ids);
+        setInitialCheckedCategories(ids);
+      } else {
+        console.error("Failed to fetch associated categories");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAssociatedCategories();
+  }, [currentId]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -158,6 +192,13 @@ export default function EditProduct() {
           setCheckedItems,
           setInitialCheckedItems,
         });
+        let currentIdNumber = currentId && parseInt(currentId);
+        currentIdNumber &&
+          submitAssociatedCategories(
+            currentIdNumber,
+            checkedCategories,
+            initialCheckedCategories
+          );
       } else {
         toast.error("Houve um erro ao editar o produto!");
         console.error("Failed to edit product");
@@ -218,6 +259,13 @@ export default function EditProduct() {
     setInitialCheckedItems: setInitialCheckedItems,
   };
 
+  const categoriesDetails: CategoryBoxProps = {
+    checkedItems: checkedCategories,
+    initialCheckedItems: initialCheckedCategories,
+    setCheckedItems: setCheckedCategories,
+    setInitialCheckedItems: setInitialCheckedCategories,
+  };
+
   const formConfig: formConfigInterface = {
     handleSubmit,
     formData,
@@ -228,6 +276,7 @@ export default function EditProduct() {
     handlePriceChange,
     submitButtonText: "Salvar",
     imagesDefinitions: imageDetails,
+    categoriesDefinitions: categoriesDetails,
   };
   return (
     <div className='wk-admin-page__wrapper'>
@@ -242,5 +291,4 @@ export default function EditProduct() {
       </div>
     </div>
   );
-  return;
 }
