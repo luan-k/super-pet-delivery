@@ -265,7 +265,7 @@ export default function ProductForm({
                                       {image.name}
                                     </h4>
                                     <h4 className='image-file-name'>
-                                      {image.image_path}
+                                      {image.image_path.split("/").pop()}
                                     </h4>
                                   </div>
                                 </div>
