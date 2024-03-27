@@ -602,12 +602,6 @@ export default function ImageModal({
                         </button>
                       </div>
 
-                      <Dialog.Close ref={closeRef} asChild>
-                        <button className='wk-btn wk-btn--md wk-btn--default'>
-                          Cancelar
-                        </button>
-                      </Dialog.Close>
-
                       <Link
                         href={`/admin/galeria/${selectedImage.id}`}
                         className='wk-btn wk-btn--md wk-btn--secondary-outline'>
@@ -617,7 +611,7 @@ export default function ImageModal({
                       <button
                         className='wk-btn wk-btn--md wk-btn--primary'
                         type='submit'>
-                        <SaveIcon className='wk-icon' />
+                        <SaveIcon className='wk-icon !m-0' />
                         Salvar
                       </button>
                     </form>
