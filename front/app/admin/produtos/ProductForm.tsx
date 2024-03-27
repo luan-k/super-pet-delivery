@@ -251,7 +251,7 @@ export default function ProductForm({
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className='wk-image-list__item'
+                                className='wk-image-list__item wk-image-list__item--box'
                                 onClick={() => setSelectedResultIndex(index)}>
                                 <img
                                   src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
@@ -259,6 +259,16 @@ export default function ProductForm({
                                   draggable='false'
                                   className='wk-image-list__image'
                                 />
+                                <div className='wk-image-list__item-content-wrapper'>
+                                  <div>
+                                    <h4 className='image-title'>
+                                      {image.name}
+                                    </h4>
+                                    <h4 className='image-file-name'>
+                                      {image.image_path}
+                                    </h4>
+                                  </div>
+                                </div>
                               </div>
                             )}
                           </Draggable>

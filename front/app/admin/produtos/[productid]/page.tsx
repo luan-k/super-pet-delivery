@@ -12,6 +12,7 @@ import {
   submitAssociatedImagesProps,
 } from "../ImageModal";
 import { CategoryBoxProps, submitAssociatedCategories } from "../CategoryBox";
+import { Image } from "../../galeria/ImageList";
 
 export interface EditProductFormRequest {
   name: string;
@@ -45,7 +46,7 @@ export default function EditProduct() {
   });
   const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const [initialCheckedItems, setInitialCheckedItems] = useState<number[]>([]);
-  const [images, setImages] = useState<any[]>([]);
+  const [images, setImages] = useState<Image[]>([]);
 
   const [checkedCategories, setCheckedCategories] = useState<number[]>([]);
   const [initialCheckedCategories, setInitialCheckedCategories] = useState<
