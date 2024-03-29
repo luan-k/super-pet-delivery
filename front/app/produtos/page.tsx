@@ -236,7 +236,8 @@ export default function Produtos() {
           <FaPaw /> Os Melhores Produtos
         </div>
         <div className='grid grid-cols-1 lg:grid-cols-4'>
-          <div className='filter text-black mb-12 lg:mb-0'>
+          <div className='filter text-black mb-12 lg:mb-0 wk-block mr-5'>
+            <h3 className='text-black text-2xl mb-8'>Filtrar por categorias: </h3>
             <div className='category-list'>
               {listCategory.map((category) => (
                 <div key={category.id} className='category-item'>
@@ -261,7 +262,7 @@ export default function Produtos() {
               ))}
             </div>
           </div>
-          <div className='col-span-3'>
+          <div className='col-span-3 '>
             <div className='product-selection-header'>
               <div className='search-wrapper'>
                 {/* <input
