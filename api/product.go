@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"strings"
 	db "super-pet-delivery/db/sqlc"
+	"unicode"
 
 	"fmt"
 	"net/http"
@@ -11,6 +12,9 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 )
 
 type createProductRequest struct {
@@ -24,8 +28,11 @@ type createProductRequest struct {
 }
 
 func sanitizeName(name string) string {
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+	result, _, _ := transform.String(t, name)
+
 	// Replace spaces with hyphens
-	sanitized := strings.ReplaceAll(name, " ", "-")
+	sanitized := strings.ReplaceAll(result, " ", "-")
 	// Convert to lowercase
 	sanitized = strings.ToLower(sanitized)
 	// URL encode to handle special characters
