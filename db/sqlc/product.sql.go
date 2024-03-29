@@ -31,10 +31,11 @@ INSERT INTO products (
     price,
     sku,
     url,
+    categories,
     images
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8
-) RETURNING id, name, description, user_id, username, price, sku, images, url, created_at, changed_at
+    $1, $2, $3, $4, $5, $6, $7, $8, $9
+) RETURNING id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at
 `
 
 type CreateProductParams struct {
@@ -45,6 +46,7 @@ type CreateProductParams struct {
 	Price       float64  `json:"price"`
 	Sku         string   `json:"sku"`
 	Url         string   `json:"url"`
+	Categories  []int64  `json:"categories"`
 	Images      []string `json:"images"`
 }
 
@@ -57,6 +59,7 @@ func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (P
 		arg.Price,
 		arg.Sku,
 		arg.Url,
+		pq.Array(arg.Categories),
 		pq.Array(arg.Images),
 	)
 	var i Product
@@ -69,6 +72,7 @@ func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (P
 		&i.Price,
 		&i.Sku,
 		pq.Array(&i.Images),
+		pq.Array(&i.Categories),
 		&i.Url,
 		&i.CreatedAt,
 		&i.ChangedAt,
@@ -87,7 +91,7 @@ func (q *Queries) DeleteProduct(ctx context.Context, id int64) error {
 }
 
 const getProduct = `-- name: GetProduct :one
-SELECT id, name, description, user_id, username, price, sku, images, url, created_at, changed_at FROM products 
+SELECT id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at FROM products 
 WHERE id = $1 LIMIT 1
 `
 
@@ -103,6 +107,7 @@ func (q *Queries) GetProduct(ctx context.Context, id int64) (Product, error) {
 		&i.Price,
 		&i.Sku,
 		pq.Array(&i.Images),
+		pq.Array(&i.Categories),
 		&i.Url,
 		&i.CreatedAt,
 		&i.ChangedAt,
@@ -111,7 +116,7 @@ func (q *Queries) GetProduct(ctx context.Context, id int64) (Product, error) {
 }
 
 const getProductByURL = `-- name: GetProductByURL :one
-SELECT id, name, description, user_id, username, price, sku, images, url, created_at, changed_at FROM products 
+SELECT id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at FROM products 
 WHERE url = $1 LIMIT 1
 `
 
@@ -127,6 +132,7 @@ func (q *Queries) GetProductByURL(ctx context.Context, url string) (Product, err
 		&i.Price,
 		&i.Sku,
 		pq.Array(&i.Images),
+		pq.Array(&i.Categories),
 		&i.Url,
 		&i.CreatedAt,
 		&i.ChangedAt,
@@ -135,7 +141,7 @@ func (q *Queries) GetProductByURL(ctx context.Context, url string) (Product, err
 }
 
 const listProducts = `-- name: ListProducts :many
-SELECT id, name, description, user_id, username, price, sku, images, url, created_at, changed_at FROM products 
+SELECT id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at FROM products 
 ORDER BY id DESC
 LIMIT $1
 OFFSET $2
@@ -164,6 +170,7 @@ func (q *Queries) ListProducts(ctx context.Context, arg ListProductsParams) ([]P
 			&i.Price,
 			&i.Sku,
 			pq.Array(&i.Images),
+			pq.Array(&i.Categories),
 			&i.Url,
 			&i.CreatedAt,
 			&i.ChangedAt,
@@ -182,7 +189,7 @@ func (q *Queries) ListProducts(ctx context.Context, arg ListProductsParams) ([]P
 }
 
 const listProductsByCategory = `-- name: ListProductsByCategory :many
-SELECT p.id, p.name, p.description, p.user_id, p.username, p.price, p.sku, p.images, p.url, p.created_at, p.changed_at
+SELECT p.id, p.name, p.description, p.user_id, p.username, p.price, p.sku, p.images, p.categories, p.url, p.created_at, p.changed_at
 FROM products p
 JOIN product_categories pc ON p.id = pc.product_id
 WHERE pc.category_id = $1
@@ -215,6 +222,7 @@ func (q *Queries) ListProductsByCategory(ctx context.Context, arg ListProductsBy
 			&i.Price,
 			&i.Sku,
 			pq.Array(&i.Images),
+			pq.Array(&i.Categories),
 			&i.Url,
 			&i.CreatedAt,
 			&i.ChangedAt,
@@ -233,7 +241,7 @@ func (q *Queries) ListProductsByCategory(ctx context.Context, arg ListProductsBy
 }
 
 const listProductsByUser = `-- name: ListProductsByUser :many
-SELECT id, name, description, user_id, username, price, sku, images, url, created_at, changed_at FROM products
+SELECT id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at FROM products
 WHERE user_id = $1
 ORDER BY id
 `
@@ -256,6 +264,7 @@ func (q *Queries) ListProductsByUser(ctx context.Context, userID int64) ([]Produ
 			&i.Price,
 			&i.Sku,
 			pq.Array(&i.Images),
+			pq.Array(&i.Categories),
 			&i.Url,
 			&i.CreatedAt,
 			&i.ChangedAt,
@@ -283,9 +292,10 @@ SET
     price = COALESCE($6, price),
     sku = COALESCE($7, sku),
     url = COALESCE($8, url),
-    images = COALESCE($9, images)
+    images = COALESCE($9, images),
+    categories = COALESCE($10, categories)
 WHERE id = $1
-RETURNING id, name, description, user_id, username, price, sku, images, url, created_at, changed_at
+RETURNING id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at
 `
 
 type UpdateProductParams struct {
@@ -298,6 +308,7 @@ type UpdateProductParams struct {
 	Sku         string   `json:"sku"`
 	Url         string   `json:"url"`
 	Images      []string `json:"images"`
+	Categories  []int64  `json:"categories"`
 }
 
 func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (Product, error) {
@@ -311,6 +322,7 @@ func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (P
 		arg.Sku,
 		arg.Url,
 		pq.Array(arg.Images),
+		pq.Array(arg.Categories),
 	)
 	var i Product
 	err := row.Scan(
@@ -322,6 +334,7 @@ func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (P
 		&i.Price,
 		&i.Sku,
 		pq.Array(&i.Images),
+		pq.Array(&i.Categories),
 		&i.Url,
 		&i.CreatedAt,
 		&i.ChangedAt,

@@ -20,6 +20,7 @@ type createProductRequest struct {
 	Price       string   `json:"price"`
 	Sku         string   `json:"sku"`
 	Images      []string `json:"images"`
+	Categories  []int64  `json:"categories"`
 }
 
 func sanitizeName(name string) string {
@@ -92,6 +93,7 @@ func (server *Server) createProduct(ctx *gin.Context) {
 		Sku:         productSku,
 		Url:         url,
 		Images:      productImages,
+		Categories:  req.Categories,
 	}
 
 	product, err := server.store.CreateProduct(ctx, arg)
@@ -165,6 +167,7 @@ type listProductRequest struct {
 	SortField     string `form:"sort_field" binding:""`
 	SortDirection string `form:"sort_direction" binding:""`
 	Search        string `form:"search" binding:""`
+	CategoryID    int64  `form:"category_id" binding:""`
 }
 
 func (server *Server) listProduct(ctx *gin.Context) {
@@ -186,8 +189,10 @@ func (server *Server) listProduct(ctx *gin.Context) {
 	}
 
 	var products []db.Product
-	// Check if sort fields and search are provided
-	if req.SortField != "" && req.SortDirection != "" && req.Search != "" {
+	if req.CategoryID != 0 {
+		// Fetch the paginated products for the given category
+		products, err = server.store.FilterProducts(ctx, req.CategoryID, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection, req.Search)
+	} else if req.SortField != "" && req.SortDirection != "" && req.Search != "" {
 		// Fetch the paginated products with sorting and search
 		products, err = server.store.SearchProducts(ctx, req.Search, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection)
 	} else if req.SortField != "" && req.SortDirection != "" {
@@ -240,6 +245,7 @@ type updateProductRequest struct {
 	Price       string   `json:"price"`
 	Sku         string   `json:"sku"`
 	Images      []string `json:"images"`
+	Categories  []int64  `json:"categories"`
 }
 
 func (server *Server) updateProduct(ctx *gin.Context) {
@@ -299,6 +305,9 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 	if len(req.Images) > 0 {
 		existingProduct.Images = req.Images
 	}
+	if len(req.Categories) > 0 {
+		existingProduct.Categories = req.Categories
+	}
 
 	baseURL := sanitizeName(existingProduct.Name)
 	url := baseURL
@@ -329,6 +338,7 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 		Sku:         existingProduct.Sku,
 		Url:         url,
 		Images:      existingProduct.Images,
+		Categories:  existingProduct.Categories,
 	}
 
 	// Perform the update operation with the modified product data

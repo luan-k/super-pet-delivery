@@ -115,7 +115,10 @@ export default function CreateProduct() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({
+            ...formData,
+            categories: checkedCategories,
+          }),
         }
       );
       console.log(formData);

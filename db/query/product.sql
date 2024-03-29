@@ -7,9 +7,10 @@ INSERT INTO products (
     price,
     sku,
     url,
+    categories,
     images
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8
+    $1, $2, $3, $4, $5, $6, $7, $8, $9
 ) RETURNING *;
 
 -- name: GetProduct :one
@@ -53,7 +54,8 @@ SET
     price = COALESCE($6, price),
     sku = COALESCE($7, sku),
     url = COALESCE($8, url),
-    images = COALESCE($9, images)
+    images = COALESCE($9, images),
+    categories = COALESCE($10, categories)
 WHERE id = $1
 RETURNING *;
 
