@@ -4,7 +4,7 @@ import Image from "next/image";
 import Logo from "../../public/static/images/superpet-logo.png";
 import FooterAnimals from "../../public/static/images/animaisfootermini.png";
 import WKode from "../../public/wkode-footer-logo.svg";
-import { FaFacebook, FaInstagram, FaYoutube } from 'react-icons/fa';
+import { FaWhatsapp, FaInstagram, FaMapMarker } from 'react-icons/fa';
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -30,13 +30,13 @@ export default function Footer() {
                         Sabemos que os animais de estimação são como uma família, por isso estamos comprometidos em fornecer produtos da mais alta qualidade em que você pode confiar.
                     </div>
                     <div className="wk-footer-icons">
-                        <Link href="#">
-                            <FaYoutube />
+                        <Link href="https://www.google.com/maps/place/Super+Pet+Delivery/@-27.6316157,-48.6558265,15z/data=!4m6!3m5!1s0x95273597c288c591:0x428507ff8e06abda!8m2!3d-27.6316157!4d-48.6558265!16s%2Fg%2F11tx4q5rtv?entry=ttu">
+                            <FaMapMarker />
                         </Link>
-                        <Link href="#">
-                            <FaFacebook />
+                        <Link href="https://api.whatsapp.com/send?phone=554899805164&text=Ol%C3%A1%2C%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es%20sobre%20os%20produtos%20da%20SuperPet.">
+                            <FaWhatsapp />
                         </Link>
-                        <Link href="#">
+                        <Link href="https://www.instagram.com/superpetdelivery/">
                             <FaInstagram />
                         </Link>
                     </div>
@@ -47,7 +47,6 @@ export default function Footer() {
                     <Link href='/produtos'>Produtos</Link>
                     <Link href='/sobre-nos'>Sobre nós</Link>
                     <Link href='/contato'>Contato</Link>
-                    <Link href='#'>Pesquisar</Link>
                 </div>
                 <div className="wk-footer-section">
                     <h3>Categorias</h3>
