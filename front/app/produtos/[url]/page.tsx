@@ -154,7 +154,7 @@ export default function SingleProduct() {
               }}
               asNavFor={nav1}
               ref={(slider) => (slider2 = slider)}
-              slidesToShow={6}
+              slidesToShow={Math.min(6, images.length)}
               swipeToSlide={true}
               focusOnSelect={true}>
               {images.map((image, index) => (

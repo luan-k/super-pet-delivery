@@ -130,7 +130,7 @@ export default function Products() {
   return (
     <div className='wk-products'>
       <div className='container'>
-        <div className='text-4xl text-front-blue text-center flex justify-center gap-7 mb-20'>
+        <div className='text-6xl text-front-blue text-center flex justify-center gap-7 mb-36'>
           <FaPaw /> Os Melhores Produtos
         </div>
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 text-black gap-12'>

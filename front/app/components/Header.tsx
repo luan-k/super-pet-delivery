@@ -4,6 +4,9 @@ import Image from "next/image";
 import Logo from "../../public/static/images/superpet-logo.png";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { InstagramLogoIcon } from "@radix-ui/react-icons";
+import { FaWhatsapp } from "react-icons/fa";
+import { RiMapPin2Fill } from "react-icons/ri";
 
 export default function Header() {
   const [currentRoute, setCurrentRoute] = useState("");
@@ -34,6 +37,22 @@ export default function Header() {
         className={`wk-header ${
           pathname === "/login" || pathname.startsWith("/admin") ? "hidden" : ""
         }`}>
+        <div className='wk-header__socials-nav'>
+          <a href='https://www.instagram.com/superpetdelivery/' target='_blank'>
+            <InstagramLogoIcon />
+            @superpetdelivery
+          </a>
+          <a
+            href='https://api.whatsapp.com/send?phone=554899805164&text=Ol%C3%A1%2C%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es%20sobre%20os%20produtos%20da%20SuperPet.'
+            target='_blank'>
+            <FaWhatsapp />
+            (48) 9980-5164
+          </a>
+          <a href='https://maps.app.goo.gl/QvXd9NArgN2aUMoC7' target='_blank'>
+            <RiMapPin2Fill />
+            Manoel Gualberto dos Santos 109
+          </a>
+        </div>
         <div className='wk-header__wrapper container'>
           <Link href='/'>
             <Image

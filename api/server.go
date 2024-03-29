@@ -105,7 +105,10 @@ func (server *Server) setupRouter() {
 	authRoutes.DELETE("/categories/:id", server.deleteCategory)
 
 	authRoutes.POST("/link_categories/:category_id/:product_id", server.associateCategoryWithProduct)
+	authRoutes.POST("/link_categories/multiple/:product_id", server.associateMultipleCategoriesWithProduct)
 	authRoutes.DELETE("/link_categories/:category_id/:product_id", server.disassociateCategoryWithProduct)
+	authRoutes.DELETE("/link_categories/multiple/:product_id", server.disassociateMultipleCategoriesWithProduct)
+	router.GET("/categories/by_product/:product_id", server.listProductCategories)
 
 	authRoutes.POST("/clients", server.createClient)
 	authRoutes.GET("/clients/:id", server.getClient)
