@@ -135,6 +135,7 @@ export default function SingleProduct() {
                 slidesToShow: 1,
                 slidesToScroll: 1,
                 arrows: true,
+                infinite: images.length > 1,
               }}>
               {images.map((image, index) => (
                 <div key={index}>
@@ -151,10 +152,11 @@ export default function SingleProduct() {
               className='slider-nav'
               {...{
                 arrows: false,
+                infinite: images.length > 1,
               }}
               asNavFor={nav1}
               ref={(slider) => (slider2 = slider)}
-              slidesToShow={Math.min(6, images.length)}
+              slidesToShow={images.length > 1 ? images.length : 6}
               swipeToSlide={true}
               focusOnSelect={true}>
               {images.map((image, index) => (
