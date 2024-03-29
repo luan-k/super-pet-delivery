@@ -13,6 +13,7 @@ import {
   ListCategoryResponse,
 } from "../admin/categorias/ListCategories";
 import SearchIcon from "../../public/admin-search.svg";
+import { useRouter } from "next/navigation";
 
 export default function Produtos() {
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -211,12 +212,20 @@ export default function Produtos() {
     setItemsPerPage: setProductsPerPage,
   };
 
+  const router = useRouter(); // Get the router instance
+
   const handleCheck = (id: number, isChecked: boolean) => {
     if (isChecked) {
       setCheckedItems &&
         setCheckedItems((prevState) => {
           const newState = [...prevState, id];
           console.log(newState);
+          // Update the URL
+          window.history.pushState(
+            { category: newState },
+            "",
+            `?category=${newState}`
+          );
           return newState;
         });
     } else {
@@ -224,6 +233,12 @@ export default function Produtos() {
         setCheckedItems((prevState) => {
           const newState = prevState.filter((itemId) => itemId !== id);
           console.log(newState);
+          // Update the URL
+          window.history.pushState(
+            { category: newState },
+            "",
+            `?category=${newState}`
+          );
           return newState;
         });
     }
