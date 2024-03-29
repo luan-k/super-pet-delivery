@@ -20,11 +20,7 @@ export type handleChangeType = (
   formData: CreateCategoryRequest | EditCategoryFormRequest
 ) => void;
 
-const handleChange: handleChangeType = (
-  e,
-  setFormData,
-  formData
-) => {
+const handleChange: handleChangeType = (e, setFormData, formData) => {
   const { name, value } = e.target;
 
   setFormData({
@@ -83,7 +79,7 @@ export default function CreateCategory() {
       if (response.ok) {
         const data = await response.json();
 
-        router.push(`/admin/produtos/`); //${data.id}`);
+        router.push(`/admin/categorias/`); //${data.id}`);
         toast.success("Categoria criada com sucesso!");
       } else {
         console.error("Failed to create category");

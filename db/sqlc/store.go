@@ -268,7 +268,7 @@ func (store *SortableSQLStore) FilterProducts(ctx context.Context, categoryIds [
 
 func (store *SortableSQLStore) ListProductsSorted(ctx context.Context, arg ListProductsParams, sortField string, sortDirection string) ([]Product, error) {
 	// Define a map of valid sort fields and directions
-	validSortFields := map[string]bool{"name": true, "description": true, "price": true, "username": true, "sku": true}
+	validSortFields := map[string]bool{"name": true, "description": true, "price": true, "username": true, "sku": true, "created_at": true}
 	validSortDirections := map[string]bool{"asc": true, "desc": true}
 
 	// Validate the sort field and direction
