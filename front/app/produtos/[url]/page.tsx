@@ -170,9 +170,9 @@ export default function SingleProduct() {
               ))}
             </Slider>
           </div>
-          <div className='product-details flex gap-12 flex-col'>
-            <h1 className='text-7xl text-gray-700'>{currentProduct?.name}</h1>
-            <h2 className='price text-5xl text-front-blue'>
+          <div className='product-details flex gap-5 flex-col'>
+            <h1 className='text-5xl text-gray-700'>{currentProduct?.name}</h1>
+            <h2 className='price text-3xl font-bold text-front-blue mb-6'>
               R${" "}
               {currentProduct &&
                 parseFloat(currentProduct.price).toLocaleString("pt-BR")}
