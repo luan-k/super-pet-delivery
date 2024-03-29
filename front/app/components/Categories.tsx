@@ -11,7 +11,7 @@ export default function Categories() {
   return (
     <div className='wk-categories'>
       <div className='container py-40'>
-        <div className='text-4xl text-front-blue text-center flex justify-center gap-7'>
+        <div className='text-6xl text-front-blue text-center flex justify-center gap-7 mb-24'>
           <FaPaw /> Navegue por Categorias!
         </div>
         <div className='grid grid-cols-1 md:grid-cols-3 relative h-full gap-7 mt-20'>

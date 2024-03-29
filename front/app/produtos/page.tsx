@@ -232,7 +232,7 @@ export default function Produtos() {
   return (
     <div className='wk-products wk-products--page'>
       <div className='container'>
-        <div className='text-4xl text-front-blue text-center flex justify-center gap-7 mb-24'>
+        <div className='text-6xl text-front-blue text-center flex justify-center gap-7 mb-36 '>
           <FaPaw /> Os Melhores Produtos
         </div>
         <div className='grid grid-cols-1 lg:grid-cols-4'>
