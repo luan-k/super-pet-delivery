@@ -290,6 +290,7 @@ export default function Produtos() {
                   <option value='price'>Preço</option>
                   <option value='username'>Username</option>
                   <option value='sku'>SKU</option>
+                  <option value='created_at'>Data de Criação</option>
                 </select>
                 <select
                   name=''
