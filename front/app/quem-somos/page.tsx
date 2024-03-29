@@ -1,3 +1,4 @@
+import { FaPaw } from "react-icons/fa6";
 import React from "react";
 import Image from "next/image";
 import quemSomosImage from "../../public/static/images/quem-somos.jpg";
@@ -18,7 +19,8 @@ export default function QuemSomos() {
             />
           </div>
           <div className='text-3xl flex items-start flex-col gap-12'>
-            <h1 className='text-5xl font-semibold text-front-blue text-left'>
+            <h1 className='text-5xl flex gap-5 font-semibold text-front-blue text-left'>
+              <FaPaw />
               Quem Somos
             </h1>
 

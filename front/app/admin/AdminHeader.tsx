@@ -39,8 +39,9 @@ export default function IsAuthenticated() {
         );
 
         if (response.ok) {
-          const data = await response.json();
+          const data = await response.json()
           setUsername(data.username);
+            localStorage.setItem("username", data.username);
         } else {
           sessionStorage.setItem("previousUrl", window.location.href);
 

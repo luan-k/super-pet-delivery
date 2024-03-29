@@ -27,7 +27,7 @@ export default function Testimonials() {
                                 <FaStar />
                                 <FaStar />
                             </div>
-                            <div className="wk-testimonial__text text-black text-center ">"Quando o meu humano pede a minha comida, o pessoal da <b>Super Pet Delivery</b> entrega <b>super rápido</b>."</div>
+                            <div className="wk-testimonial__text text-black text-center pt-4">"Quando o meu humano pede a minha comida, o pessoal da <b>Super Pet Delivery</b> entrega <b>super rápido</b>."</div>
                             <div className="wk-testimonial__author text-black text-right font-bold">Luke Skywalker, 1 Ano</div>
                             <Image draggable={false} src={TestChat1} alt="" />
                         </div>
