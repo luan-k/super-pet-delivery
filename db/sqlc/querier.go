@@ -54,7 +54,7 @@ type Querier interface {
 	ListImages(ctx context.Context, arg ListImagesParams) ([]Image, error)
 	ListImagesByProduct(ctx context.Context, productID int64) ([]ListImagesByProductRow, error)
 	ListProducts(ctx context.Context, arg ListProductsParams) ([]Product, error)
-	ListProductsByCategory(ctx context.Context, arg ListProductsByCategoryParams) ([]Product, error)
+	ListProductsByCategory(ctx context.Context, categoryID int64) ([]Product, error)
 	ListProductsByUser(ctx context.Context, userID int64) ([]Product, error)
 	ListSales(ctx context.Context, arg ListSalesParams) ([]Sale, error)
 	ListSessionsByUsername(ctx context.Context, username string) ([]Session, error)

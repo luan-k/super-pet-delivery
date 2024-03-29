@@ -162,6 +162,11 @@ type deleteCategoryRequest struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
 
+type listTestResponse struct {
+	Response []db.Product `json:"response"`
+	Message  string       `json:"message"`
+}
+
 func (server *Server) deleteCategory(ctx *gin.Context) {
 	var req deleteCategoryRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
@@ -169,14 +174,72 @@ func (server *Server) deleteCategory(ctx *gin.Context) {
 		return
 	}
 
-	// delete existing category
-	err := server.store.DeleteCategory(ctx, req.ID)
+	response, err := server.store.ListProductsByCategory(ctx, req.ID)
+
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
+	arg := listTestResponse{
+		Response: response,
+		Message:  "Category has products",
+	}
 
-	ctx.JSON(http.StatusOK, "Category deleted successfully")
+	// if the category has products, dissasoicate them first through the code
+	if len(response) > 0 {
+		for _, product := range response {
+			arg := db.DisassociateProductFromCategoryParams{
+				CategoryID: req.ID,
+				ProductID:  product.ID,
+			}
+
+			_, err := server.store.DisassociateProductFromCategory(ctx, arg)
+			if err != nil {
+				ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+				return
+			}
+
+			// Remove category from product's categories array
+			newCategories := []int64{}
+			for _, category := range product.Categories {
+				if category != req.ID {
+					newCategories = append(newCategories, category)
+				}
+			}
+
+			updateReq := db.UpdateProductParams{
+				ID:          product.ID,
+				Name:        product.Name,
+				Description: product.Description,
+				UserID:      product.UserID,
+				Username:    product.Username,
+				Price:       product.Price,
+				Sku:         product.Sku,
+				Url:         product.Url,
+				Images:      product.Images,
+				Categories:  newCategories,
+			}
+
+			_, err = server.store.UpdateProduct(ctx, updateReq)
+			if err != nil {
+				ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+				return
+			}
+		}
+	}
+
+	// delete existing category
+	err = server.store.DeleteCategory(ctx, req.ID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	arg = listTestResponse{
+		Response: response,
+		Message:  "Category deleted successfully",
+	}
+
+	ctx.JSON(http.StatusOK, arg)
 }
 
 type associateCategoryWithProductRequest struct {

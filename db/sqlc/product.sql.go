@@ -188,58 +188,6 @@ func (q *Queries) ListProducts(ctx context.Context, arg ListProductsParams) ([]P
 	return items, nil
 }
 
-const listProductsByCategory = `-- name: ListProductsByCategory :many
-SELECT p.id, p.name, p.description, p.user_id, p.username, p.price, p.sku, p.images, p.categories, p.url, p.created_at, p.changed_at
-FROM products p
-JOIN product_categories pc ON p.id = pc.product_id
-WHERE pc.category_id = $1
-ORDER BY p.id
-LIMIT $2
-OFFSET $3
-`
-
-type ListProductsByCategoryParams struct {
-	CategoryID int64 `json:"category_id"`
-	Limit      int32 `json:"limit"`
-	Offset     int32 `json:"offset"`
-}
-
-func (q *Queries) ListProductsByCategory(ctx context.Context, arg ListProductsByCategoryParams) ([]Product, error) {
-	rows, err := q.db.QueryContext(ctx, listProductsByCategory, arg.CategoryID, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []Product{}
-	for rows.Next() {
-		var i Product
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Description,
-			&i.UserID,
-			&i.Username,
-			&i.Price,
-			&i.Sku,
-			pq.Array(&i.Images),
-			pq.Array(&i.Categories),
-			&i.Url,
-			&i.CreatedAt,
-			&i.ChangedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const listProductsByUser = `-- name: ListProductsByUser :many
 SELECT id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at FROM products
 WHERE user_id = $1

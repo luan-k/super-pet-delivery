@@ -13,7 +13,9 @@ export interface formConfigInterface {
   setFormData: (data: CreateCategoryRequest) => void;
   handleChange: (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    setFormData: (data: CreateCategoryRequest | EditCategoryFormRequest) => void,
+    setFormData: (
+      data: CreateCategoryRequest | EditCategoryFormRequest
+    ) => void,
     formData: CreateCategoryRequest | EditCategoryFormRequest
   ) => void;
   formData: {
@@ -63,7 +65,6 @@ export default function CategoryForm({
               <textarea
                 name='description'
                 value={formConfig.formData.description}
-                required
                 onChange={(e) =>
                   formConfig.handleChange(
                     e,

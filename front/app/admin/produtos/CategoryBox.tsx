@@ -226,7 +226,7 @@ export default function CategoryBox({
       </div>
       {!showAddCategoryForm && (
         <button
-          className='text-wk-secondary'
+          className='text-wk-secondary add-new-category-btn'
           onClick={(e) => {
             e.stopPropagation();
             setShowAddCategoryForm(true);

@@ -36,6 +36,13 @@ JOIN product_categories pc ON c.id = pc.category_id
 WHERE pc.product_id = $1
 ORDER BY c.id;
 
+-- name: ListProductsByCategory :many
+SELECT p.*
+FROM products p
+JOIN product_categories pc ON p.id = pc.product_id
+WHERE pc.category_id = $1
+ORDER BY p.id;
+
 
 -- name: UpdateCategory :one
 UPDATE categories 
