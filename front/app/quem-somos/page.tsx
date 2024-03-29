@@ -23,11 +23,11 @@ export default function QuemSomos() {
             </h1>
 
             <p>
-              Bem-vindo à Super Pet Delivery, sua solução confiável para a
-              nutrição e o bem-estar dos seus melhores amigos de quatro patas.
-              Fundada por apaixonados por animais, nossa missão é oferecer uma
-              experiência de compra conveniente, rápida e segura para todos os
-              donos de cães e gatos.
+              Bem-vindo à <strong> Super Pet Delivery </strong>, sua solução
+              confiável para a nutrição e o bem-estar dos seus melhores amigos
+              de quatro patas. Fundada por apaixonados por animais, nossa missão
+              é oferecer uma experiência de compra conveniente, rápida e segura
+              para todos os donos de cães e gatos.
             </p>
             <p>
               Entendemos que cada pet é único e merece o melhor. Por isso,
