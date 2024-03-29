@@ -8,6 +8,11 @@ import "../styles/public-components/parts/Products.scss";
 import "../styles/public-components/parts/Footer.scss";
 import WkPagination from "../admin/components/WkPagination";
 import Link from "next/link";
+import {
+  Category,
+  ListCategoryResponse,
+} from "../admin/categorias/ListCategories";
+import SearchIcon from "../../public/admin-search.svg";
 
 export default function Produtos() {
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -20,6 +25,11 @@ export default function Produtos() {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
     null
   );
+  const [listCategory, setListCategory] = useState<Category[]>([]);
+  const [categoriesPerPage, setCategoriesPerPage] = useState<number>(50);
+  const [filter, setFilter] = useState<number[] | null>(null);
+  const [checkedItems, setCheckedItems] = useState<number[]>([]);
+  const [currentPageCategory, setCurrentPageCategory] = useState<number>(1);
 
   interface ListProductResponse {
     total: number;
@@ -83,7 +93,8 @@ export default function Produtos() {
     pageSize: number,
     sortField: string | null,
     sortDirection: "asc" | "desc" | null,
-    search?: string
+    search?: string,
+    filter?: string
   ): Promise<void> {
     try {
       let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/products?page_id=${pageId}&page_size=${pageSize}`;
@@ -93,7 +104,20 @@ export default function Produtos() {
       }
 
       if (search) {
-        url += `&search=${search}`;
+        let searchValue = search.replace(/\./g, "<dot>");
+        searchValue = searchValue.replace(/,/g, ".");
+        searchValue = searchValue.replace(/<dot>/g, ",");
+        url += `&search=${searchValue}`;
+      }
+
+      if (filter) {
+        url += `&category_id=${filter}`;
+      }
+
+      if (checkedItems && checkedItems.length > 0) {
+        checkedItems.forEach((id) => {
+          url += `&category_ids=${id}`;
+        });
       }
       const response = await fetch(url, {
         method: "GET",
@@ -105,12 +129,17 @@ export default function Produtos() {
 
       if (response.ok) {
         const data: ListProductResponse = await response.json();
-        const productsWithImages = await Promise.all(
-          data.products.map(getProductWithImages)
-        );
-        setListProductResponse(productsWithImages);
-        setTotalItems(data.total);
-        console.log(productsWithImages);
+        if (data.products) {
+          const productsWithImages = await Promise.all(
+            data.products.map(getProductWithImages)
+          );
+          setListProductResponse(productsWithImages);
+          setTotalItems(data.total);
+          console.log(productsWithImages);
+        } else {
+          console.log("Failed to fetch products: products property is missing");
+          setListProductResponse(data.products);
+        }
       } else {
         console.error("Failed to fetch products");
       }
@@ -120,6 +149,39 @@ export default function Produtos() {
       setLoading(false);
     }
   }
+  async function fetchCategories(
+    pageId: number,
+    pageSize: number
+  ): Promise<void> {
+    try {
+      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/categories?page_id=${pageId}&page_size=${pageSize}`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const data: ListCategoryResponse = await response.json();
+        setListCategory(data.categories);
+        console.log("categories!!!!!!!!!!!!");
+        console.log(data);
+        setTotalItems(data.total);
+      } else {
+        console.error("Failed to fetch categories");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchCategories(currentPageCategory, categoriesPerPage);
+  }, [currentPageCategory, categoriesPerPage]);
 
   useEffect(() => {
     fetchProducts(
@@ -127,9 +189,18 @@ export default function Produtos() {
       productsPerPage,
       sortField,
       sortDirection,
-      search
+      search,
+      filter?.toString()
     );
-  }, [currentPage, productsPerPage, sortField, sortDirection, search]);
+  }, [
+    currentPage,
+    productsPerPage,
+    sortField,
+    sortDirection,
+    search,
+    filter,
+    checkedItems,
+  ]);
 
   const pagesConfig = {
     currentPage: {
@@ -140,36 +211,127 @@ export default function Produtos() {
     setItemsPerPage: setProductsPerPage,
   };
 
+  const handleCheck = (id: number, isChecked: boolean) => {
+    if (isChecked) {
+      setCheckedItems &&
+        setCheckedItems((prevState) => {
+          const newState = [...prevState, id];
+          console.log(newState);
+          return newState;
+        });
+    } else {
+      setCheckedItems &&
+        setCheckedItems((prevState) => {
+          const newState = prevState.filter((itemId) => itemId !== id);
+          console.log(newState);
+          return newState;
+        });
+    }
+  };
+
   return (
-    <div className='wk-products'>
+    <div className='wk-products wk-products--page'>
       <div className='container'>
-        <div className='text-4xl text-front-blue text-center flex justify-center gap-7 mb-20'>
+        <div className='text-4xl text-front-blue text-center flex justify-center gap-7 mb-24'>
           <FaPaw /> Os Melhores Produtos
         </div>
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 text-black gap-12'>
-          {listProductResponse.map((product) => (
-            <div key={product.id} className='product-card'>
-              <Link
-                href={`/produtos/${product.url}-florianopolis-sao-jose-palhoca-biguacu-santo-amaro`}>
-                <div className='product-image'>
-                  <img src={product.images} alt={product.name} />
+        <div className='grid grid-cols-1 lg:grid-cols-4'>
+          <div className='filter text-black mb-12 lg:mb-0'>
+            <div className='category-list'>
+              {listCategory.map((category) => (
+                <div key={category.id} className='category-item'>
+                  <input
+                    type='checkbox'
+                    id={`checkbox-${category.id}`}
+                    checked={checkedItems && checkedItems.includes(category.id)}
+                    onChange={(e) => handleCheck(category.id, e.target.checked)}
+                    className=''
+                  />
+                  <label
+                    className={` ${
+                      checkedItems &&
+                      checkedItems.includes(category.id) &&
+                      "checked "
+                    }`}
+                    htmlFor={`checkbox-${category.id}`}>
+                    <span></span>
+                    <div className='category-name'>{category.name}</div>
+                  </label>
                 </div>
-                <div className='product-info'>
-                  <p className='product-price mb-3'>
-                    R$ {parseFloat(product.price).toLocaleString("pt-BR")}
-                  </p>
-                  <h3 className='product-title'>{product.name}</h3>
-                </div>
-              </Link>
+              ))}
             </div>
-          ))}
+          </div>
+          <div className='col-span-3'>
+            <div className='product-selection-header'>
+              <div className='search-wrapper'>
+                {/* <input
+                  type='text'
+                  onChange={(e) => setSearch(e.target.value)}
+                /> */}
+                <div className='wk-table__search-bar--wrapper'>
+                  <SearchIcon className='wk-table__search-bar--icon' />
+                  <input
+                    className='wk-table__search-bar'
+                    type='text'
+                    id='search'
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder={`Pesquise por Nome, Descrição etc...`}
+                  />
+                </div>
+              </div>
+              <div className='sorting-wrapper'>
+                <select
+                  onChange={(e) => {
+                    setSortField(e.target.value);
+                  }}>
+                  <option value=''>Ordenar por</option>
+                  <option value='name'>Nome</option>
+                  <option value='description'>Descrição</option>
+                  <option value='price'>Preço</option>
+                  <option value='username'>Username</option>
+                  <option value='sku'>SKU</option>
+                </select>
+                <select
+                  name=''
+                  onChange={(e) => setSortDirection(e.target.value.toString())}
+                  id=''>
+                  <option value=''>Ordem</option>
+                  <option value='asc'>Ascendente</option>
+                  <option value='desc'>Descendente</option>
+                </select>
+              </div>
+            </div>
+
+            <div className='wk-product-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 text-black gap-12'>
+              {listProductResponse && listProductResponse.length > 0 ? (
+                listProductResponse.map((product) => (
+                  <div key={product.id} className='product-card'>
+                    <Link
+                      href={`/produtos/${product.url}-florianopolis-sao-jose-palhoca-biguacu-santo-amaro`}>
+                      <div className='product-image'>
+                        <img src={product.images} alt={product.name} />
+                      </div>
+                      <div className='product-info'>
+                        <p className='product-price mb-3'>
+                          R$ {parseFloat(product.price).toLocaleString("pt-BR")}
+                        </p>
+                        <h3 className='product-title'>{product.name}</h3>
+                      </div>
+                    </Link>
+                  </div>
+                ))
+              ) : (
+                <p>No products found.</p>
+              )}
+            </div>
+            <WkPagination
+              totalNumberOfItems={totalItems}
+              pages={pagesConfig}
+              maxButtonsToShow={5}
+              className='product-pagination'
+            />
+          </div>
         </div>
-        <WkPagination
-          totalNumberOfItems={totalItems}
-          pages={pagesConfig}
-          maxButtonsToShow={5}
-          className='product-pagination'
-        />
       </div>
     </div>
   );

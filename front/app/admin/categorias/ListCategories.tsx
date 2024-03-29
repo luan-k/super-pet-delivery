@@ -10,7 +10,7 @@ export interface Category {
   description: string;
 }
 
-interface ListCategoryResponse {
+export interface ListCategoryResponse {
   total: number;
   categories: Category[];
 }
@@ -22,7 +22,9 @@ export default function ListCategories() {
   const [sortField, setSortField] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [categoriesPerPage, setCategoriesPerPage] = useState<number>(10);
-  const [listCategoryResponse, setListCategoryResponse] = useState<Category[]>([]);
+  const [listCategoryResponse, setListCategoryResponse] = useState<Category[]>(
+    []
+  );
   const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
     null
   );
@@ -132,7 +134,9 @@ export default function ListCategories() {
     topClasses: "wk-table--sales",
     interact: {
       edit: listCategoryResponse
-        ? listCategoryResponse.map((category) => `/admin/categorias/${category.id}`)
+        ? listCategoryResponse.map(
+            (category) => `/admin/categorias/${category.id}`
+          )
         : [],
       duplicate: false,
       delete: {
@@ -171,7 +175,7 @@ export default function ListCategories() {
           ? listCategoryResponse.map((category) => (
               <>
                 <span className='text-wk-secondary'> [ </span>
-                { category.id.toString().padStart(3, "0") }
+                {category.id.toString().padStart(3, "0")}
                 <span className='text-wk-secondary'> ] </span>
                 {category.name}
               </>
@@ -184,12 +188,8 @@ export default function ListCategories() {
         sortable: true,
         width: 60,
         items: listCategoryResponse
-        ? listCategoryResponse.map((category) => (
-              <>
-                  {category.description}
-              </>
-            ))
-        : [],
+          ? listCategoryResponse.map((category) => <>{category.description}</>)
+          : [],
       },
     ],
   };

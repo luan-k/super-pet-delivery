@@ -20,7 +20,7 @@ type SortableStore interface {
 	SearchSales(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Sale, error)
 	ListProductsSorted(ctx context.Context, arg ListProductsParams, sortField string, sortDirection string) ([]Product, error)
 	SearchProducts(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Product, error)
-	FilterProducts(ctx context.Context, categoryId int64, pageId int, pageSize int, sortField string, sortDirection string, search string) ([]Product, error)
+	FilterProducts(ctx context.Context, categoryIds []int64, pageId int, pageSize int, sortField string, sortDirection string, search string) ([]Product, error)
 	ListImagesSorted(ctx context.Context, arg ListImagesParams, sortField string, sortDirection string) ([]Image, error)
 	SearchImages(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Image, error)
 }
@@ -224,16 +224,19 @@ func (store *SortableSQLStore) SearchSales(ctx context.Context, search string, p
 	return sales, nil
 }
 
-func (store *SortableSQLStore) FilterProducts(ctx context.Context, categoryId int64, pageId int, pageSize int, sortField string, sortDirection string, search string) ([]Product, error) {
+func (store *SortableSQLStore) FilterProducts(ctx context.Context, categoryIds []int64, pageId int, pageSize int, sortField string, sortDirection string, search string) ([]Product, error) {
 	offset := (pageId - 1) * pageSize
 
-	query := `SELECT id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at FROM products WHERE
-        $1 = ANY(categories) AND
-        (LOWER(name) LIKE LOWER($2) OR
-        LOWER(description) LIKE LOWER($2) OR
-        CAST(price AS TEXT) LIKE LOWER($2) OR
-        LOWER(username) LIKE LOWER($2) OR
-        LOWER(sku) LIKE LOWER($2))`
+	query := `
+	SELECT id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at 
+	FROM products 
+	WHERE ($1::bigint[] IS NOT NULL AND categories && $1) AND
+	(LOWER(name) LIKE LOWER($2) OR
+	LOWER(description) LIKE LOWER($2) OR
+	CAST(price AS TEXT) LIKE LOWER($2) OR
+	LOWER(username) LIKE LOWER($2) OR
+	LOWER(sku) LIKE LOWER($2))
+	`
 
 	if sortField != "" && sortDirection != "" {
 		query += fmt.Sprintf(" ORDER BY %s %s", sortField, sortDirection)
@@ -241,7 +244,7 @@ func (store *SortableSQLStore) FilterProducts(ctx context.Context, categoryId in
 
 	query += " LIMIT $3 OFFSET $4"
 
-	rows, err := store.db.QueryContext(ctx, query, categoryId, "%"+search+"%", pageSize, offset)
+	rows, err := store.db.QueryContext(ctx, query, pq.Array(categoryIds), "%"+search+"%", pageSize, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -277,7 +280,12 @@ func (store *SortableSQLStore) ListProductsSorted(ctx context.Context, arg ListP
 	}
 
 	// Create the SQL query
-	query := fmt.Sprintf("SELECT id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at FROM products ORDER BY %s %s LIMIT $1 OFFSET $2", sortField, sortDirection)
+	var query string
+	if sortField == "price" {
+		query = fmt.Sprintf("SELECT id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at FROM products ORDER BY CAST(%s AS FLOAT) %s LIMIT $1 OFFSET $2", sortField, sortDirection)
+	} else {
+		query = fmt.Sprintf("SELECT id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at FROM products ORDER BY %s %s LIMIT $1 OFFSET $2", sortField, sortDirection)
+	}
 
 	// Execute the query
 	rows, err := store.db.QueryContext(ctx, query, arg.Limit, arg.Offset)

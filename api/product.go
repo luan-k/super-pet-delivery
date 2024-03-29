@@ -162,12 +162,12 @@ type listProductResponse struct {
 }
 
 type listProductRequest struct {
-	PageID        int32  `form:"page_id" binding:"required,min=1"`
-	PageSize      int32  `form:"page_size" binding:"required,min=5,max=100"`
-	SortField     string `form:"sort_field" binding:""`
-	SortDirection string `form:"sort_direction" binding:""`
-	Search        string `form:"search" binding:""`
-	CategoryID    int64  `form:"category_id" binding:""`
+	PageID        int32   `form:"page_id" binding:"required,min=1"`
+	PageSize      int32   `form:"page_size" binding:"required,min=5,max=100"`
+	SortField     string  `form:"sort_field" binding:""`
+	SortDirection string  `form:"sort_direction" binding:""`
+	Search        string  `form:"search" binding:""`
+	CategoryIDs   []int64 `form:"category_ids" binding:""`
 }
 
 func (server *Server) listProduct(ctx *gin.Context) {
@@ -189,9 +189,9 @@ func (server *Server) listProduct(ctx *gin.Context) {
 	}
 
 	var products []db.Product
-	if req.CategoryID != 0 {
+	if len(req.CategoryIDs) != 0 {
 		// Fetch the paginated products for the given category
-		products, err = server.store.FilterProducts(ctx, req.CategoryID, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection, req.Search)
+		products, err = server.store.FilterProducts(ctx, req.CategoryIDs, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection, req.Search)
 	} else if req.SortField != "" && req.SortDirection != "" && req.Search != "" {
 		// Fetch the paginated products with sorting and search
 		products, err = server.store.SearchProducts(ctx, req.Search, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection)
