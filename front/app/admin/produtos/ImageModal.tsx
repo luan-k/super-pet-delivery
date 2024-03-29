@@ -506,49 +506,53 @@ export default function ImageModal({
               </div>
               <div className='grid grid-cols-5'>
                 <div className='wk-image-list__body grid grid-cols-6 col-span-4 !gap-4'>
-                  {listImageResponse.map((image) => (
-                    <div
-                      key={image.id}
-                      className='wk-image-list__item relative'>
-                      <img
-                        src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
-                        alt={image.alt}
-                        className={`wk-image-list__image ${
-                          checkedItems &&
-                          checkedItems.includes(image.id) &&
-                          "checked"
-                        }`}
-                        draggable='false'
-                        onClick={() => {
-                          handleImageClick(image);
-                          handleCheck(
-                            image.id,
-                            !checkedItems.includes(image.id)
-                          );
-                        }}
-                      />
-                      <input
-                        type='checkbox'
-                        checked={
-                          checkedItems && checkedItems.includes(image.id)
-                        }
-                        id={`checkbox-${image.id}`}
-                        onChange={(e) =>
-                          handleCheck(image.id, e.target.checked)
-                        }
-                        className=''
-                      />
-                      <label
-                        className={`wk-image-list__checkbox ${
-                          checkedItems &&
-                          checkedItems.includes(image.id) &&
-                          "checked !opacity-100"
-                        }`}
-                        htmlFor={`checkbox-${image.id}`}>
-                        <span></span>
-                      </label>
-                    </div>
-                  ))}
+                  {listImageResponse && listImageResponse.length > 0 ? (
+                    listImageResponse.map((image) => (
+                      <div
+                        key={image.id}
+                        className='wk-image-list__item relative'>
+                        <img
+                          src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
+                          alt={image.alt}
+                          className={`wk-image-list__image ${
+                            checkedItems &&
+                            checkedItems.includes(image.id) &&
+                            "checked"
+                          }`}
+                          draggable='false'
+                          onClick={() => {
+                            handleImageClick(image);
+                            handleCheck(
+                              image.id,
+                              !checkedItems.includes(image.id)
+                            );
+                          }}
+                        />
+                        <input
+                          type='checkbox'
+                          checked={
+                            checkedItems && checkedItems.includes(image.id)
+                          }
+                          id={`checkbox-${image.id}`}
+                          onChange={(e) =>
+                            handleCheck(image.id, e.target.checked)
+                          }
+                          className=''
+                        />
+                        <label
+                          className={`wk-image-list__checkbox ${
+                            checkedItems &&
+                            checkedItems.includes(image.id) &&
+                            "checked !opacity-100"
+                          }`}
+                          htmlFor={`checkbox-${image.id}`}>
+                          <span></span>
+                        </label>
+                      </div>
+                    ))
+                  ) : (
+                    <div className='text-xl'>Nenhuma Imagem encontrada</div>
+                  )}
                 </div>
                 <div className='imageDetails py-7'>
                   {checkedItems && checkedItems.includes(selectedImage?.id) && (
