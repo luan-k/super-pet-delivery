@@ -50,12 +50,13 @@ func (server *Server) createProduct(ctx *gin.Context) {
 	productPrice := 0.0
 	productImages := []string{}
 	productSku := ""
-	price, err := strconv.ParseFloat(strings.Replace(req.Price, ",", ".", -1), 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
+	productCategories := []int64{}
 	if req.Price != "" {
+		price, err := strconv.ParseFloat(strings.Replace(req.Price, ",", ".", -1), 64)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, errorResponse(err))
+			return
+		}
 		productPrice = price
 	}
 	if len(req.Images) > 0 {
@@ -63,6 +64,9 @@ func (server *Server) createProduct(ctx *gin.Context) {
 	}
 	if req.Sku != "" {
 		productSku = req.Sku
+	}
+	if len(req.Categories) > 0 {
+		productCategories = req.Categories
 	}
 
 	user, err := server.store.GetUser(ctx, req.UserID)
@@ -91,6 +95,8 @@ func (server *Server) createProduct(ctx *gin.Context) {
 		i++
 	}
 
+	fmt.Println("Price: ", productPrice)
+
 	arg := db.CreateProductParams{
 		Name:        req.Name,
 		Description: req.Description,
@@ -100,7 +106,7 @@ func (server *Server) createProduct(ctx *gin.Context) {
 		Sku:         productSku,
 		Url:         url,
 		Images:      productImages,
-		Categories:  req.Categories,
+		Categories:  productCategories,
 	}
 
 	product, err := server.store.CreateProduct(ctx, arg)
