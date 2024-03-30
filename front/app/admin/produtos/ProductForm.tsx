@@ -10,6 +10,7 @@ import Cookies from "js-cookie";
 import { usePathname } from "next/navigation";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import CategoryBox, { CategoryBoxProps } from "./CategoryBox";
+import { DropResult } from "react-beautiful-dnd";
 
 export interface associatedImagesProps {
   currentId: string | undefined;
@@ -73,7 +74,7 @@ export interface formConfigInterface {
     name: string;
     description: string;
     price: string;
-    sku?: string;
+    sku: string;
     user_id: number;
   };
   displayPrice: string;
@@ -109,7 +110,7 @@ export default function ProductForm({
     getAssociatedImages({ setImages, currentId });
   }, [setImages, currentId]);
 
-  const onDragEnd = (result) => {
+  const onDragEnd = (result: DropResult) => {
     if (!result.destination || !document.getElementById("images") || !images)
       return;
 
