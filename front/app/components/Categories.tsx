@@ -14,7 +14,7 @@ export default function Categories() {
         <div className='text-6xl text-front-blue text-center flex justify-center gap-7 mb-24'>
           <FaPaw /> Navegue por Categorias!
         </div>
-        <div className='grid grid-cols-1 md:grid-cols-3 relative h-full gap-7 mt-20'>
+        <div className='grid grid-cols-1 md:grid-cols-3 relative h-full gap-7 mt-20 md:mb-7'>
           <div className='image-wrapper'>
             <Link href='/produtos?category=Cachorros'>
               <Image draggable={false} src={Cat1} alt='Cachorros' />
