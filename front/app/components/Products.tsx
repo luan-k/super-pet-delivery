@@ -91,6 +91,9 @@ export default function Products() {
       if (search) {
         url += `&search=${search}`;
       }
+
+      url += "&category_ids=1";
+
       const response = await fetch(url, {
         method: "GET",
         headers: {

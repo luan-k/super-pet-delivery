@@ -189,25 +189,29 @@ func (server *Server) listProduct(ctx *gin.Context) {
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
 
-	total, err := server.store.CountProducts(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
+	var total int64
+	var err error
+	if len(req.CategoryIDs) == 0 && req.SortField == "" && req.SortDirection == "" && req.Search == "" {
+		total, err = server.store.CountProducts(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
 	}
 
 	var products []db.Product
 	if len(req.CategoryIDs) != 0 {
 		// Fetch the paginated products for the given category
-		products, err = server.store.FilterProducts(ctx, req.CategoryIDs, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection, req.Search)
+		products, total, err = server.store.FilterProducts(ctx, req.CategoryIDs, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection, req.Search)
 	} else if req.SortField != "" && req.SortDirection != "" && req.Search != "" {
 		// Fetch the paginated products with sorting and search
-		products, err = server.store.SearchProducts(ctx, req.Search, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection)
+		products, total, err = server.store.SearchProducts(ctx, req.Search, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection)
 	} else if req.SortField != "" && req.SortDirection != "" {
 		// Fetch the paginated products with sorting
-		products, err = server.store.ListProductsSorted(ctx, arg, req.SortField, req.SortDirection)
+		products, total, err = server.store.ListProductsSorted(ctx, arg, req.SortField, req.SortDirection)
 	} else if req.Search != "" {
 		// Fetch the paginated products with search
-		products, err = server.store.SearchProducts(ctx, req.Search, int(req.PageID), int(req.PageSize), "", "")
+		products, total, err = server.store.SearchProducts(ctx, req.Search, int(req.PageID), int(req.PageSize), "", "")
 	} else {
 		// Fetch the paginated products without sorting or search
 		products, err = server.store.ListProducts(ctx, arg)

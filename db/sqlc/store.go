@@ -18,9 +18,9 @@ type SortableStore interface {
 	SearchClients(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Client, error)
 	ListSalesSorted(ctx context.Context, arg ListSalesParams, sortField string, sortDirection string) ([]Sale, error)
 	SearchSales(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Sale, error)
-	ListProductsSorted(ctx context.Context, arg ListProductsParams, sortField string, sortDirection string) ([]Product, error)
-	SearchProducts(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Product, error)
-	FilterProducts(ctx context.Context, categoryIds []int64, pageId int, pageSize int, sortField string, sortDirection string, search string) ([]Product, error)
+	ListProductsSorted(ctx context.Context, arg ListProductsParams, sortField string, sortDirection string) ([]Product, int64, error)
+	SearchProducts(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Product, int64, error)
+	FilterProducts(ctx context.Context, categoryIds []int64, pageId int, pageSize int, sortField string, sortDirection string, search string) ([]Product, int64, error)
 	ListImagesSorted(ctx context.Context, arg ListImagesParams, sortField string, sortDirection string) ([]Image, error)
 	SearchImages(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Image, error)
 }
@@ -224,7 +224,7 @@ func (store *SortableSQLStore) SearchSales(ctx context.Context, search string, p
 	return sales, nil
 }
 
-func (store *SortableSQLStore) FilterProducts(ctx context.Context, categoryIds []int64, pageId int, pageSize int, sortField string, sortDirection string, search string) ([]Product, error) {
+func (store *SortableSQLStore) FilterProducts(ctx context.Context, categoryIds []int64, pageId int, pageSize int, sortField string, sortDirection string, search string) ([]Product, int64, error) {
 	offset := (pageId - 1) * pageSize
 
 	query := `
@@ -246,7 +246,7 @@ func (store *SortableSQLStore) FilterProducts(ctx context.Context, categoryIds [
 
 	rows, err := store.db.QueryContext(ctx, query, pq.Array(categoryIds), "%"+search+"%", pageSize, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -254,29 +254,44 @@ func (store *SortableSQLStore) FilterProducts(ctx context.Context, categoryIds [
 	for rows.Next() {
 		var p Product
 		if err = rows.Scan(&p.ID, &p.Name, &p.Description, &p.UserID, &p.Username, &p.Price, &p.Sku, pq.Array(&p.Images), pq.Array(&p.Categories), &p.Url, &p.CreatedAt, &p.ChangedAt); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		products = append(products, p)
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return products, nil
+	countQuery := `
+    SELECT COUNT(*) 
+    FROM products 
+    WHERE ($1::bigint[] IS NOT NULL AND categories && $1) AND
+    (LOWER(name) LIKE LOWER($2) OR
+    LOWER(description) LIKE LOWER($2) OR
+    CAST(price AS TEXT) LIKE LOWER($2) OR
+    LOWER(username) LIKE LOWER($2) OR
+    LOWER(sku) LIKE LOWER($2))
+    `
+	var totalCount int64
+	if err := store.db.QueryRowContext(ctx, countQuery, pq.Array(categoryIds), "%"+search+"%").Scan(&totalCount); err != nil {
+		return nil, 0, err
+	}
+
+	return products, totalCount, nil
 }
 
-func (store *SortableSQLStore) ListProductsSorted(ctx context.Context, arg ListProductsParams, sortField string, sortDirection string) ([]Product, error) {
+func (store *SortableSQLStore) ListProductsSorted(ctx context.Context, arg ListProductsParams, sortField string, sortDirection string) ([]Product, int64, error) {
 	// Define a map of valid sort fields and directions
 	validSortFields := map[string]bool{"name": true, "description": true, "price": true, "username": true, "sku": true, "created_at": true}
 	validSortDirections := map[string]bool{"asc": true, "desc": true}
 
 	// Validate the sort field and direction
 	if !validSortFields[sortField] {
-		return nil, fmt.Errorf("invalid sort field: %s", sortField)
+		return nil, 0, fmt.Errorf("invalid sort field: %s", sortField)
 	}
 	if !validSortDirections[sortDirection] {
-		return nil, fmt.Errorf("invalid sort direction: %s", sortDirection)
+		return nil, 0, fmt.Errorf("invalid sort direction: %s", sortDirection)
 	}
 
 	// Create the SQL query
@@ -290,7 +305,7 @@ func (store *SortableSQLStore) ListProductsSorted(ctx context.Context, arg ListP
 	// Execute the query
 	rows, err := store.db.QueryContext(ctx, query, arg.Limit, arg.Offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -299,20 +314,25 @@ func (store *SortableSQLStore) ListProductsSorted(ctx context.Context, arg ListP
 	for rows.Next() {
 		var product Product
 		if err := rows.Scan(&product.ID, &product.Name, &product.Description, &product.UserID, &product.Username, &product.Price, &product.Sku, pq.Array(&product.Images), pq.Array(&product.Categories), &product.Url, &product.CreatedAt, &product.ChangedAt); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		products = append(products, product)
 	}
 
 	// Check for errors from iterating over rows
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, 0, err
+	}
+	countQuery := "SELECT COUNT(*) FROM products"
+	var totalCount int64
+	if err := store.db.QueryRowContext(ctx, countQuery).Scan(&totalCount); err != nil {
+		return nil, 0, err
 	}
 
-	return products, nil
+	return products, totalCount, nil
 }
 
-func (store *SortableSQLStore) SearchProducts(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Product, error) {
+func (store *SortableSQLStore) SearchProducts(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Product, int64, error) {
 	offset := (pageId - 1) * pageSize
 
 	query := `SELECT id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at FROM products WHERE
@@ -330,7 +350,7 @@ func (store *SortableSQLStore) SearchProducts(ctx context.Context, search string
 
 	rows, err := store.db.QueryContext(ctx, query, "%"+search+"%", pageSize, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -338,16 +358,27 @@ func (store *SortableSQLStore) SearchProducts(ctx context.Context, search string
 	for rows.Next() {
 		var p Product
 		if err = rows.Scan(&p.ID, &p.Name, &p.Description, &p.UserID, &p.Username, &p.Price, &p.Sku, pq.Array(&p.Images), pq.Array(&p.Categories), &p.Url, &p.CreatedAt, &p.ChangedAt); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		products = append(products, p)
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return products, nil
+	countQuery := `SELECT COUNT(*) FROM products WHERE
+    LOWER(name) LIKE LOWER($1) OR
+    LOWER(description) LIKE LOWER($1) OR
+    CAST(price AS TEXT) LIKE LOWER($1) OR
+    LOWER(username) LIKE LOWER($1) OR
+    LOWER(sku) LIKE LOWER($1)`
+	var totalCount int64
+	if err := store.db.QueryRowContext(ctx, countQuery, "%"+search+"%").Scan(&totalCount); err != nil {
+		return nil, 0, err
+	}
+
+	return products, totalCount, nil
 }
 
 func (store *SortableSQLStore) ListImagesSorted(ctx context.Context, arg ListImagesParams, sortField string, sortDirection string) ([]Image, error) {
