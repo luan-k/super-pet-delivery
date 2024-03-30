@@ -63,6 +63,7 @@ export default function SingleProduct() {
             name: data.name,
             description: data.description,
             price: data.price.toString(),
+            old_price: data.old_price.toString(),
             user_id: data.user_id,
             sku: data.sku,
           });
@@ -182,13 +183,32 @@ export default function SingleProduct() {
             </div>
             <div className='product-details flex gap-5 flex-col'>
               <h1 className='text-5xl text-gray-700'>{currentProduct?.name}</h1>
-              <h2 className='price text-3xl font-bold text-front-blue mb-6'>
-                {currentProduct && parseFloat(currentProduct.price) > 0
-                  ? `R$ ${parseFloat(currentProduct.price).toLocaleString(
-                      "pt-BR"
-                    )}`
-                  : "Consulte"}
-              </h2>
+              <div className='price-wrapper flex flex-row justify-start items-center gap-4 mb-6'>
+                <h2 className='price text-3xl font-bold text-front-blue '>
+                  {currentProduct && parseFloat(currentProduct.price) > 0
+                    ? `R$ ${parseFloat(currentProduct.price).toLocaleString(
+                        "pt-BR",
+                        {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }
+                      )}`
+                    : "Consulte"}
+                </h2>
+                <h3 className='price price--old text-xl text-center text-gray-500 line-through'>
+                  {currentProduct &&
+                  currentProduct.old_price &&
+                  parseFloat(currentProduct.old_price) > 0 ? (
+                    <del>{`R$ ${parseFloat(
+                      currentProduct.old_price
+                    ).toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}`}</del>
+                  ) : null}
+                </h3>
+              </div>
+
               <p className='text-2xl text-black'>
                 {currentProduct?.description.split("\n").map((line, i) => (
                   <React.Fragment key={i}>

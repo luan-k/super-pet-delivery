@@ -49,6 +49,7 @@ type Product struct {
 	UserID      int64     `json:"user_id"`
 	Username    string    `json:"username"`
 	Price       float64   `json:"price"`
+	OldPrice    float64   `json:"old_price"`
 	Sku         string    `json:"sku"`
 	Images      []string  `json:"images"`
 	Categories  []int64   `json:"categories"`

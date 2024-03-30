@@ -168,7 +168,7 @@ func (q *Queries) ListCategoriesByProduct(ctx context.Context, productID int64) 
 }
 
 const listProductsByCategory = `-- name: ListProductsByCategory :many
-SELECT p.id, p.name, p.description, p.user_id, p.username, p.price, p.sku, p.images, p.categories, p.url, p.created_at, p.changed_at
+SELECT p.id, p.name, p.description, p.user_id, p.username, p.price, p.old_price, p.sku, p.images, p.categories, p.url, p.created_at, p.changed_at
 FROM products p
 JOIN product_categories pc ON p.id = pc.product_id
 WHERE pc.category_id = $1
@@ -191,6 +191,7 @@ func (q *Queries) ListProductsByCategory(ctx context.Context, categoryID int64) 
 			&i.UserID,
 			&i.Username,
 			&i.Price,
+			&i.OldPrice,
 			&i.Sku,
 			pq.Array(&i.Images),
 			pq.Array(&i.Categories),

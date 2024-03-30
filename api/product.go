@@ -22,6 +22,7 @@ type createProductRequest struct {
 	Description string   `json:"description" validate:"required"`
 	UserID      int64    `json:"user_id" validate:"required"`
 	Price       string   `json:"price"`
+	OldPrice    string   `json:"old_price"`
 	Sku         string   `json:"sku"`
 	Images      []string `json:"images"`
 	Categories  []int64  `json:"categories"`
@@ -48,6 +49,7 @@ func (server *Server) createProduct(ctx *gin.Context) {
 	}
 
 	productPrice := 0.0
+	oldPrice := 0.0
 	productImages := []string{}
 	productSku := ""
 	productCategories := []int64{}
@@ -58,6 +60,14 @@ func (server *Server) createProduct(ctx *gin.Context) {
 			return
 		}
 		productPrice = price
+	}
+	if req.OldPrice != "" {
+		price, err := strconv.ParseFloat(strings.Replace(req.OldPrice, ",", ".", -1), 64)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, errorResponse(err))
+			return
+		}
+		oldPrice = price
 	}
 	if len(req.Images) > 0 {
 		productImages = req.Images
@@ -95,14 +105,13 @@ func (server *Server) createProduct(ctx *gin.Context) {
 		i++
 	}
 
-	fmt.Println("Price: ", productPrice)
-
 	arg := db.CreateProductParams{
 		Name:        req.Name,
 		Description: req.Description,
 		UserID:      req.UserID,
 		Username:    user.Username,
 		Price:       productPrice,
+		OldPrice:    oldPrice,
 		Sku:         productSku,
 		Url:         url,
 		Images:      productImages,
@@ -260,6 +269,7 @@ type updateProductRequest struct {
 	Description string   `json:"description"`
 	UserID      int64    `json:"user_id"`
 	Price       string   `json:"price"`
+	OldPrice    string   `json:"old_price"`
 	Sku         string   `json:"sku"`
 	Images      []string `json:"images"`
 	Categories  []int64  `json:"categories"`
@@ -303,6 +313,12 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 		return
 	}
 
+	oldPrice, err := strconv.ParseFloat(strings.Replace(req.OldPrice, ",", ".", -1), 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
 	// Update only the fields that are provided in the request
 	if req.Name != "" {
 		existingProduct.Name = req.Name
@@ -315,6 +331,9 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 	}
 	if req.Price != "" {
 		existingProduct.Price = price
+	}
+	if req.OldPrice != "" {
+		existingProduct.OldPrice = oldPrice
 	}
 	if req.Sku != "" {
 		existingProduct.Sku = req.Sku
@@ -352,6 +371,7 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 		UserID:      existingProduct.UserID,
 		Username:    user.Username,
 		Price:       existingProduct.Price,
+		OldPrice:    existingProduct.OldPrice,
 		Sku:         existingProduct.Sku,
 		Url:         url,
 		Images:      existingProduct.Images,

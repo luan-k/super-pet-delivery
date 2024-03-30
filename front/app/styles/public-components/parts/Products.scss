@@ -25,6 +25,9 @@
       }
       .product-price {
         @apply text-4xl text-center text-front-blue font-medium;
+        &--old {
+          @apply text-2xl text-center text-gray-500 line-through;
+        }
       }
     }
   }

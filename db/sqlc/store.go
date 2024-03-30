@@ -228,7 +228,7 @@ func (store *SortableSQLStore) FilterProducts(ctx context.Context, categoryIds [
 	offset := (pageId - 1) * pageSize
 
 	query := `
-	SELECT id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at 
+	SELECT id, name, description, user_id, username, price, old_price, sku, images, categories, url, created_at, changed_at 
 	FROM products 
 	WHERE ($1::bigint[] IS NOT NULL AND categories && $1) AND
 	(LOWER(name) LIKE LOWER($2) OR
@@ -253,7 +253,7 @@ func (store *SortableSQLStore) FilterProducts(ctx context.Context, categoryIds [
 	var products []Product
 	for rows.Next() {
 		var p Product
-		if err = rows.Scan(&p.ID, &p.Name, &p.Description, &p.UserID, &p.Username, &p.Price, &p.Sku, pq.Array(&p.Images), pq.Array(&p.Categories), &p.Url, &p.CreatedAt, &p.ChangedAt); err != nil {
+		if err = rows.Scan(&p.ID, &p.Name, &p.Description, &p.UserID, &p.Username, &p.Price, &p.OldPrice, &p.Sku, pq.Array(&p.Images), pq.Array(&p.Categories), &p.Url, &p.CreatedAt, &p.ChangedAt); err != nil {
 			return nil, 0, err
 		}
 		products = append(products, p)
@@ -297,9 +297,9 @@ func (store *SortableSQLStore) ListProductsSorted(ctx context.Context, arg ListP
 	// Create the SQL query
 	var query string
 	if sortField == "price" {
-		query = fmt.Sprintf("SELECT id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at FROM products ORDER BY CAST(%s AS FLOAT) %s LIMIT $1 OFFSET $2", sortField, sortDirection)
+		query = fmt.Sprintf("SELECT id, name, description, user_id, username, price, old_price, sku, images, categories, url, created_at, changed_at FROM products ORDER BY CAST(%s AS FLOAT) %s LIMIT $1 OFFSET $2", sortField, sortDirection)
 	} else {
-		query = fmt.Sprintf("SELECT id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at FROM products ORDER BY %s %s LIMIT $1 OFFSET $2", sortField, sortDirection)
+		query = fmt.Sprintf("SELECT id, name, description, user_id, username, price, old_price, sku, images, categories, url, created_at, changed_at FROM products ORDER BY %s %s LIMIT $1 OFFSET $2", sortField, sortDirection)
 	}
 
 	// Execute the query
@@ -313,7 +313,7 @@ func (store *SortableSQLStore) ListProductsSorted(ctx context.Context, arg ListP
 	var products []Product
 	for rows.Next() {
 		var product Product
-		if err := rows.Scan(&product.ID, &product.Name, &product.Description, &product.UserID, &product.Username, &product.Price, &product.Sku, pq.Array(&product.Images), pq.Array(&product.Categories), &product.Url, &product.CreatedAt, &product.ChangedAt); err != nil {
+		if err := rows.Scan(&product.ID, &product.Name, &product.Description, &product.UserID, &product.Username, &product.Price, &product.OldPrice, &product.Sku, pq.Array(&product.Images), pq.Array(&product.Categories), &product.Url, &product.CreatedAt, &product.ChangedAt); err != nil {
 			return nil, 0, err
 		}
 		products = append(products, product)
@@ -335,7 +335,7 @@ func (store *SortableSQLStore) ListProductsSorted(ctx context.Context, arg ListP
 func (store *SortableSQLStore) SearchProducts(ctx context.Context, search string, pageId int, pageSize int, sortField string, sortDirection string) ([]Product, int64, error) {
 	offset := (pageId - 1) * pageSize
 
-	query := `SELECT id, name, description, user_id, username, price, sku, images, categories, url, created_at, changed_at FROM products WHERE
+	query := `SELECT id, name, description, user_id, username, price, old_price, sku, images, categories, url, created_at, changed_at FROM products WHERE
         LOWER(name) LIKE LOWER($1) OR
         LOWER(description) LIKE LOWER($1) OR
         CAST(price AS TEXT) LIKE LOWER($1) OR
@@ -357,7 +357,7 @@ func (store *SortableSQLStore) SearchProducts(ctx context.Context, search string
 	var products []Product
 	for rows.Next() {
 		var p Product
-		if err = rows.Scan(&p.ID, &p.Name, &p.Description, &p.UserID, &p.Username, &p.Price, &p.Sku, pq.Array(&p.Images), pq.Array(&p.Categories), &p.Url, &p.CreatedAt, &p.ChangedAt); err != nil {
+		if err = rows.Scan(&p.ID, &p.Name, &p.Description, &p.UserID, &p.Username, &p.Price, &p.OldPrice, &p.Sku, pq.Array(&p.Images), pq.Array(&p.Categories), &p.Url, &p.CreatedAt, &p.ChangedAt); err != nil {
 			return nil, 0, err
 		}
 		products = append(products, p)

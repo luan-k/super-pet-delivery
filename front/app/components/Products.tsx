@@ -147,13 +147,31 @@ export default function Products() {
                   <img src={product.images} alt={product.name} />
                 </div>
                 <div className='product-info'>
-                  <p className='product-price mb-3'>
-                    {parseFloat(product.price) > 0
-                      ? `R$ ${parseFloat(product.price).toLocaleString(
-                          "pt-BR"
-                        )}`
-                      : "Consulte"}
-                  </p>
+                  <div className='flex flex-row justify-center items-center gap-4'>
+                    <p className='product-price product-price--old mb-3 text-xs'>
+                      {product.old_price &&
+                      parseFloat(product.old_price) > 0 ? (
+                        <del>{`R$ ${parseFloat(
+                          product.old_price
+                        ).toLocaleString("pt-BR", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}`}</del>
+                      ) : null}
+                    </p>
+                    <p className='product-price mb-3'>
+                      {parseFloat(product.price) > 0
+                        ? `R$ ${parseFloat(product.price).toLocaleString(
+                            "pt-BR",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            }
+                          )}`
+                        : "Consulte"}
+                    </p>
+                  </div>
+
                   <h3 className='product-title'>{product.name}</h3>
                 </div>
               </Link>

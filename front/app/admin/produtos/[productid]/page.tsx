@@ -18,6 +18,7 @@ export interface EditProductFormRequest {
   name: string;
   description: string;
   price: string;
+  old_price: string;
   user_id: number;
   sku: string;
 }
@@ -26,6 +27,7 @@ export interface ProductDetails {
   name: string;
   description: string;
   price: string;
+  old_price: string;
   user_id: number;
   sku: string;
 }
@@ -41,6 +43,7 @@ export default function EditProduct() {
     name: "",
     description: "",
     price: "",
+    old_price: "",
     user_id: 0,
     sku: "",
   });
@@ -53,6 +56,7 @@ export default function EditProduct() {
     number[]
   >([]);
   const [displayPrice, setDisplayPrice] = useState("0,00");
+  const [displayOldPrice, setDisplayOldPrice] = useState("0,00");
   const handlePriceChange = (
     value: string,
     setDisplayPrice: (data: string) => void,
@@ -69,6 +73,25 @@ export default function EditProduct() {
     setFormData({
       ...formData,
       price: newValue,
+    });
+  };
+  const handleOldPriceChange = (
+    value: string,
+    setDisplayOldPrice: (data: string) => void,
+    setFormData: (data: CreateProductRequest | EditProductFormRequest) => void,
+    formData: CreateProductRequest | EditProductFormRequest
+  ) => {
+    let newValue: string | number;
+
+    newValue = value.replace(/\D/g, ""); // remove non-digits
+    newValue = (parseInt(newValue) / 100).toFixed(2); // divide by 100 and fix 2 decimal places
+    setDisplayOldPrice(newValue.replace(".", ",")); // replace dot with comma
+    //newValue = parseFloat(newValue); // convert back to number
+
+    console.log("formData", formData);
+    setFormData({
+      ...formData,
+      old_price: newValue,
     });
   };
 
@@ -95,9 +118,13 @@ export default function EditProduct() {
             name: data.name,
             description: data.description,
             price: data.price.toString(),
+            old_price: data.old_price.toString(),
             user_id: data.user_id,
             sku: data.sku,
           });
+
+          console.log("here is the data in fetch");
+          console.log(data);
         } else {
           console.error("Failed to fetch products");
         }
@@ -109,6 +136,8 @@ export default function EditProduct() {
     };
 
     fetchProductDetails();
+    console.log("fetch");
+    console.log(currentProduct);
   }, [currentId]);
 
   const token = Cookies.get("access_token");
@@ -218,18 +247,24 @@ export default function EditProduct() {
         name: currentProduct.name,
         description: currentProduct.description,
         price: currentProduct.price,
+        old_price: currentProduct.old_price,
         user_id: currentProduct.user_id,
         sku: currentProduct.sku,
       });
       let newValue: string | number;
       newValue = parseFloat(currentProduct.price).toFixed(2); // convert to float and fix 2 decimal places
       setDisplayPrice(newValue.replace(".", ","));
+
+      let newValueOldPrice: string | number;
+      newValueOldPrice = parseFloat(currentProduct.old_price).toFixed(2); // convert to float and fix 2 decimal places
+      setDisplayOldPrice(newValueOldPrice.replace(".", ","));
     }
   }, [currentProduct]);
 
   const handleChange: handleChangeType = (
     e,
     setDisplayPrice,
+    setDisplayOldPrice,
     setFormData,
     formData
   ) => {
@@ -244,9 +279,16 @@ export default function EditProduct() {
       newValue = (parseInt(newValue) / 100).toFixed(2); // divide by 100 and fix 2 decimal places
       setDisplayPrice(newValue.replace(".", ",")); // replace dot with comma
       newValue = parseFloat(newValue); // convert back to number
+    } else if (name === "old_price") {
+      newValue = value.replace(/\D/g, ""); // remove non-digits
+      newValue = (parseInt(newValue) / 100).toFixed(2); // divide by 100 and fix 2 decimal places
+      setDisplayOldPrice(newValue.replace(".", ",")); // replace dot with comma
+      newValue = parseFloat(newValue); // convert back to number
     } else {
       newValue = value;
     }
+
+    console.log("formData", formData);
 
     setFormData({
       ...formData,
@@ -278,6 +320,9 @@ export default function EditProduct() {
     displayPrice,
     setDisplayPrice,
     handlePriceChange,
+    handleOldPriceChange,
+    displayOldPrice,
+    setDisplayOldPrice,
     submitButtonText: "Salvar",
     imagesDefinitions: imageDetails,
     categoriesDefinitions: categoriesDetails,
