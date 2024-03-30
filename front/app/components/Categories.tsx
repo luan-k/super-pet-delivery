@@ -16,26 +16,26 @@ export default function Categories() {
         </div>
         <div className='grid grid-cols-1 md:grid-cols-3 relative h-full gap-7 mt-20'>
           <div className='image-wrapper'>
-            <Link href='/produtos/cachorros'>
+            <Link href='/produtos?category=Cachorros'>
               <Image draggable={false} src={Cat1} alt='Cachorros' />
             </Link>
           </div>
           <div className='image-wrapper'>
-            <Link href='/produtos/gatos'>
+            <Link href='/produtos?category=Gatos'>
               <Image draggable={false} src={Cat2} alt='Gatos' />
             </Link>
           </div>
           <div className='image-wrapper'>
-            <Link href='/produtos/medicamentos'>
+            <Link href='/produtos?category=Medicamentos'>
               <Image draggable={false} src={Cat3} alt='Medicamentos' />
             </Link>
           </div>
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-7'>
-          <Link href='/produtos/acessorios'>
+          <Link href='/produtos?category=Acessórios-e-Brinquedos'>
             <Image draggable={false} src={Cat4} alt='Acessorios' />
           </Link>
-          <Link href='/produtos/promocoes'>
+          <Link href='/produtos?category=Promoções'>
             <Image draggable={false} src={Cat5} alt='Promoções' />
           </Link>
         </div>
