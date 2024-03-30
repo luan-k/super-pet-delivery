@@ -125,7 +125,7 @@ export default function SingleProduct() {
   return (
     <div className='single-product pt-48 pb-80'>
       <div className='container'>
-        <div className='grid grid-cols-2 min-h-screen gap-24'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 min-h-screen gap-24'>
           <div className=''>
             <Slider
               className='slider-main'

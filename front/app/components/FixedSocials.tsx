@@ -1,16 +1,16 @@
-import { FaFacebook, FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa';
+import { FaFacebook, FaInstagram, FaTwitter, FaMapMarker } from 'react-icons/fa';
 
 export default function FixedSocials() {
   return (
     <div className='wp-fixed-socials'>
         <div className='flex justify-center flex-col align-items-center gap-10'>
-          <a
+          {/* <a
             href='#'
             target='_blank'
             rel='noreferrer'
           >
             <FaTwitter />
-          </a>
+          </a> */}
           <a
             href='https://www.facebook.com/profile.php?id=61554648693457'
             target='_blank'
@@ -30,7 +30,7 @@ export default function FixedSocials() {
             target='_blank'
             rel='noreferrer'
           >
-            <FaYoutube />
+            <FaMapMarker />
           </a>
         </div>
     </div>

@@ -25,6 +25,9 @@
         height: 2.1rem;
       }
     }
+    @media screen and (max-width: 1240px) {
+      display: none;
+    }
   }
 
   & &__image {
