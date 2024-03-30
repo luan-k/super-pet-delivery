@@ -92,6 +92,8 @@ export default function Products() {
         url += `&search=${search}`;
       }
 
+      url += "&sort_field=created_at&sort_direction=desc";
+
       url += "&category_ids=1";
 
       const response = await fetch(url, {
