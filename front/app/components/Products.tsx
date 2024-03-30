@@ -148,7 +148,11 @@ export default function Products() {
                 </div>
                 <div className='product-info'>
                   <p className='product-price mb-3'>
-                    R$ {parseFloat(product.price).toLocaleString("pt-BR")}
+                    {parseFloat(product.price) > 0
+                      ? `R$ ${parseFloat(product.price).toLocaleString(
+                          "pt-BR"
+                        )}`
+                      : "Consulte"}
                   </p>
                   <h3 className='product-title'>{product.name}</h3>
                 </div>

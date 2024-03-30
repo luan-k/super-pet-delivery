@@ -22,6 +22,7 @@ export default function SingleProduct() {
   const [images, setImages] = useState<any[]>([]);
   const [nav1, setNav1] = useState(null);
   const [nav2, setNav2] = useState(null);
+  const [productNotFound, setProductNotFound] = useState(false);
 
   useEffect(() => {
     setNav1(slider1);
@@ -66,6 +67,8 @@ export default function SingleProduct() {
             sku: data.sku,
           });
           console.log(data);
+        } else if (response.status === 404) {
+          setProductNotFound(true);
         } else {
           console.error("Failed to fetch products");
         }
@@ -125,68 +128,78 @@ export default function SingleProduct() {
   return (
     <div className='single-product pt-48 pb-80'>
       <div className='container'>
-        <div className='grid grid-cols-1 lg:grid-cols-2 min-h-screen gap-24'>
-          <div className=''>
-            <Slider
-              className='slider-main'
-              asNavFor={nav2}
-              ref={(slider) => (slider1 = slider)}
-              {...{
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                arrows: true,
-                infinite: images.length > 1,
-              }}>
-              {images.map((image, index) => (
-                <div key={index}>
-                  <img
-                    src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
-                    alt='product'
-                    className='w-full'
-                  />
-                </div>
-              ))}
-            </Slider>
+        {productNotFound ? (
+          <div className='min-h-screen'>
+            <h1 className='text-5xl text-gray-700'>
+              Nenhum produto encontrado
+            </h1>
+          </div>
+        ) : (
+          <div className='grid grid-cols-1 lg:grid-cols-2 min-h-screen gap-24'>
+            <div className=''>
+              <Slider
+                className='slider-main'
+                asNavFor={nav2}
+                ref={(slider) => (slider1 = slider)}
+                {...{
+                  slidesToShow: 1,
+                  slidesToScroll: 1,
+                  arrows: true,
+                  infinite: images.length > 1,
+                }}>
+                {images.map((image, index) => (
+                  <div key={index}>
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
+                      alt='product'
+                      className='w-full'
+                    />
+                  </div>
+                ))}
+              </Slider>
 
-            <Slider
-              className='slider-nav'
-              {...{
-                arrows: false,
-                infinite: images.length > 1,
-              }}
-              asNavFor={nav1}
-              ref={(slider) => (slider2 = slider)}
-              slidesToShow={images.length > 1 ? images.length : 6}
-              swipeToSlide={true}
-              focusOnSelect={true}>
-              {images.map((image, index) => (
-                <div key={index}>
-                  <img
-                    src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
-                    alt='product'
-                    className='w-full'
-                  />
-                </div>
-              ))}
-            </Slider>
+              <Slider
+                className='slider-nav'
+                {...{
+                  arrows: false,
+                  infinite: images.length > 1,
+                }}
+                asNavFor={nav1}
+                ref={(slider) => (slider2 = slider)}
+                slidesToShow={images.length > 1 ? images.length : 6}
+                swipeToSlide={true}
+                focusOnSelect={true}>
+                {images.map((image, index) => (
+                  <div key={index}>
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
+                      alt='product'
+                      className='w-full'
+                    />
+                  </div>
+                ))}
+              </Slider>
+            </div>
+            <div className='product-details flex gap-5 flex-col'>
+              <h1 className='text-5xl text-gray-700'>{currentProduct?.name}</h1>
+              <h2 className='price text-3xl font-bold text-front-blue mb-6'>
+                {currentProduct && parseFloat(currentProduct.price) > 0
+                  ? `R$ ${parseFloat(currentProduct.price).toLocaleString(
+                      "pt-BR"
+                    )}`
+                  : "Consulte"}
+              </h2>
+              <p className='text-2xl text-black'>
+                {currentProduct?.description.split("\n").map((line, i) => (
+                  <React.Fragment key={i}>
+                    {line}
+                    <br />
+                  </React.Fragment>
+                ))}
+              </p>
+            </div>
           </div>
-          <div className='product-details flex gap-5 flex-col'>
-            <h1 className='text-5xl text-gray-700'>{currentProduct?.name}</h1>
-            <h2 className='price text-3xl font-bold text-front-blue mb-6'>
-              R${" "}
-              {currentProduct &&
-                parseFloat(currentProduct.price).toLocaleString("pt-BR")}
-            </h2>
-            <p className='text-2xl text-black'>
-              {currentProduct?.description.split("\n").map((line, i) => (
-                <React.Fragment key={i}>
-                  {line}
-                  <br />
-                </React.Fragment>
-              ))}
-            </p>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
