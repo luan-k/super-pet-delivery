@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Logo from "../../public/static/images/superpet-logo.png";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { InstagramLogoIcon } from "@radix-ui/react-icons";
 import { FaTimes, FaWhatsapp } from "react-icons/fa";
 import { RiMapPin2Fill } from "react-icons/ri";
@@ -24,6 +24,7 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [listProductResponse, setListProductResponse] = useState<Product[]>([]);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const pathname = usePathname();
 
   async function fetchProducts(
@@ -122,6 +123,11 @@ export default function Header() {
 
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen);
+
+    // Focus the input when the search box is opened
+    if (!isSearchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
   };
 
   const handleSearchChange = async (
@@ -160,7 +166,11 @@ export default function Header() {
     <>
       <header
         className={`wk-header ${
-          pathname === "/login" || pathname.startsWith("/admin") ? "hidden" : ""
+          pathname === "/login" || pathname.startsWith("/admin")
+            ? "hidden"
+            : pathname === "/"
+            ? "wk-header--home"
+            : ""
         }`}>
         <div className='wk-header__socials-nav'>
           <a href='https://www.instagram.com/superpetdelivery/' target='_blank'>
@@ -231,6 +241,7 @@ export default function Header() {
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder='Pesquisar...'
+                  ref={searchInputRef}
                 />
                 {isSearchOpen && (
                   <button
