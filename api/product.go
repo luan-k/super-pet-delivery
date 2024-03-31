@@ -22,6 +22,7 @@ type createProductRequest struct {
 	Description string   `json:"description" validate:"required"`
 	UserID      int64    `json:"user_id" validate:"required"`
 	Price       string   `json:"price"`
+	OldPrice    string   `json:"old_price"`
 	Sku         string   `json:"sku"`
 	Images      []string `json:"images"`
 	Categories  []int64  `json:"categories"`
@@ -48,21 +49,34 @@ func (server *Server) createProduct(ctx *gin.Context) {
 	}
 
 	productPrice := 0.0
+	oldPrice := 0.0
 	productImages := []string{}
 	productSku := ""
-	price, err := strconv.ParseFloat(strings.Replace(req.Price, ",", ".", -1), 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
+	productCategories := []int64{}
 	if req.Price != "" {
+		price, err := strconv.ParseFloat(strings.Replace(req.Price, ",", ".", -1), 64)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, errorResponse(err))
+			return
+		}
 		productPrice = price
+	}
+	if req.OldPrice != "" {
+		price, err := strconv.ParseFloat(strings.Replace(req.OldPrice, ",", ".", -1), 64)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, errorResponse(err))
+			return
+		}
+		oldPrice = price
 	}
 	if len(req.Images) > 0 {
 		productImages = req.Images
 	}
 	if req.Sku != "" {
 		productSku = req.Sku
+	}
+	if len(req.Categories) > 0 {
+		productCategories = req.Categories
 	}
 
 	user, err := server.store.GetUser(ctx, req.UserID)
@@ -97,10 +111,11 @@ func (server *Server) createProduct(ctx *gin.Context) {
 		UserID:      req.UserID,
 		Username:    user.Username,
 		Price:       productPrice,
+		OldPrice:    oldPrice,
 		Sku:         productSku,
 		Url:         url,
 		Images:      productImages,
-		Categories:  req.Categories,
+		Categories:  productCategories,
 	}
 
 	product, err := server.store.CreateProduct(ctx, arg)
@@ -189,25 +204,29 @@ func (server *Server) listProduct(ctx *gin.Context) {
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
 
-	total, err := server.store.CountProducts(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
+	var total int64
+	var err error
+	if len(req.CategoryIDs) == 0 && req.SortField == "" && req.SortDirection == "" && req.Search == "" {
+		total, err = server.store.CountProducts(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
 	}
 
 	var products []db.Product
 	if len(req.CategoryIDs) != 0 {
 		// Fetch the paginated products for the given category
-		products, err = server.store.FilterProducts(ctx, req.CategoryIDs, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection, req.Search)
+		products, total, err = server.store.FilterProducts(ctx, req.CategoryIDs, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection, req.Search)
 	} else if req.SortField != "" && req.SortDirection != "" && req.Search != "" {
 		// Fetch the paginated products with sorting and search
-		products, err = server.store.SearchProducts(ctx, req.Search, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection)
+		products, total, err = server.store.SearchProducts(ctx, req.Search, int(req.PageID), int(req.PageSize), req.SortField, req.SortDirection)
 	} else if req.SortField != "" && req.SortDirection != "" {
 		// Fetch the paginated products with sorting
-		products, err = server.store.ListProductsSorted(ctx, arg, req.SortField, req.SortDirection)
+		products, total, err = server.store.ListProductsSorted(ctx, arg, req.SortField, req.SortDirection)
 	} else if req.Search != "" {
 		// Fetch the paginated products with search
-		products, err = server.store.SearchProducts(ctx, req.Search, int(req.PageID), int(req.PageSize), "", "")
+		products, total, err = server.store.SearchProducts(ctx, req.Search, int(req.PageID), int(req.PageSize), "", "")
 	} else {
 		// Fetch the paginated products without sorting or search
 		products, err = server.store.ListProducts(ctx, arg)
@@ -250,6 +269,7 @@ type updateProductRequest struct {
 	Description string   `json:"description"`
 	UserID      int64    `json:"user_id"`
 	Price       string   `json:"price"`
+	OldPrice    string   `json:"old_price"`
 	Sku         string   `json:"sku"`
 	Images      []string `json:"images"`
 	Categories  []int64  `json:"categories"`
@@ -293,6 +313,12 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 		return
 	}
 
+	oldPrice, err := strconv.ParseFloat(strings.Replace(req.OldPrice, ",", ".", -1), 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
 	// Update only the fields that are provided in the request
 	if req.Name != "" {
 		existingProduct.Name = req.Name
@@ -305,6 +331,9 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 	}
 	if req.Price != "" {
 		existingProduct.Price = price
+	}
+	if req.OldPrice != "" {
+		existingProduct.OldPrice = oldPrice
 	}
 	if req.Sku != "" {
 		existingProduct.Sku = req.Sku
@@ -342,6 +371,7 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 		UserID:      existingProduct.UserID,
 		Username:    user.Username,
 		Price:       existingProduct.Price,
+		OldPrice:    existingProduct.OldPrice,
 		Sku:         existingProduct.Sku,
 		Url:         url,
 		Images:      existingProduct.Images,

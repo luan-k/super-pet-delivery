@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Product } from "../admin/produtos/ListProducts";
 import { associatedImagesProps } from "../admin/produtos/ProductForm";
 import { FaPaw } from "react-icons/fa";
@@ -13,7 +13,7 @@ import {
   ListCategoryResponse,
 } from "../admin/categorias/ListCategories";
 import SearchIcon from "../../public/admin-search.svg";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function Produtos() {
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -32,6 +32,9 @@ export default function Produtos() {
   const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const [currentPageCategory, setCurrentPageCategory] = useState<number>(1);
 
+  const searchParams = useSearchParams();
+
+  const queryParam = searchParams.getAll("category").join("&");
   interface ListProductResponse {
     total: number;
     products: Product[];
@@ -39,6 +42,25 @@ export default function Produtos() {
   /*   interface productsWithImages extends Product {
     images: string[];
   } */
+
+  useEffect(() => {
+    console.log("query", queryParam);
+    if (queryParam) {
+      const categoriesFromUrl = queryParam
+        .split("&")
+        .map((category) => category.replace(/-/g, " "));
+      const checkedIds = [];
+      const checkedNames = [];
+      for (const category of listCategory) {
+        if (categoriesFromUrl.includes(category.name)) {
+          checkedIds.push(category.id);
+          checkedNames.push(category.name);
+        }
+      }
+      setCheckedItems(checkedIds);
+      setCheckedNames(checkedNames);
+    }
+  }, [queryParam, listCategory]);
 
   const getAssociatedImages = async ({
     currentId,
@@ -212,33 +234,60 @@ export default function Produtos() {
     setItemsPerPage: setProductsPerPage,
   };
 
-  const router = useRouter(); // Get the router instance
+  const [checkedNames, setCheckedNames] = useState<string[]>([]);
 
-  const handleCheck = (id: number, isChecked: boolean) => {
+  const handleCheck = (id: number, name: string, isChecked: boolean) => {
     if (isChecked) {
       setCheckedItems &&
         setCheckedItems((prevState) => {
           const newState = [...prevState, id];
-          console.log(newState);
-          // Update the URL
-          window.history.pushState(
-            { category: newState },
-            "",
-            `?category=${newState}`
-          );
+          console.log("checkedItems:", newState); // log checkedItems
+          setCheckedNames((prevNames) => {
+            // Only add name if it's not already in checkedNames
+            const newNames = prevNames.includes(name)
+              ? prevNames
+              : [...prevNames, name];
+            console.log("checkedNames:", newNames); // log checkedNames
+            // Update the URL
+            const urlCategories = newNames
+              .map((name) => `category=${name.replace(/ /g, "-")}`)
+              .join("&");
+            window.history.pushState(
+              { category: newState },
+              "",
+              `?${urlCategories}` // replace spaces with hyphens
+            );
+            return newNames;
+          });
           return newState;
         });
     } else {
       setCheckedItems &&
         setCheckedItems((prevState) => {
           const newState = prevState.filter((itemId) => itemId !== id);
-          console.log(newState);
-          // Update the URL
-          window.history.pushState(
-            { category: newState },
-            "",
-            `?category=${newState}`
-          );
+          console.log("checkedItems:", newState); // log checkedItems
+          setCheckedNames((prevNames) => {
+            const newNames = prevNames.filter((itemName) => itemName !== name);
+            console.log("checkedNames:", newNames); // log checkedNames
+            // Update the URL
+            const urlCategories = newNames
+              .map((name) => `category=${name.replace(/ /g, "-")}`)
+              .join("&");
+            if (newNames.length > 0) {
+              window.history.pushState(
+                { category: newState },
+                "",
+                `?${urlCategories}` // replace spaces with hyphens
+              );
+            } else {
+              window.history.pushState(
+                { category: newState },
+                "",
+                window.location.pathname // remove ?category when no category is selected
+              );
+            }
+            return newNames;
+          });
           return newState;
         });
     }
@@ -252,7 +301,9 @@ export default function Produtos() {
         </div>
         <div className='grid grid-cols-1 lg:grid-cols-4'>
           <div className='filter text-black mb-12 lg:mb-0 wk-block mr-5'>
-            <h3 className='text-black text-2xl mb-8'>Filtrar por categorias: </h3>
+            <h3 className='text-black text-2xl mb-8'>
+              Filtrar por categorias:{" "}
+            </h3>
             <div className='category-list'>
               {listCategory.map((category) => (
                 <div key={category.id} className='category-item'>
@@ -260,7 +311,9 @@ export default function Produtos() {
                     type='checkbox'
                     id={`checkbox-${category.id}`}
                     checked={checkedItems && checkedItems.includes(category.id)}
-                    onChange={(e) => handleCheck(category.id, e.target.checked)}
+                    onChange={(e) =>
+                      handleCheck(category.id, category.name, e.target.checked)
+                    }
                     className=''
                   />
                   <label
@@ -329,9 +382,30 @@ export default function Produtos() {
                         <img src={product.images} alt={product.name} />
                       </div>
                       <div className='product-info'>
-                        <p className='product-price mb-3'>
-                          R$ {parseFloat(product.price).toLocaleString("pt-BR")}
-                        </p>
+                        <div className='flex flex-row justify-center items-center gap-4'>
+                          <p className='product-price product-price--old mb-3 text-xs'>
+                            {product.old_price &&
+                            parseFloat(product.old_price) > 0 ? (
+                              <del>{`R$ ${parseFloat(
+                                product.old_price
+                              ).toLocaleString("pt-BR", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}`}</del>
+                            ) : null}
+                          </p>
+                          <p className='product-price mb-3'>
+                            {parseFloat(product.price) > 0
+                              ? `R$ ${parseFloat(product.price).toLocaleString(
+                                  "pt-BR",
+                                  {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  }
+                                )}`
+                              : "Consulte"}
+                          </p>
+                        </div>
                         <h3 className='product-title'>{product.name}</h3>
                       </div>
                     </Link>

@@ -16,6 +16,7 @@ CREATE TABLE "products" (
   "user_id" bigint NOT NULL,
   "username" varchar NOT NULL DEFAULT '',
   "price" float NOT NULL,
+  "old_price" float NOT NULL,
   "sku" varchar NOT NULL DEFAULT '',
   "images" varchar[] NOT NULL DEFAULT '{}',
   "categories" bigint[] NOT NULL DEFAULT '{}',

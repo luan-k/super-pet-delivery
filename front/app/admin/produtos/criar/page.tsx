@@ -20,6 +20,7 @@ export interface CreateProductRequest {
   name: string;
   description: string;
   price: string;
+  old_price: string;
   sku: string;
   user_id: number;
 }
@@ -27,6 +28,7 @@ export interface CreateProductRequest {
 export type handleChangeType = (
   e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   setDisplayPrice: (data: string) => void,
+  setDisplayOldPrice: (data: string) => void,
   setFormData: (data: CreateProductRequest | EditProductFormRequest) => void,
   formData: CreateProductRequest | EditProductFormRequest
 ) => void;
@@ -34,6 +36,7 @@ export type handleChangeType = (
 const handleChange: handleChangeType = (
   e,
   setDisplayPrice,
+  setDisplayOldPrice,
   setFormData,
   formData
 ) => {
@@ -47,6 +50,11 @@ const handleChange: handleChangeType = (
     newValue = value.replace(/\D/g, ""); // remove non-digits
     newValue = (parseInt(newValue) / 100).toFixed(2); // divide by 100 and fix 2 decimal places
     setDisplayPrice(newValue.replace(".", ",")); // replace dot with comma
+    newValue = parseFloat(newValue); // convert back to number
+  } else if (name === "old_price") {
+    newValue = value.replace(/\D/g, ""); // remove non-digits
+    newValue = (parseInt(newValue) / 100).toFixed(2); // divide by 100 and fix 2 decimal places
+    setDisplayOldPrice(newValue.replace(".", ",")); // replace dot with comma
     newValue = parseFloat(newValue); // convert back to number
   } else {
     newValue = value;
@@ -76,6 +84,26 @@ const handlePriceChange = (
   });
 };
 
+const handleOldPriceChange = (
+  value: string,
+  setDisplayOldPrice: (data: string) => void,
+  setFormData: (data: CreateProductRequest | EditProductFormRequest) => void,
+  formData: CreateProductRequest | EditProductFormRequest
+) => {
+  let newValue: string | number;
+
+  newValue = value.replace(/\D/g, ""); // remove non-digits
+  newValue = (parseInt(newValue) / 100).toFixed(2); // divide by 100 and fix 2 decimal places
+  setDisplayOldPrice(newValue.replace(".", ",")); // replace dot with comma
+  //newValue = parseFloat(newValue); // convert back to number
+
+  console.log("formData", formData);
+  setFormData({
+    ...formData,
+    old_price: newValue,
+  });
+};
+
 export default function CreateProduct() {
   const router = useRouter();
   const userId = parseInt(Cookies.get("user_id") as string);
@@ -85,10 +113,12 @@ export default function CreateProduct() {
     name: "",
     description: "",
     price: "",
+    old_price: "",
     sku: "",
     user_id: userId,
   });
   const [displayPrice, setDisplayPrice] = useState("0,00");
+  const [displayOldPrice, setDisplayOldPrice] = useState("0,00");
   const [searchResults, setSearchResults] = useState<Client[]>([]);
 
   const [checkedItems, setCheckedItems] = useState<number[]>([]);
@@ -177,6 +207,9 @@ export default function CreateProduct() {
     handleChange,
     displayPrice,
     handlePriceChange,
+    handleOldPriceChange,
+    displayOldPrice,
+    setDisplayOldPrice,
     submitButtonText: "Criar Produto",
     imagesDefinitions: imageDetails,
     categoriesDefinitions: categoryDetails,

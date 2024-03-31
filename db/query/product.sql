@@ -5,12 +5,13 @@ INSERT INTO products (
     user_id,
     username,
     price,
+    old_price,
     sku,
     url,
     categories,
     images
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
 ) RETURNING *;
 
 -- name: GetProduct :one
@@ -46,10 +47,11 @@ SET
     user_id = COALESCE($4, user_id),
     username = COALESCE($5, username),
     price = COALESCE($6, price),
-    sku = COALESCE($7, sku),
-    url = COALESCE($8, url),
-    images = COALESCE($9, images),
-    categories = COALESCE($10, categories)
+    old_price = COALESCE($7, old_price),
+    sku = COALESCE($8, sku),
+    url = COALESCE($9, url),
+    images = COALESCE($10, images),
+    categories = COALESCE($11, categories)
 WHERE id = $1
 RETURNING *;
 

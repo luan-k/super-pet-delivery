@@ -10,6 +10,7 @@ import Cookies from "js-cookie";
 import { usePathname } from "next/navigation";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import CategoryBox, { CategoryBoxProps } from "./CategoryBox";
+import { DropResult } from "react-beautiful-dnd";
 
 export interface associatedImagesProps {
   currentId: string | undefined;
@@ -66,6 +67,7 @@ export interface formConfigInterface {
   handleChange: (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     setDisplayPrice: (data: string) => void,
+    setDisplayOldPrice: (data: string) => void,
     setFormData: (data: CreateProductRequest | EditProductFormRequest) => void,
     formData: CreateProductRequest | EditProductFormRequest
   ) => void;
@@ -73,7 +75,8 @@ export interface formConfigInterface {
     name: string;
     description: string;
     price: string;
-    sku?: string;
+    old_price: string;
+    sku: string;
     user_id: number;
   };
   displayPrice: string;
@@ -84,6 +87,14 @@ export interface formConfigInterface {
     setFormData: (data: CreateProductRequest | EditProductFormRequest) => void,
     formData: CreateProductRequest | EditProductFormRequest
   ) => void;
+  handleOldPriceChange: (
+    value: string,
+    setDisplayOldPrice: (data: string) => void,
+    setFormData: (data: CreateProductRequest | EditProductFormRequest) => void,
+    formData: CreateProductRequest | EditProductFormRequest
+  ) => void;
+  displayOldPrice: string;
+  setDisplayOldPrice: (data: string) => void;
   submitButtonText: string;
   imagesDefinitions?: submitAssociatedImagesProps;
   categoriesDefinitions?: CategoryBoxProps;
@@ -109,7 +120,7 @@ export default function ProductForm({
     getAssociatedImages({ setImages, currentId });
   }, [setImages, currentId]);
 
-  const onDragEnd = (result) => {
+  const onDragEnd = (result: DropResult) => {
     if (!result.destination || !document.getElementById("images") || !images)
       return;
 
@@ -151,6 +162,7 @@ export default function ProductForm({
                 formConfig.handleChange(
                   e,
                   formConfig.setDisplayPrice,
+                  formConfig.setDisplayOldPrice,
                   formConfig.setFormData,
                   formConfig.formData
                 )
@@ -179,26 +191,7 @@ export default function ProductForm({
             </label>
           </div>
         </div>
-
         <div className='wk-form__row grid grid-cols-3 gap-9 gap-y'>
-          <div className=''>
-            <label>
-              <h4 className=''>Descrição</h4>
-              <textarea
-                name='description'
-                value={formConfig.formData.description}
-                required
-                onChange={(e) =>
-                  formConfig.handleChange(
-                    e,
-                    formConfig.setDisplayPrice,
-                    formConfig.setFormData,
-                    formConfig.formData
-                  )
-                }
-              />
-            </label>
-          </div>
           <div className=''>
             <label>
               <h4 className=''>Código (opcional)</h4>
@@ -211,6 +204,49 @@ export default function ProductForm({
                   formConfig.handleChange(
                     e,
                     formConfig.setDisplayPrice,
+                    formConfig.setDisplayOldPrice,
+                    formConfig.setFormData,
+                    formConfig.formData
+                  )
+                }
+              />
+            </label>
+          </div>
+
+          <div className=''>
+            <label>
+              <h4 className=''>Preço antigo (se em promoção)</h4>
+              <NumberFormat
+                value={formConfig.displayOldPrice}
+                onValueChange={(values: any) => {
+                  formConfig.handleOldPriceChange(
+                    values.value,
+                    formConfig.setDisplayOldPrice,
+                    formConfig.setFormData,
+                    formConfig.formData
+                  );
+                }}
+                thousandSeparator='.'
+                decimalSeparator=','
+                prefix={"R$ "}
+              />
+            </label>
+          </div>
+        </div>
+
+        <div className='wk-form__row grid grid-cols-3 gap-9 gap-y'>
+          <div className='col-span-2'>
+            <label>
+              <h4 className=''>Descrição</h4>
+              <textarea
+                name='description'
+                value={formConfig.formData.description}
+                required
+                onChange={(e) =>
+                  formConfig.handleChange(
+                    e,
+                    formConfig.setDisplayPrice,
+                    formConfig.setDisplayOldPrice,
                     formConfig.setFormData,
                     formConfig.formData
                   )

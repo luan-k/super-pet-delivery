@@ -10,6 +10,7 @@ export interface Product {
   description: string;
   userId: number;
   price: string;
+  old_price: string;
   sku: string;
   images: string[];
   url: string;
