@@ -412,7 +412,7 @@ export default function Produtos() {
                   </div>
                 ))
               ) : (
-                <p>No products found.</p>
+                <p>Nenhum produto encontrado.</p>
               )}
             </div>
             <WkPagination

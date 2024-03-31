@@ -5,19 +5,144 @@ import Logo from "../../public/static/images/superpet-logo.png";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { InstagramLogoIcon } from "@radix-ui/react-icons";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaTimes, FaWhatsapp } from "react-icons/fa";
 import { RiMapPin2Fill } from "react-icons/ri";
+import { FaSearch } from "react-icons/fa";
+import { Product } from "../admin/produtos/ListProducts";
+import { associatedImagesProps } from "../admin/produtos/ProductForm";
+
+interface ListProductResponse {
+  total: number;
+  products: Product[];
+}
 
 export default function Header() {
   const [currentRoute, setCurrentRoute] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMenuItem2, setIsMenuItem2] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [listProductResponse, setListProductResponse] = useState<Product[]>([]);
+  const [isResultsOpen, setIsResultsOpen] = useState(false);
   const pathname = usePathname();
+
+  async function fetchProducts(
+    pageId: number,
+    pageSize: number,
+    search?: string
+  ): Promise<void> {
+    try {
+      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/products?page_id=${pageId}&page_size=${pageSize}`;
+
+      if (search) {
+        let searchValue = search.replace(/\./g, "<dot>");
+        searchValue = searchValue.replace(/,/g, ".");
+        searchValue = searchValue.replace(/<dot>/g, ",");
+        url += `&search=${searchValue}`;
+      }
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          //Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data: ListProductResponse = await response.json();
+        console.log(data);
+        const productsWithImages = await Promise.all(
+          data.products.map(getProductWithImages)
+        );
+        setListProductResponse(productsWithImages);
+      } else {
+        console.error("Failed to fetch products");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      //setLoading(false);
+    }
+  }
+
+  const getAssociatedImages = async ({
+    currentId,
+    setImages,
+  }: associatedImagesProps) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/by_product/${currentId}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            //Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        //toast.success("Imagem editada com sucesso!");
+        const data = await response.json();
+        console.log(data);
+        setImages && setImages(data);
+        return data;
+      } else {
+        console.error("Failed to edit product");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const getProductWithImages = async (product: Product) => {
+    const images = await getAssociatedImages({
+      currentId: product.id.toString(),
+      setImages: () => {}, // Fix: Pass an empty function instead of null
+    });
+    if (Array.isArray(images) && images.length > 0) {
+      // Fix: Check if images is an array
+      return {
+        ...product,
+        images:
+          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080` +
+          images[0].image_path,
+      };
+    } else {
+      return { ...product, images: null };
+    }
+  };
 
   useEffect(() => {
     // Update the current route when the route changes
     setCurrentRoute(pathname);
   }, [pathname]);
+
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
+  };
+
+  const handleSearchChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+
+    if (query.trim() !== "") {
+      await fetchProducts(1, 8, query);
+      setIsResultsOpen(true);
+    } else {
+      setIsResultsOpen(false);
+    }
+  };
+
+  const closeSearch = () => {
+    setIsSearchOpen(false);
+    setIsResultsOpen(false);
+    setSearchQuery("");
+  };
 
   const isActive = (href: string) => {
     // Compare the current route with the link's href
@@ -73,7 +198,7 @@ export default function Header() {
             <span></span>
           </button>
           <nav
-            className={`wk-header__nav ${
+            className={`wk-header__nav relative ${
               isMenuOpen ? "wk-header__nav--active" : ""
             }`}>
             <ul className='wk-header__nav-list'>
@@ -89,8 +214,85 @@ export default function Header() {
               <li className={`wk-header__nav-item ${isActive("/contato")}`}>
                 <Link href='/contato'>Contato</Link>
               </li>
+              <div
+                className={`wk-header__search text-front-blue ${
+                  isSearchOpen
+                    ? "wk-header__search--open"
+                    : "wk-header__search--close"
+                }`}>
+                <button
+                  className='wk-header__search-icon'
+                  onClick={() => !isSearchOpen && toggleSearch()}>
+                  <FaSearch />
+                </button>
+                <input
+                  className='wk-header__search-input'
+                  type='text'
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  placeholder='Pesquisar...'
+                />
+                {isSearchOpen && (
+                  <button
+                    className='wk-header__search-close'
+                    onClick={closeSearch}>
+                    <FaTimes />
+                  </button>
+                )}
+              </div>
             </ul>
           </nav>
+        </div>
+        <div
+          className={`wk-header__search-box ${
+            isResultsOpen ? "wk-header__search-box--open" : ""
+          }`}>
+          {isResultsOpen && (
+            <>
+              <div className='wk-products container wk-product-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 text-black gap-12'>
+                {listProductResponse && listProductResponse.length > 0 ? (
+                  listProductResponse.map((product) => (
+                    <div key={product.id} className='product-card'>
+                      <Link
+                        href={`/produtos/${product.url}-florianopolis-sao-jose-palhoca-biguacu-santo-amaro`}>
+                        <div className='product-image'>
+                          <img src={product.images} alt={product.alt} />
+                        </div>
+                        <div className='product-info'>
+                          <div className='flex flex-row justify-center items-center gap-4'>
+                            <p className='product-price product-price--old mb-3 text-xs'>
+                              {product.old_price &&
+                              parseFloat(product.old_price) > 0 ? (
+                                <del>{`R$ ${parseFloat(
+                                  product.old_price
+                                ).toLocaleString("pt-BR", {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })}`}</del>
+                              ) : null}
+                            </p>
+                            <p className='product-price mb-3'>
+                              {parseFloat(product.price) > 0
+                                ? `R$ ${parseFloat(
+                                    product.price
+                                  ).toLocaleString("pt-BR", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })}`
+                                : "Consulte"}
+                            </p>
+                          </div>
+                          <h3 className='product-title'>{product.name}</h3>
+                        </div>
+                      </Link>
+                    </div>
+                  ))
+                ) : (
+                  <p>Nenhum Produto Encontrado</p>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </header>
     </>
