@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Logo from "../../public/static/images/superpet-logo.png";
 import FooterAnimals from "../../public/static/images/animaisfootermini.png";
+import WhatsappImage from "../../public/static/images/whatsapp-logo-border.png";
 import WKode from "../../public/wkode-footer-logo.svg";
 import { FaWhatsapp, FaInstagram, FaMapMarker } from "react-icons/fa";
 import { usePathname } from "next/navigation";
@@ -102,6 +103,17 @@ export default function Footer() {
       <div className='wk-footer-main container p-20 flex items-center justify-end'>
         <WKode />
       </div>
+      <Link
+        target='_blanket'
+        href='https://api.whatsapp.com/send?phone=554899805164&text=Ol%C3%A1%2C%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es%20sobre%20os%20produtos%20da%20SuperPet.'>
+        <Image
+          src={WhatsappImage}
+          alt='Imagem whatsapp'
+          className='wk-whatsapp-image'
+          width={70}
+          height={70}
+        />
+      </Link>
     </footer>
   );
 }
