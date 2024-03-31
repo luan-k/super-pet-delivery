@@ -92,6 +92,12 @@ type Session struct {
 	CreatedAt    time.Time `json:"created_at"`
 }
 
+type SliderImageWidget struct {
+	ID      int64 `json:"id"`
+	ImageID int64 `json:"image_id"`
+	Order   int32 `json:"order"`
+}
+
 type User struct {
 	ID                int64     `json:"id"`
 	Username          string    `json:"username"`

@@ -106,3 +106,12 @@ CREATE TABLE "product_images" (
 ALTER TABLE "product_images" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id");
 
 ALTER TABLE "product_images" ADD FOREIGN KEY ("image_id") REFERENCES "images" ("id");
+
+CREATE TABLE "slider_image_widget" (
+  "id" BIGSERIAL PRIMARY KEY,
+  "image_id" bigint NOT NULL,
+  "order" int NOT NULL DEFAULT 0,
+  CONSTRAINT unique_slider_image UNIQUE (id, image_id)
+);
+
+ALTER TABLE "slider_image_widget" ADD FOREIGN KEY ("image_id") REFERENCES "images" ("id");

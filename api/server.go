@@ -144,6 +144,13 @@ func (server *Server) setupRouter() {
 	router.GET("/images/by_product/:product_id", server.listProductImages)
 	authRoutes.PUT("/images/by_product/:product_id", server.editImageOrder)
 
+	authRoutes.POST("/slider_images", server.CreateSliderImage)
+	router.GET("/slider_images", server.ListSliderImages)
+	authRoutes.POST("/slider_images/update", server.UpdateSliderImage)
+	authRoutes.POST("/slider_images/update_by_image_id", server.UpdateSliderImageByImageId)
+	authRoutes.POST("/slider_images/delete", server.DeleteSliderImages)
+	authRoutes.POST("/slider_images/delete_by_image_id", server.DeleteSliderImagesByImageId)
+
 	server.router = router
 }
 

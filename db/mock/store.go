@@ -231,6 +231,21 @@ func (mr *MockStoreMockRecorder) CreateSession(arg0, arg1 interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSession", reflect.TypeOf((*MockStore)(nil).CreateSession), arg0, arg1)
 }
 
+// CreateSliderImage mocks base method.
+func (m *MockStore) CreateSliderImage(arg0 context.Context, arg1 db.CreateSliderImageParams) (db.SliderImageWidget, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateSliderImage", arg0, arg1)
+	ret0, _ := ret[0].(db.SliderImageWidget)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateSliderImage indicates an expected call of CreateSliderImage.
+func (mr *MockStoreMockRecorder) CreateSliderImage(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSliderImage", reflect.TypeOf((*MockStore)(nil).CreateSliderImage), arg0, arg1)
+}
+
 // CreateUser mocks base method.
 func (m *MockStore) CreateUser(arg0 context.Context, arg1 db.CreateUserParams) (db.User, error) {
 	m.ctrl.T.Helper()
@@ -328,6 +343,20 @@ func (m *MockStore) DeleteSales(arg0 context.Context, arg1 []int32) error {
 func (mr *MockStoreMockRecorder) DeleteSales(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSales", reflect.TypeOf((*MockStore)(nil).DeleteSales), arg0, arg1)
+}
+
+// DeleteSliderImage mocks base method.
+func (m *MockStore) DeleteSliderImage(arg0 context.Context, arg1 int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteSliderImage", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteSliderImage indicates an expected call of DeleteSliderImage.
+func (mr *MockStoreMockRecorder) DeleteSliderImage(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSliderImage", reflect.TypeOf((*MockStore)(nil).DeleteSliderImage), arg0, arg1)
 }
 
 // DeleteUser mocks base method.
@@ -675,7 +704,7 @@ func (mr *MockStoreMockRecorder) ListProducts(arg0, arg1 interface{}) *gomock.Ca
 }
 
 // ListProductsByCategory mocks base method.
-func (m *MockStore) ListProductsByCategory(arg0 context.Context, arg1 db.ListProductsByCategoryParams) ([]db.Product, error) {
+func (m *MockStore) ListProductsByCategory(arg0 context.Context, arg1 int64) ([]db.Product, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListProductsByCategory", arg0, arg1)
 	ret0, _ := ret[0].([]db.Product)
@@ -732,6 +761,21 @@ func (m *MockStore) ListSessionsByUsername(arg0 context.Context, arg1 string) ([
 func (mr *MockStoreMockRecorder) ListSessionsByUsername(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSessionsByUsername", reflect.TypeOf((*MockStore)(nil).ListSessionsByUsername), arg0, arg1)
+}
+
+// ListSliderImages mocks base method.
+func (m *MockStore) ListSliderImages(arg0 context.Context, arg1 db.ListSliderImagesParams) ([]db.SliderImageWidget, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListSliderImages", arg0, arg1)
+	ret0, _ := ret[0].([]db.SliderImageWidget)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListSliderImages indicates an expected call of ListSliderImages.
+func (mr *MockStoreMockRecorder) ListSliderImages(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSliderImages", reflect.TypeOf((*MockStore)(nil).ListSliderImages), arg0, arg1)
 }
 
 // ListUsers mocks base method.
@@ -852,6 +896,21 @@ func (m *MockStore) UpdateSessionsUsername(arg0 context.Context, arg1 db.UpdateS
 func (mr *MockStoreMockRecorder) UpdateSessionsUsername(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSessionsUsername", reflect.TypeOf((*MockStore)(nil).UpdateSessionsUsername), arg0, arg1)
+}
+
+// UpdateSliderImage mocks base method.
+func (m *MockStore) UpdateSliderImage(arg0 context.Context, arg1 db.UpdateSliderImageParams) (db.SliderImageWidget, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateSliderImage", arg0, arg1)
+	ret0, _ := ret[0].(db.SliderImageWidget)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateSliderImage indicates an expected call of UpdateSliderImage.
+func (mr *MockStoreMockRecorder) UpdateSliderImage(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSliderImage", reflect.TypeOf((*MockStore)(nil).UpdateSliderImage), arg0, arg1)
 }
 
 // UpdateUser mocks base method.

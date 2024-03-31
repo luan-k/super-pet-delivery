@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { Client, ListClientResponse } from "./fetchClients";
 import NumberFormat from "react-number-format";
+import SliderWidget from "../components/SliderWidget";
 
 interface Sale {
   id: number;
@@ -373,6 +374,9 @@ export default function Dashboard() {
         </div>
         <div className='title-wrapper grid grid-cols-2 mt-7 mb-14'>
           <h1 className='text-5xl font-semibold '>Dashboard</h1>
+        </div>
+        <div className='wk-dashboard w-full grid grid-cols-2 gap-12'>
+          <SliderWidget />
         </div>
         <div className='wk-dashboard h-full w-full grid grid-cols-2 gap-12'>
           <DashboardWidget

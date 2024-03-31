@@ -24,13 +24,16 @@ type Querier interface {
 	CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error)
 	CreateSale(ctx context.Context, arg CreateSaleParams) (Sale, error)
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
+	CreateSliderImage(ctx context.Context, arg CreateSliderImageParams) (SliderImageWidget, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	DeleteByImageId(ctx context.Context, imageID int64) error
 	DeleteCategory(ctx context.Context, id int64) error
 	DeleteClient(ctx context.Context, id int64) error
 	DeleteImage(ctx context.Context, id int64) error
 	DeleteProduct(ctx context.Context, id int64) error
 	DeleteSale(ctx context.Context, id int64) error
 	DeleteSales(ctx context.Context, dollar_1 []int32) error
+	DeleteSliderImage(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
 	DisassociateProductFromCategory(ctx context.Context, arg DisassociateProductFromCategoryParams) (ProductCategory, error)
 	DisassociateProductFromImage(ctx context.Context, arg DisassociateProductFromImageParams) (ProductImage, error)
@@ -58,6 +61,7 @@ type Querier interface {
 	ListProductsByUser(ctx context.Context, userID int64) ([]Product, error)
 	ListSales(ctx context.Context, arg ListSalesParams) ([]Sale, error)
 	ListSessionsByUsername(ctx context.Context, username string) ([]Session, error)
+	ListSliderImages(ctx context.Context, arg ListSliderImagesParams) ([]SliderImageWidget, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
 	UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Category, error)
 	UpdateClient(ctx context.Context, arg UpdateClientParams) (Client, error)
@@ -66,6 +70,8 @@ type Querier interface {
 	UpdateSale(ctx context.Context, arg UpdateSaleParams) (Sale, error)
 	UpdateSession(ctx context.Context, arg UpdateSessionParams) (Session, error)
 	UpdateSessionsUsername(ctx context.Context, arg UpdateSessionsUsernameParams) ([]Session, error)
+	UpdateSliderImage(ctx context.Context, arg UpdateSliderImageParams) (SliderImageWidget, error)
+	UpdateSliderImageByImageId(ctx context.Context, arg UpdateSliderImageByImageIdParams) (SliderImageWidget, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 

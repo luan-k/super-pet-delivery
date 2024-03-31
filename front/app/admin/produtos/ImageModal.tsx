@@ -14,6 +14,7 @@ import { editImageRequest } from "../galeria/SingleImageList";
 import { usePathname } from "next/navigation";
 import { get } from "http";
 import { associatedImagesProps } from "./ProductForm";
+import { getAssociatedSliderImages } from "@/app/components/SliderWidget";
 
 interface ImageModalProps {
   getAssociatedImages?: ({
@@ -23,8 +24,9 @@ interface ImageModalProps {
     setInitialCheckedItems,
   }: associatedImagesProps) => void;
   setImages?: (data: any[]) => void;
-  getImages?: (data: any[]) => void;
+  getImages?: Image[];
   imageProps?: submitAssociatedImagesProps;
+  isSlider?: boolean;
 }
 
 export interface submitAssociatedImagesProps {
@@ -43,6 +45,103 @@ export interface submitAssociatedImagesProps {
   setCheckedItems?: (data: any[]) => void;
   setInitialCheckedItems?: (data: any[]) => void;
 }
+
+interface submitSliderImagesProps {
+  e: any;
+  checkedItems: any[];
+  initialCheckedItems: any[];
+  getAssociatedSliderImages: (props: associatedImagesProps) => void;
+  setImages?: (data: any[]) => void;
+  setCheckedItems?: (data: any[]) => void;
+  setInitialCheckedItems?: (data: any[]) => void;
+}
+
+export const submitSliderImages = async ({
+  e,
+  checkedItems,
+  initialCheckedItems,
+  getAssociatedSliderImages,
+  setImages,
+  setCheckedItems,
+  setInitialCheckedItems,
+}: submitSliderImagesProps) => {
+  e && e.stopPropagation();
+  const token = Cookies.get("access_token");
+
+  const imagesToAssociate = checkedItems
+    .filter((id) => !initialCheckedItems.includes(id))
+    .map((id) => ({ id, order: checkedItems.indexOf(id) }));
+  const imagesToDisassociate = initialCheckedItems.filter(
+    (id) => !checkedItems.includes(id)
+  );
+
+  console.log("checkedItems");
+  console.log(checkedItems);
+  console.log("initialCheckedItems");
+  console.log(initialCheckedItems);
+  console.log("imagesToAssociate");
+  console.log(imagesToAssociate);
+  console.log("imagesToDisassociate");
+  console.log(imagesToDisassociate);
+
+  if (imagesToAssociate.length > 0) {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/slider_images`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ images: imagesToAssociate }),
+        }
+      );
+
+      if (response.ok) {
+        getAssociatedSliderImages({
+          setImages,
+          setCheckedItems,
+          setInitialCheckedItems,
+        });
+      } else {
+        console.error("Failed to associate slider images");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
+  if (imagesToDisassociate.length > 0) {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/slider_images/delete_by_image_id`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ image_ids: imagesToDisassociate }),
+        }
+      );
+
+      if (response.ok) {
+        getAssociatedSliderImages({
+          setImages,
+          setCheckedItems,
+          setInitialCheckedItems,
+        });
+      } else {
+        console.error("Failed to disassociate slider images");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+};
 
 export const submitAssociatedImages = async ({
   e,
@@ -176,6 +275,7 @@ export default function ImageModal({
   setImages,
   getImages,
   imageProps,
+  isSlider,
 }: ImageModalProps) {
   const pathname = usePathname();
   var urlParts = pathname.split("/");
@@ -666,16 +766,26 @@ export default function ImageModal({
                 className='wk-btn wk-btn--md wk-btn--primary'
                 type='submit'
                 onClick={(e) => {
-                  submitAssociatedImages({
-                    e,
-                    currentId,
-                    checkedItems,
-                    initialCheckedItems,
-                    getAssociatedImages,
-                    setImages,
-                    setCheckedItems,
-                    setInitialCheckedItems,
-                  });
+                  isSlider
+                    ? submitSliderImages({
+                        e,
+                        checkedItems,
+                        initialCheckedItems,
+                        getAssociatedSliderImages,
+                        setImages,
+                        setCheckedItems,
+                        setInitialCheckedItems,
+                      })
+                    : submitAssociatedImages({
+                        e,
+                        currentId,
+                        checkedItems,
+                        initialCheckedItems,
+                        getAssociatedImages,
+                        setImages,
+                        setCheckedItems,
+                        setInitialCheckedItems,
+                      });
                 }}>
                 <SaveIcon className='wk-icon' />
                 Selecionar Imagens
