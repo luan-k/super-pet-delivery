@@ -6,8 +6,81 @@ import Image from "next/image";
 import Slide1 from "../../public/static/images/slider-1.jpg";
 import Slide2 from "../../public/static/images/slider-2.jpg";
 import Slide3 from "../../public/static/images/slider-3.jpg";
+import { useEffect, useState } from "react";
+import { Image as ImageType } from "../admin/galeria/ImageList";
 
 export default function SimpleSlider() {
+  const [images, setImages] = useState<ImageType[]>([]);
+
+  // repeat code for a change :O
+  interface associatedImagesProps {
+    setImages: (data: any[]) => void;
+  }
+
+  const getSliderImages = async ({ setImages }: associatedImagesProps) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/slider_images?page_id=1&page_size=10`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            //Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("date");
+        console.log(data);
+
+        if (setImages) {
+          const images = await Promise.all(
+            data.SliderImages.map(async (item: any) => {
+              const imageResponse = await fetch(
+                `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/${item.image_id}`,
+                {
+                  method: "GET",
+                  credentials: "include",
+                  headers: {
+                    "Content-Type": "application/json",
+                    //Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+
+              if (imageResponse.ok) {
+                const image = await imageResponse.json();
+                return { ...image, order: item.order };
+              } else {
+                console.error(`Failed to fetch image with ID ${item.image_id}`);
+                return null;
+              }
+            })
+          );
+
+          const sortedImages = images
+            .filter((image: any) => image !== null)
+            .sort((a: any, b: any) => a.order - b.order);
+
+          setImages(sortedImages);
+          console.log("images");
+          console.log(sortedImages);
+        }
+      } else {
+        console.error("Failed to fetch slider images");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    getSliderImages({ setImages });
+  }, []);
+
   var settings = {
     dots: true,
     infinite: true,
@@ -19,15 +92,14 @@ export default function SimpleSlider() {
   return (
     <div className='wk-slider text-2xl max-w-full'>
       <Slider {...settings}>
-        <div className='bg-white'>
-          <Image src={Slide1} alt='Slide 1' width={1920} height={1080} />
-        </div>
-        <div className='bg-white'>
-          <Image src={Slide2} alt='Slide 2' width={1920} height={1080} />
-        </div>
-        <div className='bg-white'>
-          <Image src={Slide3} alt='Slide 3' width={1920} height={1080} />
-        </div>
+        {images.map((image) => (
+          <div key={image.id}>
+            <img
+              src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
+              alt={image.alt}
+            />
+          </div>
+        ))}
       </Slider>
     </div>
   );
