@@ -261,6 +261,20 @@ func (mr *MockStoreMockRecorder) CreateUser(arg0, arg1 interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockStore)(nil).CreateUser), arg0, arg1)
 }
 
+// DeleteByImageId mocks base method.
+func (m *MockStore) DeleteByImageId(arg0 context.Context, arg1 int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteByImageId", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteByImageId indicates an expected call of DeleteByImageId.
+func (mr *MockStoreMockRecorder) DeleteByImageId(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByImageId", reflect.TypeOf((*MockStore)(nil).DeleteByImageId), arg0, arg1)
+}
+
 // DeleteCategory mocks base method.
 func (m *MockStore) DeleteCategory(arg0 context.Context, arg1 int64) error {
 	m.ctrl.T.Helper()
@@ -911,6 +925,21 @@ func (m *MockStore) UpdateSliderImage(arg0 context.Context, arg1 db.UpdateSlider
 func (mr *MockStoreMockRecorder) UpdateSliderImage(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSliderImage", reflect.TypeOf((*MockStore)(nil).UpdateSliderImage), arg0, arg1)
+}
+
+// UpdateSliderImageByImageId mocks base method.
+func (m *MockStore) UpdateSliderImageByImageId(arg0 context.Context, arg1 db.UpdateSliderImageByImageIdParams) (db.SliderImageWidget, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateSliderImageByImageId", arg0, arg1)
+	ret0, _ := ret[0].(db.SliderImageWidget)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateSliderImageByImageId indicates an expected call of UpdateSliderImageByImageId.
+func (mr *MockStoreMockRecorder) UpdateSliderImageByImageId(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSliderImageByImageId", reflect.TypeOf((*MockStore)(nil).UpdateSliderImageByImageId), arg0, arg1)
 }
 
 // UpdateUser mocks base method.
