@@ -4,7 +4,13 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  //@apply py-7 md:px-4;
+  border-bottom-width: 1.2rem;
+
+  @apply border-front-blue;
+
+  &--home {
+    border-bottom-width: 0;
+  }
 
   &__socials-nav {
     @apply bg-front-blue py-7 md:px-4;
