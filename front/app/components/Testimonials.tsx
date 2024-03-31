@@ -1,3 +1,4 @@
+"use client";
 import { FaPaw, FaStar } from "react-icons/fa6";
 import Image from "next/image";
 import TestChat1 from "../../public/static/images/TestimonialChat1.png";
@@ -6,16 +7,22 @@ import TestChat3 from "../../public/static/images/TestimonialChat3.png";
 import luke from "../../public/static/images/luke.png";
 import milady from "../../public/static/images/milady.png";
 import russo from "../../public/static/images/russo.png";
+import { motion } from "framer-motion";
+import { popFromBottom, popFromLeft, popFromRight, popFromTop } from "../util/animationVariants";
 
 export default function Testimonials() {
   return (
-    <div className='wk-testimonials'>
+    <motion.div 
+    className='wk-testimonials'
+    initial="offscreen"
+    whileInView="onscreen"
+    viewport={{ once: true, amount: 0.4 }}>
       <div className='container py-40'>
-        <div className='text-6xl text-front-blue text-center flex justify-center gap-7 mb-24'>
+        <motion.div variants={popFromTop} className='text-6xl text-front-blue text-center flex justify-center gap-7 mb-24'>
           <FaPaw /> Depoimentos
-        </div>
+        </motion.div>
         <div className='grid grid-cols-1 lg:grid-cols-3 relative h-full gap-20 md:gap-10 xl:gap-20 mt-20 justify-items-center'>
-          <div className='wk-testimonial'>
+          <motion.div variants={popFromLeft} className='wk-testimonial'>
             <div className='wk-testimonial__pet'>
               <Image draggable={false} src={luke} alt='Luke Skywalker' />
             </div>
@@ -36,8 +43,8 @@ export default function Testimonials() {
               </div>
               <Image draggable={false} src={TestChat1} alt='' />
             </div>
-          </div>
-          <div className='wk-testimonial'>
+          </motion.div>
+          <motion.div variants={popFromBottom} className='wk-testimonial'>
             <div className='wk-testimonial__pet'>
               <Image draggable={false} src={russo} alt='Russo' />
             </div>
@@ -60,8 +67,8 @@ export default function Testimonials() {
               </div>
               <Image draggable={false} src={TestChat2} alt='' />
             </div>
-          </div>
-          <div className='wk-testimonial'>
+          </motion.div>
+          <motion.div variants={popFromRight} className='wk-testimonial'>
             <div className='wk-testimonial__pet'>
               <Image draggable={false} src={milady} alt='Milady' />
             </div>
@@ -84,9 +91,9 @@ export default function Testimonials() {
               </div>
               <Image draggable={false} src={TestChat3} alt='' />
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

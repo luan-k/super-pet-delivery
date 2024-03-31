@@ -4,6 +4,8 @@ import { Product } from "../admin/produtos/ListProducts";
 import { useEffect, useState } from "react";
 import { associatedImagesProps } from "../admin/produtos/ProductForm";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { popFromLeft } from "../util/animationVariants";
 
 export default function Products() {
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -128,11 +130,15 @@ export default function Products() {
   }, [currentPage, productsPerPage, sortField, sortDirection, search]);
 
   return (
-    <div className='wk-products'>
+    <motion.div
+    className='wk-products'
+    initial="offscreen"
+    whileInView="onscreen"
+    viewport={{ once: true, amount: 0.4 }}>
       <div className='container'>
-        <div className='text-6xl text-front-blue text-center flex justify-center gap-7 mb-36'>
+        <motion.div variants={popFromLeft} className='text-6xl text-front-blue text-center flex justify-center gap-7 mb-36'>
           <FaPaw /> Os Melhores Produtos
-        </div>
+        </motion.div>
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 text-black gap-12'>
           {listProductResponse.map((product) => (
             <div key={product.id} className='product-card'>
@@ -152,6 +158,6 @@ export default function Products() {
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
