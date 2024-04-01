@@ -24,13 +24,16 @@ export default function Footer() {
     event.preventDefault();
     setIsSubmitting(true);
 
-    const response = await fetch("http://localhost:8080/contact", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, email, phone, message }),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/contact`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, phone, message }),
+      }
+    );
 
     setIsSubmitting(false);
 
