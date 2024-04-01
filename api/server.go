@@ -51,7 +51,7 @@ func NewServer(config util.Config, store db.SortableStore) (*Server, error) {
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://superpetdelivery.com.br")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Cookie, cookie, Cookies, cookies, accept, origin, Cache-Control, X-Requested-With, Cookie")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
@@ -72,7 +72,7 @@ func (server *Server) setupRouter() {
 	router.Use(CORSMiddleware())
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 
-	config.AllowOrigins = []string{"http://localhost:3000"}
+	config.AllowOrigins = []string{"http://superpetdelivery.com.br"}
 	config.AllowHeaders = []string{"Authorization", "Cookie"}
 
 	config.AllowCredentials = true
@@ -150,6 +150,8 @@ func (server *Server) setupRouter() {
 	authRoutes.POST("/slider_images/update_by_image_id", server.UpdateSliderImageByImageId)
 	authRoutes.POST("/slider_images/delete", server.DeleteSliderImages)
 	authRoutes.POST("/slider_images/delete_by_image_id", server.DeleteSliderImagesByImageId)
+
+	router.POST("/contact", server.HandleForm)
 
 	server.router = router
 }

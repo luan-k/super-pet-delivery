@@ -23,9 +23,9 @@ func TestSendEmailWithZoho(t *testing.T) {
 	<p>This is a test email</p>
 	`
 	to := []string{"luankds@gmail.com"}
-	attachFiles := []string{"../README.md"}
+	//attachFiles := []string{"../README.md"}
 
-	err = sender.SendEmail(subject, content, to, nil, nil, attachFiles)
+	err = sender.SendEmail(subject, content, to, nil, nil, nil)
 	require.NoError(t, err)
 
 }

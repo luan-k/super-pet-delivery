@@ -8,10 +8,39 @@ import WKode from "../../public/wkode-footer-logo.svg";
 import { FaWhatsapp, FaInstagram, FaMapMarker } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import NumberFormat from "react-number-format";
 
 export default function Footer() {
   const [currentRoute, setCurrentRoute] = useState("");
   const pathname = usePathname();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+
+    const response = await fetch("http://localhost:8080/contact", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, phone, message }),
+    });
+
+    setIsSubmitting(false);
+
+    if (response.ok) {
+      console.log("Form submitted successfully");
+      setFormSubmitted(true);
+    } else {
+      console.error("Form submission failed");
+    }
+  };
 
   useEffect(() => {
     // Update the current route when the route changes
@@ -64,39 +93,60 @@ export default function Footer() {
         <div className='wk-footer-section'>
           <h3>Fale Conosco</h3>
           <div className='wk-form'>
-            <label>
-              <h4>Nome</h4>
-              <input type='text' name='name' required placeholder='Seu nome' />
-            </label>
-            <label>
-              <h4>Email</h4>
-              <input
-                type='email'
-                name='email'
-                required
-                placeholder='Seu email'
-              />
-            </label>
-            <label>
-              <h4>Telefone</h4>
-              <input
-                type='phone'
-                name='phone'
-                required
-                placeholder='Seu telefone'
-              />
-            </label>
-            <label>
-              <h4>Mensagem</h4>
-              <textarea
-                name='message'
-                cols={30}
-                rows={10}
-                placeholder='Sua mensagem'></textarea>
-            </label>
-            <button className='wk-btn wk-btn--sm wk-btn--primary' type='submit'>
-              Enviar
-            </button>
+            {formSubmitted ? (
+              <p>Obrigado pela mensagem, entraremos em contato em breve.</p>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <label>
+                  <h4>Nome</h4>
+                  <input
+                    type='text'
+                    name='name'
+                    required
+                    placeholder='Seu nome'
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </label>
+                <label>
+                  <h4>Email</h4>
+                  <input
+                    type='email'
+                    name='email'
+                    required
+                    placeholder='Seu email'
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </label>
+                <label>
+                  <h4>Telefone</h4>
+                  <NumberFormat
+                    format='(##) # ####-####'
+                    isNumericString={true}
+                    value={phone}
+                    onValueChange={(values) => setPhone(values.value)}
+                    placeholder='Ex: (00) 9 9999-9999'
+                  />
+                </label>
+                <label>
+                  <h4>Mensagem</h4>
+                  <textarea
+                    name='message'
+                    cols={30}
+                    rows={10}
+                    placeholder='Sua mensagem'
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}></textarea>
+                </label>
+                <button
+                  className='wk-btn wk-btn--sm wk-btn--primary'
+                  type='submit'
+                  disabled={isSubmitting}>
+                  {isSubmitting ? "Enviando..." : "Enviar"}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </div>
