@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { TfiLayoutSlider } from "react-icons/tfi";
 import ImageModal, {
   submitAssociatedImagesProps,
@@ -175,7 +176,7 @@ export default function SliderWidget() {
                 {images &&
                   images.length > 0 &&
                   images
-                    .sort((a, b) => a.order - b.order)
+                    .sort((a, b) => (a.order || 0) - (b.order || 0))
                     .map((image, index) => (
                       <Draggable
                         key={image.id}

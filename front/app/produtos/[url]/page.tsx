@@ -1,7 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { usePathname } from "next/navigation";
 import "../../styles/public-components/main.scss";
-import { use, useEffect, useState } from "react";
+import { RefObject, createRef, use, useEffect, useState } from "react";
 import { ProductDetails } from "@/app/admin/produtos/[productid]/page";
 import Cookies from "js-cookie";
 import { associatedImagesProps } from "@/app/admin/produtos/ProductForm";
@@ -20,17 +21,19 @@ export default function SingleProduct() {
     null
   );
   const [images, setImages] = useState<any[]>([]);
-  const [nav1, setNav1] = useState(null);
-  const [nav2, setNav2] = useState(null);
+  const [nav1, setNav1] = useState<Slider | undefined>(undefined);
+  const [nav2, setNav2] = useState<Slider | undefined>(undefined);
   const [productNotFound, setProductNotFound] = useState(false);
 
-  useEffect(() => {
-    setNav1(slider1);
-    setNav2(slider2);
-  }, []);
+  const slider1: RefObject<Slider> = createRef();
+  const slider2: RefObject<Slider> = createRef();
 
-  let slider1 = [];
-  let slider2 = [];
+  useEffect(() => {
+    if (slider1.current && slider2.current) {
+      setNav1(slider1.current);
+      setNav2(slider2.current);
+    }
+  }, []);
 
   const [displayPrice, setDisplayPrice] = useState("0,00");
   // returning ordering-image-test-florianopolis-sao-jose-palhoca-biguacu-santo-amaro | use whatever is before -florianopolis-sao-jose-palhoca-biguacu-santo-amaro and save it onto a variable
@@ -43,7 +46,9 @@ export default function SingleProduct() {
       try {
         const token = Cookies.get("access_token");
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/product/${currentUrl[0]}`,
+          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/product/${
+            currentUrl ? currentUrl[0] : ""
+          }`,
           {
             method: "GET",
             headers: {
@@ -77,8 +82,10 @@ export default function SingleProduct() {
       }
     };
 
-    fetchProductDetails();
-  }, [currentUrl[0]]);
+    if (currentUrl && currentUrl[0]) {
+      fetchProductDetails();
+    }
+  }, [currentUrl ? currentUrl[0] : undefined]);
 
   const getAssociatedImages = async ({
     currentId,
@@ -134,7 +141,7 @@ export default function SingleProduct() {
               <Slider
                 className='slider-main'
                 asNavFor={nav2}
-                ref={(slider) => (slider1 = slider)}
+                ref={slider1}
                 {...{
                   slidesToShow: 1,
                   slidesToScroll: 1,
@@ -159,7 +166,7 @@ export default function SingleProduct() {
                   infinite: images.length > 1,
                 }}
                 asNavFor={nav1}
-                ref={(slider) => (slider2 = slider)}
+                ref={slider2}
                 slidesToShow={images.length > 1 ? images.length : 6}
                 swipeToSlide={true}
                 focusOnSelect={true}>

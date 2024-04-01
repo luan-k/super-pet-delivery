@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import React, { ChangeEvent, use, useEffect, useState } from "react";
@@ -42,7 +43,7 @@ export interface submitAssociatedImagesProps {
     setInitialCheckedItems,
   }: associatedImagesProps) => void;
   setImages?: (data: any[]) => void;
-  setCheckedItems?: (data: any[]) => void;
+  setCheckedItems?: (data: any[]) => void | ((data: any[]) => any[]);
   setInitialCheckedItems?: (data: any[]) => void;
 }
 
@@ -52,7 +53,7 @@ interface submitSliderImagesProps {
   initialCheckedItems: any[];
   getAssociatedSliderImages: (props: associatedImagesProps) => void;
   setImages?: (data: any[]) => void;
-  setCheckedItems?: (data: any[]) => void;
+  setCheckedItems?: (data: any[]) => void | ((data: any[]) => any[]);
   setInitialCheckedItems?: (data: any[]) => void;
 }
 
@@ -95,7 +96,7 @@ export const submitSliderImages = async ({
           setImages,
           setCheckedItems,
           setInitialCheckedItems,
-        });
+        } as any);
       } else {
         console.error("Failed to associate slider images");
       }
@@ -124,7 +125,7 @@ export const submitSliderImages = async ({
           setImages,
           setCheckedItems,
           setInitialCheckedItems,
-        });
+        } as any);
       } else {
         console.error("Failed to disassociate slider images");
       }
@@ -289,21 +290,15 @@ export default function ImageModal({
   const initialCheckedItems = imageProps?.initialCheckedItems;
 
   const handleCheck = (id: number, isChecked: boolean) => {
+    let newCheckedItems = [...(checkedItems || [])]; // copy the current state
+
     if (isChecked) {
-      setCheckedItems &&
-        setCheckedItems((prevState) => {
-          const newState = [...prevState, id];
-
-          return newState;
-        });
+      newCheckedItems.push(id); // add the id
     } else {
-      setCheckedItems &&
-        setCheckedItems((prevState) => {
-          const newState = prevState.filter((itemId) => itemId !== id);
-
-          return newState;
-        });
+      newCheckedItems = newCheckedItems.filter((itemId) => itemId !== id); // remove the id
     }
+
+    setCheckedItems && setCheckedItems(newCheckedItems); // update the state
   };
 
   const handleDragOver = (event: React.DragEvent) => {
@@ -602,10 +597,11 @@ export default function ImageModal({
                           draggable='false'
                           onClick={() => {
                             handleImageClick(image);
-                            handleCheck(
-                              image.id,
-                              !checkedItems.includes(image.id)
-                            );
+                            checkedItems &&
+                              handleCheck(
+                                image.id,
+                                !checkedItems.includes(image.id)
+                              );
                           }}
                         />
                         <input
@@ -755,7 +751,7 @@ export default function ImageModal({
                         setImages,
                         setCheckedItems,
                         setInitialCheckedItems,
-                      })
+                      } as any)
                     : submitAssociatedImages({
                         e,
                         currentId,
@@ -765,7 +761,7 @@ export default function ImageModal({
                         setImages,
                         setCheckedItems,
                         setInitialCheckedItems,
-                      });
+                      } as any);
                 }}>
                 <SaveIcon className='wk-icon' />
                 Selecionar Imagens

@@ -43,6 +43,14 @@ export default function Produtos() {
     images: string[];
   } */
 
+  function handleSortDirectionChange(value: string) {
+    if (value === "asc" || value === "desc" || value === null) {
+      setSortDirection(value);
+    } else {
+      setSortDirection(null);
+    }
+  }
+
   useEffect(() => {
     if (queryParam) {
       const categoriesFromUrl = queryParam
@@ -104,9 +112,10 @@ export default function Produtos() {
         images:
           `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080` +
           images[0].image_path,
+        alt: images[0].alt,
       };
     } else {
-      return { ...product, images: null };
+      return { ...product, images: "" };
     }
   };
 
@@ -151,14 +160,14 @@ export default function Produtos() {
 
       if (response.ok) {
         const data: ListProductResponse = await response.json();
-        if (data.products) {
+        if (data && data.products) {
           const productsWithImages = await Promise.all(
             data.products.map(getProductWithImages)
           );
           setListProductResponse(productsWithImages);
-          setTotalItems(data.total);
         } else {
-          setListProductResponse(data.products);
+          setListProductResponse([]);
+          console.log("No products found");
         }
       } else {
         console.error("Failed to fetch products");
@@ -355,7 +364,7 @@ export default function Produtos() {
                 </select>
                 <select
                   name=''
-                  onChange={(e) => setSortDirection(e.target.value.toString())}
+                  onChange={(e) => handleSortDirectionChange(e.target.value)}
                   id=''>
                   <option value=''>Ordem</option>
                   <option value='asc'>Ascendente</option>

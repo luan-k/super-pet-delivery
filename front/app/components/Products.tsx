@@ -70,9 +70,10 @@ export default function Products() {
         images:
           `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080` +
           images[0].image_path,
+        alt: images[0].alt,
       };
     } else {
-      return { ...product, images: null };
+      return { ...product, images: "" };
     }
   };
 

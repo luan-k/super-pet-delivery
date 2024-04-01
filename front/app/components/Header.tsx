@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import Link from "next/link";
 import Image from "next/image";
@@ -53,10 +54,15 @@ export default function Header() {
       if (response.ok) {
         const data: ListProductResponse = await response.json();
 
-        const productsWithImages = await Promise.all(
-          data.products.map(getProductWithImages)
-        );
-        setListProductResponse(productsWithImages);
+        if (data && data.products) {
+          const productsWithImages = await Promise.all(
+            data.products.map(getProductWithImages)
+          );
+          setListProductResponse(productsWithImages);
+        } else {
+          setListProductResponse([]);
+          console.log("No products found");
+        }
       } else {
         console.error("Failed to fetch products");
       }
@@ -110,9 +116,10 @@ export default function Header() {
         images:
           `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080` +
           images[0].image_path,
+        alt: images[0].alt,
       };
     } else {
-      return { ...product, images: null };
+      return { ...product, images: "" };
     }
   };
 
@@ -299,7 +306,7 @@ export default function Header() {
                     </div>
                   ))
                 ) : (
-                  <p>Nenhum Produto Encontrado</p>
+                  <p className='text-3xl'>Nenhum Produto Encontrado</p>
                 )}
               </div>
             </>

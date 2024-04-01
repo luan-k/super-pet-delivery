@@ -16,7 +16,7 @@ export default function QuemSomos() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
     setIsSubmitting(true);
 
@@ -98,7 +98,9 @@ export default function QuemSomos() {
                     format='(##) # ####-####'
                     isNumericString={true}
                     value={phone}
-                    onValueChange={(values) => setPhone(values.value)}
+                    onValueChange={(values: {
+                      value: React.SetStateAction<string>;
+                    }) => setPhone(values.value)}
                     placeholder='Ex: (00) 9 9999-9999'
                   />
                 </label>
@@ -107,6 +109,7 @@ export default function QuemSomos() {
                   <textarea
                     name='message'
                     cols={30}
+                    required
                     rows={10}
                     placeholder='Sua mensagem'
                     value={message}

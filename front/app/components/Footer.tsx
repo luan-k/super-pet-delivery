@@ -7,7 +7,7 @@ import WhatsappImage from "../../public/static/images/whatsapp-logo-border.png";
 import WKode from "../../public/wkode-footer-logo.svg";
 import { FaWhatsapp, FaInstagram, FaMapMarker } from "react-icons/fa";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import NumberFormat from "react-number-format";
 
 export default function Footer() {
@@ -20,7 +20,7 @@ export default function Footer() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
     setIsSubmitting(true);
 
@@ -124,7 +124,9 @@ export default function Footer() {
                     format='(##) # ####-####'
                     isNumericString={true}
                     value={phone}
-                    onValueChange={(values) => setPhone(values.value)}
+                    onValueChange={(values: {
+                      value: SetStateAction<string>;
+                    }) => setPhone(values.value)}
                     placeholder='Ex: (00) 9 9999-9999'
                   />
                 </label>
@@ -134,6 +136,7 @@ export default function Footer() {
                     name='message'
                     cols={30}
                     rows={10}
+                    required
                     placeholder='Sua mensagem'
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}></textarea>

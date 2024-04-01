@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import NumberFormat from "react-number-format";
@@ -275,7 +276,7 @@ export default function ProductForm({
                     ref={provided.innerRef}>
                     {images &&
                       images
-                        .sort((a, b) => a.order - b.order)
+                        .sort((a, b) => (a.order || 0) - (b.order || 0))
                         .map((image, index) => (
                           <Draggable
                             key={image.id}

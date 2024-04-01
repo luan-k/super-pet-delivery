@@ -132,11 +132,11 @@ function LoginForm() {
           </label>
         </div> */}
         <div className='wkode-login-form__forgot-password-wrapper'>
-          <Link
+          {/* <Link
             href='/esqueci-minha-senha'
             className='wkode-login-form__forgot-password'>
             Esqueci minha senha
-          </Link>
+          </Link> */}
         </div>
 
         <button

@@ -12,9 +12,10 @@ export interface Product {
   price: string;
   old_price: string;
   sku: string;
-  images: string[];
+  images: string;
   url: string;
   created_at: string;
+  alt?: string;
 }
 
 interface ListProductResponse {
