@@ -40,10 +40,10 @@ func NewServer(config util.Config, store db.SortableStore) (*Server, error) {
 	}
 
 	// Create dummy data
-	//err = server.createDummyData(store)
-	/* if err != nil {
-		log.Fatal("cannot create dummy data:", err)
-	} */
+	// err = server.createDummyData(store)
+	// if err != nil {
+	// 	log.Fatal("cannot create dummy data:", err)
+	// }
 
 	server.setupRouter()
 	return server, nil
@@ -84,11 +84,13 @@ func (server *Server) setupRouter() {
 
 	authRoutes.POST("/users", server.createUser)
 	authRoutes.GET("/users/:id", server.getUser)
+	authRoutes.GET("/current_user", server.GetLoggedInUser)
 	authRoutes.GET("/users", server.listUser)
 	authRoutes.PUT("/users/:id", server.updateUser)
 	authRoutes.DELETE("/users/:id", server.deleteUser)
 
 	authRoutes.POST("/products", server.createProduct)
+	router.GET("/product/:url", server.getProductByURL)
 	router.GET("/products/:id", server.getProduct)
 	router.GET("/products", server.listProduct)
 	// ideally would be paginated as well but for now its good enough
@@ -103,7 +105,10 @@ func (server *Server) setupRouter() {
 	authRoutes.DELETE("/categories/:id", server.deleteCategory)
 
 	authRoutes.POST("/link_categories/:category_id/:product_id", server.associateCategoryWithProduct)
+	authRoutes.POST("/link_categories/multiple/:product_id", server.associateMultipleCategoriesWithProduct)
 	authRoutes.DELETE("/link_categories/:category_id/:product_id", server.disassociateCategoryWithProduct)
+	authRoutes.DELETE("/link_categories/multiple/:product_id", server.disassociateMultipleCategoriesWithProduct)
+	router.GET("/categories/by_product/:product_id", server.listProductCategories)
 
 	authRoutes.POST("/clients", server.createClient)
 	authRoutes.GET("/clients/:id", server.getClient)
@@ -126,13 +131,27 @@ func (server *Server) setupRouter() {
 
 	authRoutes.POST("/images", server.createImage)
 	router.GET("/images/:id", server.getImage)
+	router.POST("/images-multiple", server.getImages)
 	router.GET("/media/:year/:month/:filename", server.getImagePath)
-	router.GET("/images", server.listImage)
+	authRoutes.GET("/images", server.listImage)
 	authRoutes.PUT("/images/:id", server.updateImage)
 	authRoutes.DELETE("/images/:id", server.deleteImage)
 
 	authRoutes.POST("/link_images/:image_id/:product_id", server.associateImageWithProduct)
+	authRoutes.POST("/link_images/multiple/:product_id", server.associateMultipleImagesWithProduct)
 	authRoutes.DELETE("/link_images/:image_id/:product_id", server.disassociateImageWithProduct)
+	authRoutes.DELETE("/link_images/multiple/:product_id", server.disassociateMultipleImagesWithProduct)
+	router.GET("/images/by_product/:product_id", server.listProductImages)
+	authRoutes.PUT("/images/by_product/:product_id", server.editImageOrder)
+
+	authRoutes.POST("/slider_images", server.CreateSliderImage)
+	router.GET("/slider_images", server.ListSliderImages)
+	authRoutes.POST("/slider_images/update", server.UpdateSliderImage)
+	authRoutes.POST("/slider_images/update_by_image_id", server.UpdateSliderImageByImageId)
+	authRoutes.POST("/slider_images/delete", server.DeleteSliderImages)
+	authRoutes.POST("/slider_images/delete_by_image_id", server.DeleteSliderImagesByImageId)
+
+	router.POST("/contact", server.HandleForm)
 
 	server.router = router
 }

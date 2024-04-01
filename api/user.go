@@ -128,6 +128,24 @@ func (server *Server) getUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, rsp)
 }
 
+func (server *Server) GetLoggedInUser(ctx *gin.Context) {
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	currentLoggedInUser, err := server.store.GetUserByUsername(ctx, authPayload.Username)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	rsp := newUserResponse(currentLoggedInUser)
+
+	ctx.JSON(http.StatusOK, rsp)
+}
+
 type listUserRequest struct {
 	PageID   int32 `form:"page_id" binding:"required,min=1"`
 	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
@@ -401,6 +419,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 	// Set the refresh token as an HTTP-only cookie
 	ctx.SetCookie("refresh_token", refreshToken, int(server.config.RefreshTokenDuration.Seconds()), "/", "", false, true)
 	fmt.Println("cookie successfully set")
+	ctx.SetCookie("user_id", strconv.FormatInt(user.ID, 10), int(server.config.AccessTokenDuration.Seconds()), "/", "", false, false)
 
 	rsp := loginUserResponse{
 		SessionID:            session.ID,

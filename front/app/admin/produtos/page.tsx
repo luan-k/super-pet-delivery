@@ -1,4 +1,7 @@
+import Link from "next/link";
 import HistoryArrows from "../components/HistoryArrows";
+import PlusIcon from "../../../public/admin-plus.svg";
+import ListProducts from "./ListProducts";
 
 export default function Produtos() {
   return (
@@ -8,17 +11,19 @@ export default function Produtos() {
           <HistoryArrows />
         </div>
         <div className='title-wrapper grid grid-cols-2 mt-7'>
-          <h1 className='text-5xl font-semibold '>Em Breve</h1>
-          {/*  <div className='wk-btn__wrapper ml-auto gap-6 '>
+          <h1 className='text-5xl font-semibold '>Produtos</h1>
+          <div className='wk-btn__wrapper ml-auto gap-6 '>
             <Link
               className='wk-btn wk-btn--primary wk-btn--md'
-              href={"/admin/clientes/criar"}>
+              href={"/admin/produtos/criar"}>
               <PlusIcon />
-              Novo Cliente
+              Novo Produto
             </Link>
-          </div> */}
+          </div>
         </div>
       </div>
+
+      <ListProducts />
     </>
   );
 }

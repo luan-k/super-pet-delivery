@@ -27,6 +27,7 @@ services:
     command: ["sh", "-c", "cd /app/app && make devserver"]
     restart: always
     volumes:
+      - ./media:/app/app/media
       - ./api:/app/app/api
       - ./util:/app/app/util
       - ./db:/app/app/db

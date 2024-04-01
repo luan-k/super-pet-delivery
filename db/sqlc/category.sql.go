@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/lib/pq"
 )
 
 const associateProductWithCategory = `-- name: AssociateProductWithCategory :one
@@ -25,6 +27,17 @@ func (q *Queries) AssociateProductWithCategory(ctx context.Context, arg Associat
 	var i ProductCategory
 	err := row.Scan(&i.ProductID, &i.CategoryID)
 	return i, err
+}
+
+const countCategory = `-- name: CountCategory :one
+SELECT COUNT(*) FROM categories
+`
+
+func (q *Queries) CountCategory(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countCategory)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }
 
 const createCategory = `-- name: CreateCategory :one
@@ -141,6 +154,51 @@ func (q *Queries) ListCategoriesByProduct(ctx context.Context, productID int64) 
 	for rows.Next() {
 		var i Category
 		if err := rows.Scan(&i.ID, &i.Name, &i.Description); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listProductsByCategory = `-- name: ListProductsByCategory :many
+SELECT p.id, p.name, p.description, p.user_id, p.username, p.price, p.old_price, p.sku, p.images, p.categories, p.url, p.created_at, p.changed_at
+FROM products p
+JOIN product_categories pc ON p.id = pc.product_id
+WHERE pc.category_id = $1
+ORDER BY p.id
+`
+
+func (q *Queries) ListProductsByCategory(ctx context.Context, categoryID int64) ([]Product, error) {
+	rows, err := q.db.QueryContext(ctx, listProductsByCategory, categoryID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Product{}
+	for rows.Next() {
+		var i Product
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.UserID,
+			&i.Username,
+			&i.Price,
+			&i.OldPrice,
+			&i.Sku,
+			pq.Array(&i.Images),
+			pq.Array(&i.Categories),
+			&i.Url,
+			&i.CreatedAt,
+			&i.ChangedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

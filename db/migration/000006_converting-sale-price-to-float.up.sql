@@ -1,1 +1,0 @@
-ALTER TABLE "sale" ALTER COLUMN "price" TYPE float USING "price"::float;

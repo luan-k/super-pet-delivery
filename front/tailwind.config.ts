@@ -26,6 +26,9 @@ const config: Config = {
           warning: "#FBFF3A",
           info: "#DFE242",
         },
+        front: {
+          blue: "#0071bc",
+        },
         "dark-tremor": {
           brand: {
             faint: "#0B1229",

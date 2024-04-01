@@ -16,6 +16,9 @@ type Config struct {
 	AccessTokenDuration  time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 	RefreshTokenDuration time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
 	SuperpetDeliveryUrl  string        `mapstructure:"SUPERPET_DELIVERY_URL"`
+	EmailSenderName      string        `mapstructure:"EMAIL_SENDER_NAME"`
+	EmailSenderAddress   string        `mapstructure:"EMAIL_SENDER_ADDRESS"`
+	EmailSenderPassword  string        `mapstructure:"EMAIL_SENDER_PASSWORD"`
 }
 
 // LoadConfig reads configuration from file or enviroment variables.
@@ -40,6 +43,10 @@ func LoadConfig(path string) (config Config, err error) {
 	// environment variables to time.Duration values
 	config.AccessTokenDuration = viper.GetDuration("ACCESS_TOKEN_DURATION")
 	config.RefreshTokenDuration = viper.GetDuration("REFRESH_TOKEN_DURATION")
+
+	config.EmailSenderName = viper.GetString("EMAIL_SENDER_NAME")
+	config.EmailSenderAddress = viper.GetString("EMAIL_SENDER_ADDRESS")
+	config.EmailSenderPassword = viper.GetString("EMAIL_SENDER_PASSWORD")
 
 	return
 }
