@@ -180,9 +180,11 @@ export default function Header() {
             : ""
         }`}>
         <div className='wk-header__socials-nav'>
-          <a href='https://www.instagram.com/superpetdelivery/' target='_blank'>
+          <a
+            href='https://www.instagram.com/superpet.delivery/'
+            target='_blank'>
             <InstagramLogoIcon />
-            @superpetdelivery
+            @superpet.delivery
           </a>
           <a
             href='https://api.whatsapp.com/send?phone=554899805164&text=Ol%C3%A1%2C%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es%20sobre%20os%20produtos%20da%20SuperPet.'
@@ -192,7 +194,7 @@ export default function Header() {
           </a>
           <a href='https://maps.app.goo.gl/QvXd9NArgN2aUMoC7' target='_blank'>
             <RiMapPin2Fill />
-            Manoel Gualberto dos Santos 109
+            R. Princesa Isabel, 260 - Pte. do Imaruim, Palhoça - SC
           </a>
         </div>
         <div className='wk-header__wrapper container'>
