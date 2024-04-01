@@ -52,7 +52,7 @@ export default function Header() {
 
       if (response.ok) {
         const data: ListProductResponse = await response.json();
-        console.log(data);
+
         const productsWithImages = await Promise.all(
           data.products.map(getProductWithImages)
         );
@@ -87,7 +87,7 @@ export default function Header() {
       if (response.ok) {
         //toast.success("Imagem editada com sucesso!");
         const data = await response.json();
-        console.log(data);
+
         setImages && setImages(data);
         return data;
       } else {

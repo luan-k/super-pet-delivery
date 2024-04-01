@@ -33,8 +33,6 @@ export default function SimpleSlider() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("date");
-        console.log(data);
 
         if (setImages) {
           const images = await Promise.all(
@@ -66,8 +64,6 @@ export default function SimpleSlider() {
             .sort((a: any, b: any) => a.order - b.order);
 
           setImages(sortedImages);
-          console.log("images");
-          console.log(sortedImages);
         }
       } else {
         console.error("Failed to fetch slider images");

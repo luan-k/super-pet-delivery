@@ -45,7 +45,7 @@ const getAssociatedImages = async ({
     if (response.ok) {
       //toast.success("Imagem editada com sucesso!");
       const data = await response.json();
-      console.log(data);
+
       setImages && setImages(data);
 
       if (setCheckedItems && setInitialCheckedItems) {
@@ -133,7 +133,6 @@ export default function ProductForm({
       ...item,
       order: index,
     }));
-    console.log(updatedItems);
 
     setImages && setImages(updatedItems);
   };

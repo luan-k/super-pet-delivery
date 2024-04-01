@@ -97,7 +97,6 @@ const handleOldPriceChange = (
   setDisplayOldPrice(newValue.replace(".", ",")); // replace dot with comma
   //newValue = parseFloat(newValue); // convert back to number
 
-  console.log("formData", formData);
   setFormData({
     ...formData,
     old_price: newValue,
@@ -107,7 +106,7 @@ const handleOldPriceChange = (
 export default function CreateProduct() {
   const router = useRouter();
   const userId = parseInt(Cookies.get("user_id") as string);
-  console.log(userId);
+
   const [loading, setLoading] = useState<boolean>(true);
   const [formData, setFormData] = useState<CreateProductRequest>({
     name: "",
@@ -151,11 +150,10 @@ export default function CreateProduct() {
           }),
         }
       );
-      console.log(formData);
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
+
         const currentId = data.id;
         submitAssociatedImages({
           currentId,

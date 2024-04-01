@@ -65,7 +65,6 @@ export default function UploadBox() {
       }
 
       const data = await response.json();
-      console.log(data);
 
       const newUploadedFiles = [
         ...data.images.map((file: FileData) => ({

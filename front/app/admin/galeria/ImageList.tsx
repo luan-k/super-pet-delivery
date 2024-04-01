@@ -68,7 +68,7 @@ export async function fetchImages({
       //const data: ListImageResponse = await response.json();
       const data: ListImageResponse = await response.json();
       setListImageResponse(data.images);
-      console.log(data);
+
       setTotalItems(data.total);
     } else {
       console.error("Failed to fetch images");
@@ -171,7 +171,6 @@ export default function ImageList() {
       });
 
       const data = await response.json();
-      console.log(data);
     } catch (error) {
       console.error("Error:", error);
     }

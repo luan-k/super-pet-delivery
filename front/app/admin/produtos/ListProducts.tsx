@@ -79,7 +79,7 @@ export default function ListProducts() {
         //const data: ListProductResponse = await response.json();
         const data: ListProductResponse = await response.json();
         setListProductResponse(data.products);
-        console.log(data);
+
         setTotalItems(data.total);
       } else {
         console.error("Failed to fetch products");

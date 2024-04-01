@@ -128,7 +128,7 @@ export default function CategoryBox({
         //const data: ListProductResponse = await response.json();
         const data: ListCategoryResponse = await response.json();
         setListCategoryResponse(data.categories);
-        console.log(data);
+
         setTotalItems(data.total);
       } else {
         console.error("Failed to fetch categories");
@@ -162,7 +162,6 @@ export default function CategoryBox({
       });
 
       if (response.ok) {
-        console.log("Categoria criada com sucesso!");
         setNewCategoryName("");
         setShowAddCategoryForm(false);
         fetchCategories(currentPage, categoriesPerPage);
@@ -188,14 +187,14 @@ export default function CategoryBox({
       setCheckedItems &&
         setCheckedItems((prevState) => {
           const newState = [...prevState, id];
-          console.log(newState);
+
           return newState;
         });
     } else {
       setCheckedItems &&
         setCheckedItems((prevState) => {
           const newState = prevState.filter((itemId) => itemId !== id);
-          console.log(newState);
+
           return newState;
         });
     }

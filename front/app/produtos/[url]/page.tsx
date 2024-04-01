@@ -37,8 +37,6 @@ export default function SingleProduct() {
   var currentUrl =
     currentUrlFull &&
     currentUrlFull.split("-florianopolis-sao-jose-palhoca-biguacu-santo-amaro");
-  console.log(currentUrl && currentUrl[0]);
-  console.log(currentUrlFull);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -67,7 +65,6 @@ export default function SingleProduct() {
             user_id: data.user_id,
             sku: data.sku,
           });
-          console.log(data);
         } else if (response.status === 404) {
           setProductNotFound(true);
         } else {
@@ -87,8 +84,6 @@ export default function SingleProduct() {
     currentId,
     setImages,
   }: associatedImagesProps) => {
-    console.log("this is the id inside the funcion");
-    console.log(currentId);
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/by_product/${currentId}`,
@@ -105,7 +100,7 @@ export default function SingleProduct() {
       if (response.ok) {
         //toast.success("Imagem editada com sucesso!");
         const data = await response.json();
-        console.log(data);
+
         setImages && setImages(data);
       } else {
         console.error("Failed to get images");
@@ -117,8 +112,6 @@ export default function SingleProduct() {
 
   useEffect(() => {
     if (currentProduct) {
-      console.log("here is the id");
-      console.log(currentProduct?.id.toString());
       getAssociatedImages({
         currentId: currentProduct?.id.toString(),
         setImages: setImages,

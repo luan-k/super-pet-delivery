@@ -38,11 +38,10 @@ export const getAssociatedSliderImages = async ({
 
     if (response.ok) {
       const data = await response.json();
-      console.log(data);
 
       if (setCheckedItems && setInitialCheckedItems) {
         const ids = data.SliderImages.map((item: any) => item.image_id);
-        console.log(ids);
+
         setCheckedItems(ids);
         setInitialCheckedItems(ids);
       }
@@ -91,8 +90,6 @@ export default function SliderWidget() {
 
   const token = Cookies.get("access_token");
   const updateImageOrder = async (updatedItems: any[]) => {
-    console.log(updatedItems);
-    console.log(JSON.stringify(updatedItems));
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/slider_images/update_by_image_id`,
       {
@@ -118,8 +115,6 @@ export default function SliderWidget() {
     const items = Array.from(images);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
-
-    console.log(items);
 
     // Update the order property of the images
     const updatedItems = items.map((item, index) => ({

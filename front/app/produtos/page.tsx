@@ -44,7 +44,6 @@ export default function Produtos() {
   } */
 
   useEffect(() => {
-    console.log("query", queryParam);
     if (queryParam) {
       const categoriesFromUrl = queryParam
         .split("&")
@@ -82,7 +81,7 @@ export default function Produtos() {
       if (response.ok) {
         //toast.success("Imagem editada com sucesso!");
         const data = await response.json();
-        console.log(data);
+
         setImages && setImages(data);
         return data;
       } else {
@@ -158,9 +157,7 @@ export default function Produtos() {
           );
           setListProductResponse(productsWithImages);
           setTotalItems(data.total);
-          console.log(productsWithImages);
         } else {
-          console.log("Failed to fetch products: products property is missing");
           setListProductResponse(data.products);
         }
       } else {
@@ -189,8 +186,7 @@ export default function Produtos() {
       if (response.ok) {
         const data: ListCategoryResponse = await response.json();
         setListCategory(data.categories);
-        console.log("categories!!!!!!!!!!!!");
-        console.log(data);
+
         setTotalItems(data.total);
       } else {
         console.error("Failed to fetch categories");
@@ -241,13 +237,11 @@ export default function Produtos() {
       setCheckedItems &&
         setCheckedItems((prevState) => {
           const newState = [...prevState, id];
-          console.log("checkedItems:", newState); // log checkedItems
           setCheckedNames((prevNames) => {
             // Only add name if it's not already in checkedNames
             const newNames = prevNames.includes(name)
               ? prevNames
               : [...prevNames, name];
-            console.log("checkedNames:", newNames); // log checkedNames
             // Update the URL
             const urlCategories = newNames
               .map((name) => `category=${name.replace(/ /g, "-")}`)
@@ -265,10 +259,8 @@ export default function Produtos() {
       setCheckedItems &&
         setCheckedItems((prevState) => {
           const newState = prevState.filter((itemId) => itemId !== id);
-          console.log("checkedItems:", newState); // log checkedItems
           setCheckedNames((prevNames) => {
             const newNames = prevNames.filter((itemName) => itemName !== name);
-            console.log("checkedNames:", newNames); // log checkedNames
             // Update the URL
             const urlCategories = newNames
               .map((name) => `category=${name.replace(/ /g, "-")}`)

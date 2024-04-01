@@ -48,7 +48,6 @@ export default function EditImage() {
             description: data.description,
           });
           setCurrentImage(data);
-          console.log(data);
         } else {
           console.error("Failed to fetch images");
         }

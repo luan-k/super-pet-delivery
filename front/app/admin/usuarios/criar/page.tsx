@@ -23,11 +23,7 @@ export type handleChangeType = (
   formData: CreateUserRequest | EditUserFormRequest
 ) => void;
 
-const handleChange: handleChangeType = (
-  e,
-  setFormData,
-  formData
-) => {
+const handleChange: handleChangeType = (e, setFormData, formData) => {
   const { name, value } = e.target;
 
   setFormData({
@@ -84,7 +80,6 @@ export default function CreateUser() {
           body: JSON.stringify(formData),
         }
       );
-      console.log(formData);
 
       if (response.ok) {
         const data = await response.json();

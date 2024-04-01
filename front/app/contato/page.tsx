@@ -34,7 +34,6 @@ export default function QuemSomos() {
 
     if (response.ok) {
       setFormSubmitted(true);
-      console.log("Form submitted successfully");
     } else {
       console.error("Form submission failed");
     }

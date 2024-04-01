@@ -24,10 +24,6 @@ export default function WkDatePicker({
       locale={ptBR}
       placeholder='Selecione por período'
       onValueChange={(newValue) => {
-        console.log({
-          from: newValue.from?.toISOString() ?? "",
-          to: newValue.to?.toISOString() ?? "",
-        });
         setValue(newValue);
         if (newValue.from && newValue.to) {
           const from = newValue.from.toISOString();

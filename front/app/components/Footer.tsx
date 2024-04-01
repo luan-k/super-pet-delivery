@@ -35,7 +35,6 @@ export default function Footer() {
     setIsSubmitting(false);
 
     if (response.ok) {
-      console.log("Form submitted successfully");
       setFormSubmitted(true);
     } else {
       console.error("Form submission failed");

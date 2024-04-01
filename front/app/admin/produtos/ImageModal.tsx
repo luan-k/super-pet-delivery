@@ -75,15 +75,6 @@ export const submitSliderImages = async ({
     (id) => !checkedItems.includes(id)
   );
 
-  console.log("checkedItems");
-  console.log(checkedItems);
-  console.log("initialCheckedItems");
-  console.log(initialCheckedItems);
-  console.log("imagesToAssociate");
-  console.log(imagesToAssociate);
-  console.log("imagesToDisassociate");
-  console.log(imagesToDisassociate);
-
   if (imagesToAssociate.length > 0) {
     try {
       const response = await fetch(
@@ -192,15 +183,6 @@ export const submitAssociatedImages = async ({
     (id) => !checkedItems.includes(id)
   );
 
-  console.log("checkedItems");
-  console.log(checkedItems);
-  console.log("initialCheckedItems");
-  console.log(initialCheckedItems);
-  console.log("imagesToAssociate");
-  console.log(imagesToAssociate);
-  console.log("imagesToDisassociate");
-  console.log(imagesToDisassociate);
-
   if (imagesToAssociate.length > 0) {
     try {
       const response = await fetch(
@@ -219,7 +201,7 @@ export const submitAssociatedImages = async ({
       if (response.ok) {
         //toast.success("Imagem editada com sucesso!");
         const data = await response.json();
-        console.log(data);
+
         getAssociatedImages &&
           getAssociatedImages({
             currentId,
@@ -252,7 +234,6 @@ export const submitAssociatedImages = async ({
       );
 
       if (response.ok) {
-        console.log("Images disassociated");
         getAssociatedImages &&
           getAssociatedImages({
             currentId,
@@ -312,14 +293,14 @@ export default function ImageModal({
       setCheckedItems &&
         setCheckedItems((prevState) => {
           const newState = [...prevState, id];
-          console.log(newState);
+
           return newState;
         });
     } else {
       setCheckedItems &&
         setCheckedItems((prevState) => {
           const newState = prevState.filter((itemId) => itemId !== id);
-          console.log(newState);
+
           return newState;
         });
     }
@@ -401,7 +382,6 @@ export default function ImageModal({
       });
 
       const data = await response.json();
-      console.log(data);
     } catch (error) {
       console.error("Error:", error);
     }

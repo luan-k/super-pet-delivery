@@ -73,7 +73,7 @@ export default function ListUsers() {
       if (response.ok) {
         const data = await response.json();
         setListUserResponse(data);
-        console.log(data);
+
         setTotalItems(data.length);
       } else {
         console.error("Failed to fetch users");
@@ -86,13 +86,7 @@ export default function ListUsers() {
   }
 
   useEffect(() => {
-    fetchUsers(
-      currentPage,
-      usersPerPage,
-      sortField,
-      sortDirection,
-      search
-    );
+    fetchUsers(currentPage, usersPerPage, sortField, sortDirection, search);
   }, [currentPage, usersPerPage, sortField, sortDirection, search]);
 
   async function handleDelete(itemId: number): Promise<void> {
@@ -112,13 +106,7 @@ export default function ListUsers() {
       );
 
       if (response.ok) {
-        fetchUsers(
-          currentPage,
-          usersPerPage,
-          sortField,
-          sortDirection,
-          search
-        );
+        fetchUsers(currentPage, usersPerPage, sortField, sortDirection, search);
         toast.success("Usuário deletado com sucesso!");
       } else {
         console.error("Failed to delete user");
@@ -139,9 +127,7 @@ export default function ListUsers() {
       duplicate: false,
       delete: {
         eventFunction: handleDelete,
-        items: listUserResponse
-          ? listUserResponse.map((user) => user.id)
-          : [],
+        items: listUserResponse ? listUserResponse.map((user) => user.id) : [],
       },
     },
     totalNumberOfItems: totalItems,
@@ -173,7 +159,7 @@ export default function ListUsers() {
           ? listUserResponse.map((user) => (
               <>
                 <span className='text-wk-secondary'> [ </span>
-                { user.id.toString().padStart(3, "0") }
+                {user.id.toString().padStart(3, "0")}
                 <span className='text-wk-secondary'> ] </span>
                 {user.username}
               </>
@@ -186,12 +172,8 @@ export default function ListUsers() {
         sortable: true,
         width: 30,
         items: listUserResponse
-        ? listUserResponse.map((user) => (
-              <>
-                  {user.full_name}
-              </>
-            ))
-        : [],
+          ? listUserResponse.map((user) => <>{user.full_name}</>)
+          : [],
       },
       {
         title: "Email",
@@ -199,12 +181,8 @@ export default function ListUsers() {
         sortable: true,
         width: 50,
         items: listUserResponse
-        ? listUserResponse.map((user) => (
-              <>
-                  {user.email}
-              </>
-            ))
-        : [],
+          ? listUserResponse.map((user) => <>{user.email}</>)
+          : [],
       },
       {
         title: "Cargo",
@@ -212,12 +190,8 @@ export default function ListUsers() {
         sortable: true,
         width: 30,
         items: listUserResponse
-        ? listUserResponse.map((user) => (
-              <>
-                  {user.role}
-              </>
-            ))
-        : [],
+          ? listUserResponse.map((user) => <>{user.role}</>)
+          : [],
       },
     ],
   };

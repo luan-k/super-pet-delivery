@@ -88,7 +88,6 @@ export default function EditProduct() {
     setDisplayOldPrice(newValue.replace(".", ",")); // replace dot with comma
     //newValue = parseFloat(newValue); // convert back to number
 
-    console.log("formData", formData);
     setFormData({
       ...formData,
       old_price: newValue,
@@ -122,9 +121,6 @@ export default function EditProduct() {
             user_id: data.user_id,
             sku: data.sku,
           });
-
-          console.log("here is the data in fetch");
-          console.log(data);
         } else {
           console.error("Failed to fetch products");
         }
@@ -136,8 +132,6 @@ export default function EditProduct() {
     };
 
     fetchProductDetails();
-    console.log("fetch");
-    console.log(currentProduct);
   }, [currentId]);
 
   const token = Cookies.get("access_token");
@@ -193,7 +187,6 @@ export default function EditProduct() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log(formData);
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/products/${currentId}`,
@@ -287,8 +280,6 @@ export default function EditProduct() {
     } else {
       newValue = value;
     }
-
-    console.log("formData", formData);
 
     setFormData({
       ...formData,

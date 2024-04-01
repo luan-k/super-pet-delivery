@@ -47,7 +47,7 @@ export default function Products() {
       if (response.ok) {
         //toast.success("Imagem editada com sucesso!");
         const data = await response.json();
-        console.log(data);
+
         setImages && setImages(data);
         return data;
       } else {
@@ -113,7 +113,6 @@ export default function Products() {
         );
         setListProductResponse(productsWithImages);
         setTotalItems(data.total);
-        console.log(productsWithImages);
       } else {
         console.error("Failed to fetch products");
       }
@@ -136,12 +135,14 @@ export default function Products() {
 
   return (
     <motion.div
-    className='wk-products'
-    initial="offscreen"
-    whileInView="onscreen"
-    viewport={{ once: true, amount: 0.4 }}>
+      className='wk-products'
+      initial='offscreen'
+      whileInView='onscreen'
+      viewport={{ once: true, amount: 0.4 }}>
       <div className='container'>
-        <motion.div variants={popFromLeft} className='text-6xl text-front-blue text-center flex justify-center gap-7 mb-36'>
+        <motion.div
+          variants={popFromLeft}
+          className='text-6xl text-front-blue text-center flex justify-center gap-7 mb-36'>
           <FaPaw /> Os Melhores Produtos
         </motion.div>
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 text-black gap-12'>
