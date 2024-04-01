@@ -64,13 +64,19 @@ export default function Footer() {
             que você pode confiar.
           </div>
           <div className='wk-footer-icons'>
-            <Link href='https://www.google.com/maps/place/Super+Pet+Delivery/@-27.6316157,-48.6558265,15z/data=!4m6!3m5!1s0x95273597c288c591:0x428507ff8e06abda!8m2!3d-27.6316157!4d-48.6558265!16s%2Fg%2F11tx4q5rtv?entry=ttu'>
+            <Link
+              target='_blank'
+              href='https://www.google.com/maps/place/Super+Pet+Delivery/@-27.6316157,-48.6558265,15z/data=!4m6!3m5!1s0x95273597c288c591:0x428507ff8e06abda!8m2!3d-27.6316157!4d-48.6558265!16s%2Fg%2F11tx4q5rtv?entry=ttu'>
               <FaMapMarker />
             </Link>
-            <Link href='https://api.whatsapp.com/send?phone=554899805164&text=Ol%C3%A1%2C%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es%20sobre%20os%20produtos%20da%20SuperPet.'>
+            <Link
+              target='_blank'
+              href='https://api.whatsapp.com/send?phone=554899805164&text=Ol%C3%A1%2C%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es%20sobre%20os%20produtos%20da%20SuperPet.'>
               <FaWhatsapp />
             </Link>
-            <Link href='https://www.instagram.com/superpetdelivery/'>
+            <Link
+              target='_blank'
+              href='https://www.instagram.com/superpet.delivery/'>
               <FaInstagram />
             </Link>
           </div>
