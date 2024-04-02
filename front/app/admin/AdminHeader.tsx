@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import "../styles/admin/header.scss";
-import Logo from "../../public/static/images/superpet.png";
+import Logo from "../../public/static/images/superpet-logo.png";
 import userPic from "../../public/static/images/User.png";
 import GearIcon from "../../public/gear.svg";
 import ArrowDown from "../../public/arrow-down.svg";
@@ -39,9 +39,9 @@ export default function IsAuthenticated() {
         );
 
         if (response.ok) {
-          const data = await response.json()
+          const data = await response.json();
           setUsername(data.username);
-            localStorage.setItem("username", data.username);
+          localStorage.setItem("username", data.username);
         } else {
           sessionStorage.setItem("previousUrl", window.location.href);
 
@@ -61,7 +61,7 @@ export default function IsAuthenticated() {
       <div className='wkode-admin-header'>
         <div className='wkode-admin-header__logo'>
           <Link href='/admin/'>
-            <Image src={Logo} alt='Logo' width={55} height={61} />
+            <Image src={Logo} alt='Logo' width={40} height={50} />
           </Link>
         </div>
         <div className='wkode-admin-header__right'>

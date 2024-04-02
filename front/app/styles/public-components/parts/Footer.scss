@@ -102,5 +102,8 @@
     position: fixed;
     right: 2rem;
     width: 7rem;
+    &--footer {
+      bottom: 9rem;
+    }
   }
 }

@@ -81,6 +81,7 @@ func (server *Server) createProduct(ctx *gin.Context) {
 
 	user, err := server.store.GetUser(ctx, req.UserID)
 	if err != nil {
+		// if theres no user, redirect to login
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
 			return
