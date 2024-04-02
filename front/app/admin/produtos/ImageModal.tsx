@@ -533,6 +533,10 @@ export default function ImageModal({
       console.error("Error:", error);
     }
   }
+  const handleButtonFormClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    fileInputRef.current?.click();
+  };
 
   return (
     <Dialog.Root>
@@ -559,12 +563,11 @@ export default function ImageModal({
               <div className='wk-image-list__header'>
                 <div className='wk-image-list__header-filter'>
                   <div className='button-wrapper'>
-                    {/* <button className='filter-list'>
-                    <SearchImageList />
+                    <button
+                      onClick={handleButtonFormClick}
+                      className='wk-btn wk-btn--secondary wk-btn--sm'>
+                      Selecionar arquivos
                     </button>
-                    <button className='filter-grid'>
-                      <SearchImageGrid />
-                    </button> */}
                   </div>
                 </div>
                 <div className='wk-table__search-bar--wrapper'>

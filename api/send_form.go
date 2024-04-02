@@ -1,9 +1,11 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/smtp"
+	"net/url"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jordan-wright/email"
@@ -71,6 +73,7 @@ type FormData struct {
 	Email   string `json:"email" binding:"required"`
 	Phone   string `json:"phone" binding:"required"`
 	Message string `json:"message" binding:"required"`
+	Captcha string `json:"token" binding:"required"`
 }
 
 func (server *Server) HandleForm(ctx *gin.Context) {
@@ -82,9 +85,36 @@ func (server *Server) HandleForm(ctx *gin.Context) {
 		return
 	}
 
+	// Verify the reCAPTCHA token
+	resp, err := http.PostForm("https://www.google.com/recaptcha/api/siteverify", url.Values{
+		"secret":   {"6LdSvaopAAAAAKj0NDLNQxqDeBwU_BwTrtFt4LOl"},
+		"response": {formData.Captcha},
+	})
+	if err != nil {
+		fmt.Println("Error verifying reCAPTCHA:", err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to verify reCAPTCHA"})
+		return
+	}
+	defer resp.Body.Close()
+
+	var result struct {
+		Success bool `json:"success"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		fmt.Println("Error decoding reCAPTCHA response:", err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to decode reCAPTCHA response"})
+		return
+	}
+
+	if !result.Success {
+		fmt.Println("Failed reCAPTCHA verification")
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Failed reCAPTCHA verification"})
+		return
+	}
+
 	emailSender := NewGmailSender("Super Pet Delivery", server.config.EmailSenderAddress, server.config.EmailSenderPassword)
 
-	// Handle the form data here. For example, send an email:
+	// Handle the form data
 	subject := "Novo Formulário de contato recebido no Super Pet Delivery"
 	content := fmt.Sprintf(`
 	<html>
@@ -100,7 +130,7 @@ func (server *Server) HandleForm(ctx *gin.Context) {
 		formData.Name, formData.Email, formData.Phone, formData.Message)
 
 	to := []string{"luankds@gmail.com"} // replace with your email address
-	err := emailSender.SendEmail(subject, content, to, nil, nil, nil)
+	err = emailSender.SendEmail(subject, content, to, nil, nil, nil)
 	if err != nil {
 		fmt.Println("Error sending email:", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email"})
