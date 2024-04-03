@@ -50,8 +50,25 @@ func NewServer(config util.Config, store db.SortableStore) (*Server, error) {
 }
 
 func CORSMiddleware() gin.HandlerFunc {
+	allowedOrigins := []string{
+		"http://localhost",
+		"http://localhost:3000",
+		"http://superpetdelivery.com.br",
+		"https://superpetdelivery.com.br",
+		"http://www.superpetdelivery.com.br",
+		"https://www.superpetdelivery.com.br",
+	}
+
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://superpetdelivery.com.br")
+		origin := c.Request.Header.Get("Origin")
+
+		for _, allowedOrigin := range allowedOrigins {
+			if origin == allowedOrigin {
+				c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+				break
+			}
+		}
+
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Cookie, cookie, Cookies, cookies, accept, origin, Cache-Control, X-Requested-With, Cookie")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
@@ -72,7 +89,7 @@ func (server *Server) setupRouter() {
 	router.Use(CORSMiddleware())
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 
-	config.AllowOrigins = []string{"http://superpetdelivery.com.br"}
+	config.AllowOrigins = []string{"https://superpetdelivery.com.br"}
 	config.AllowHeaders = []string{"Authorization", "Cookie"}
 
 	config.AllowCredentials = true
