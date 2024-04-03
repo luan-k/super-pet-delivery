@@ -1,7 +1,7 @@
 # Use an official Node.js image as the base
 FROM node:21-alpine3.17 AS builder
 
-ENV NEXT_PUBLIC_SUPERPET_DELIVERY_URL=https://superpetdelivery.com.br
+ENV NEXT_PUBLIC_SUPERPET_DELIVERY_URL=http://superpetdelivery.com.br
 
 
 # Set the working directory within the container
