@@ -8,7 +8,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Super Pet",
-  description: "",
+  description:
+    "O seu destino confiável em Palhoça para tudo que seu pet precisa! Oferecemos entrega gratuita em toda a Grande Florianópolis. Encontre rações, medicamentos e acessórios de qualidade, tudo em um só lugar e com os menores preços  da cidade. Venha conferir e surpreenda-se!",
 };
 
 export default function RootLayout({
