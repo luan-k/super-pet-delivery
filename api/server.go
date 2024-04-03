@@ -50,25 +50,8 @@ func NewServer(config util.Config, store db.SortableStore) (*Server, error) {
 }
 
 func CORSMiddleware() gin.HandlerFunc {
-	allowedOrigins := []string{
-		"http://localhost",
-		"http://localhost:3000",
-		"http://superpetdelivery.com.br",
-		"https://superpetdelivery.com.br",
-		"http://www.superpetdelivery.com.br",
-		"https://www.superpetdelivery.com.br",
-	}
-
 	return func(c *gin.Context) {
-		origin := c.Request.Header.Get("Origin")
-
-		for _, allowedOrigin := range allowedOrigins {
-			if origin == allowedOrigin {
-				c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
-				break
-			}
-		}
-
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "https://superpetdelivery.com.br")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Cookie, cookie, Cookies, cookies, accept, origin, Cache-Control, X-Requested-With, Cookie")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")

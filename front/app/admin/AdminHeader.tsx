@@ -68,13 +68,16 @@ export default function IsAuthenticated() {
     try {
       const headers = new Headers();
       headers.append("Authorization", `Bearer ${currentToken}`);
-      await fetch(`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/users/logout`, { method: "POST", credentials: "include", headers: headers});
+      await fetch(
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/users/logout`,
+        { method: "POST", credentials: "include", headers: headers }
+      );
       sessionStorage.setItem("previousUrl", window.location.href);
-      router.push("/login")
-    } catch(err) {
+      router.push("/login");
+    } catch (err) {
       console.error("Error logging out: ", err);
     }
-  }
+  };
 
   return (
     <>
@@ -92,17 +95,19 @@ export default function IsAuthenticated() {
             <Link href={`/admin/usuarios/${username}`}>
               <Image src={userPic} alt='user image' width={35} height={35} />
             </Link>
-            <div className='wkode-admin-header__user-name-wrapper' onClick={handleDropdownToggle}>
+            <div
+              className='wkode-admin-header__user-name-wrapper'
+              onClick={handleDropdownToggle}>
               {username}
-              <ArrowDown className={ showDropdown ? 'inverted' : ''} />
+              <ArrowDown className={showDropdown ? "inverted" : ""} />
             </div>
           </div>
         </div>
-      {showDropdown && (
-          <div className="wkode-admin-header-dropdown-content">
+        {showDropdown && (
+          <div className='wkode-admin-header-dropdown-content'>
             <a onClick={handleLogout}>Logout</a>
           </div>
-      )}
+        )}
       </div>
     </>
   );
