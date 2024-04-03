@@ -431,3 +431,17 @@ func (server *Server) loginUser(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, rsp)
 }
+
+func (server *Server) logoutUser(ctx *gin.Context) {
+	// Get the session ID from the context
+	// sessionID := ctx.MustGet(authorizationPayloadKey).(*token.Payload).ID
+
+	// Clear the access token cookie
+	ctx.SetCookie("access_token", "", -1, "/", "", false, false)
+	// Clear the refresh token cookie
+	ctx.SetCookie("refresh_token", "", -1, "/", "", false, true)
+	// Clear the user ID cookie
+	ctx.SetCookie("user_id", "", -1, "/", "", false, false)
+
+	ctx.JSON(http.StatusOK, "Successfully logged out")
+}

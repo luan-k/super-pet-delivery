@@ -81,6 +81,7 @@ func (server *Server) setupRouter() {
 
 	router.POST("/users/login", server.loginUser)
 	authRoutes.POST("/tokens/renew_access", server.RenewAccessTokenHeader)
+	authRoutes.POST("/users/logout", server.logoutUser)
 
 	authRoutes.POST("/users", server.createUser)
 	authRoutes.GET("/users/:id", server.getUser)
