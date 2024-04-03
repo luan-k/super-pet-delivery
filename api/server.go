@@ -89,7 +89,12 @@ func (server *Server) setupRouter() {
 	router.Use(CORSMiddleware())
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 
-	config.AllowOrigins = []string{"https://superpetdelivery.com.br"}
+	config.AllowOrigins = []string{"http://localhost",
+		"http://localhost:3000",
+		"http://superpetdelivery.com.br",
+		"https://superpetdelivery.com.br",
+		"http://www.superpetdelivery.com.br",
+		"https://www.superpetdelivery.com.br"}
 	config.AllowHeaders = []string{"Authorization", "Cookie"}
 
 	config.AllowCredentials = true
