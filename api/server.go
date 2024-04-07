@@ -162,7 +162,7 @@ func (server *Server) Start(address string) error {
 
 	// Define HTTPS server configuration with the loaded certificate and private key
 	s := &http.Server{
-		Addr: ":443",
+		Addr: ":8080",
 		TLSConfig: &tls.Config{
 			Certificates: []tls.Certificate{cert},
 		},

@@ -25,7 +25,7 @@ RUN chmod +x ./wait-for.sh
 ENV ACCESS_TOKEN_DURATION=50m
 ENV REFRESH_TOKEN_DURATION=168h
 
-EXPOSE 443
+EXPOSE 8080
 
 CMD [ "/app/main" ]
 ENTRYPOINT [ "/app/start.sh" ]
