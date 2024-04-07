@@ -28,6 +28,9 @@ func main() {
 		log.Fatal("cannot create server:", err)
 	}
 
+	// Logging out the server address
+	log.Printf("Starting server on address: %s", config.ServerAddress)
+
 	err = server.Start(config.ServerAddress)
 	if err != nil {
 		log.Fatal("cannot start server:", err)
