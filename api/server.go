@@ -155,7 +155,7 @@ func (server *Server) setupRouter() {
 // Start runs the HTTP server on a specific address.
 func (server *Server) Start(address string) error {
 	// Load certificate and private key from files
-	cert, err := tls.LoadX509KeyPair("cert/certificate.pem", "cert/privatekey.pem")
+	cert, err := tls.LoadX509KeyPair("cert/superpetdelivery.com.br.pem", "cert/superpetdelivery.com.br.key")
 	if err != nil {
 		return err
 	}
