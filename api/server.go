@@ -154,21 +154,28 @@ func (server *Server) setupRouter() {
 
 // Start runs the HTTP server on a specific address.
 func (server *Server) Start(address string) error {
+	// Define autocert manager
 	m := autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
 		HostPolicy: autocert.HostWhitelist("superpetdelivery.com.br", "www.superpetdelivery.com.br"),
 		Cache:      autocert.DirCache("/var/www/.cache"),
 	}
+
+	// Define HTTPS server configuration
 	s := &http.Server{
-		Addr:      ":https",
+		Addr:      ":443",
 		TLSConfig: m.TLSConfig(),
 	}
 
+	// Start HTTPS server in a goroutine
 	go func() {
 		log.Fatal(s.ListenAndServeTLS("", ""))
 	}()
 
-	return server.router.Run(":http")
+	// Redirect HTTP traffic to HTTPS
+	http.ListenAndServe(":80", m.HTTPHandler(nil))
+
+	return nil
 }
 
 func errorResponse(err error) gin.H {
