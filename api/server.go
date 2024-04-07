@@ -3,13 +3,14 @@ package api
 import (
 	"fmt"
 	"log"
+	"net/http"
 	db "super-pet-delivery/db/sqlc"
 	"super-pet-delivery/token"
 	"super-pet-delivery/util"
 
 	"github.com/gin-contrib/cors"
-
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 // Server serves HTTP requests for our api.
@@ -38,12 +39,6 @@ func NewServer(config util.Config, store db.SortableStore) (*Server, error) {
 	if err != nil {
 		log.Fatal("cannot create initial user:", err)
 	}
-
-	// Create dummy data
-	// err = server.createDummyData(store)
-	// if err != nil {
-	// 	log.Fatal("cannot create dummy data:", err)
-	// }
 
 	server.setupRouter()
 	return server, nil
@@ -159,7 +154,21 @@ func (server *Server) setupRouter() {
 
 // Start runs the HTTP server on a specific address.
 func (server *Server) Start(address string) error {
-	return server.router.Run(address)
+	m := autocert.Manager{
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist("superpetdelivery.com.br", "www.superpetdelivery.com.br"),
+		Cache:      autocert.DirCache("/var/www/.cache"),
+	}
+	s := &http.Server{
+		Addr:      ":https",
+		TLSConfig: m.TLSConfig(),
+	}
+
+	go func() {
+		log.Fatal(s.ListenAndServeTLS("", ""))
+	}()
+
+	return server.router.Run(":http")
 }
 
 func errorResponse(err error) gin.H {
