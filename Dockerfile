@@ -12,6 +12,7 @@ WORKDIR /app
 ENV NEXT_PUBLIC_SUPERPET_DELIVERY_URL=http://superpetdelivery.com.br
 COPY --from=builder /app/main .
 COPY --from=builder /app/migrate.linux-amd64 ./migrate
+COPY --from=builder /app/cert /app/cert
 COPY app.env .
 COPY start.sh .
 COPY wait-for.sh .
