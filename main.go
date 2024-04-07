@@ -29,7 +29,7 @@ func main() {
 	}
 
 	// Logging out the server address
-	log.Printf("Starting server on address: %s", config.ServerAddress)
+	log.Printf("Starting server on addresss: %s", config.ServerAddress)
 
 	err = server.Start(config.ServerAddress)
 	if err != nil {
