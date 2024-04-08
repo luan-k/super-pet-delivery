@@ -169,12 +169,14 @@ func (server *Server) Start(address string) error {
 	}
 
 	// Start HTTPS server
-	err = s.ListenAndServeTLS("", "")
-	if err != nil {
-		return err
-	}
+	go func() {
+		if err := s.ListenAndServeTLS("", ""); err != nil {
+			log.Fatalf("Failed to start HTTPS server: %v", err)
+		}
+	}()
 
-	return nil
+	// Start Gin router
+	return server.router.Run(address)
 }
 
 func errorResponse(err error) gin.H {
