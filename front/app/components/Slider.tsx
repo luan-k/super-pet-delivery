@@ -21,7 +21,7 @@ export default function SimpleSlider() {
   const getSliderImages = async ({ setImages }: associatedImagesProps) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/slider_images?page_id=1&page_size=10`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/slider_images?page_id=1&page_size=10`,
         {
           method: "GET",
           credentials: "include",
@@ -39,7 +39,7 @@ export default function SimpleSlider() {
           const images = await Promise.all(
             data.SliderImages.map(async (item: any) => {
               const imageResponse = await fetch(
-                `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/${item.image_id}`,
+                `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images/${item.image_id}`,
                 {
                   method: "GET",
                   credentials: "include",
@@ -94,7 +94,7 @@ export default function SimpleSlider() {
         {images.map((image) => (
           <div key={image.id}>
             <img
-              src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
+              src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443${image.image_path}`}
               alt={image.alt}
             />
           </div>

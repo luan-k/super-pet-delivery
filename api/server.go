@@ -44,7 +44,7 @@ func NewServer(config util.Config, store db.SortableStore) (*Server, error) {
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://superpetdelivery.com.br")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "https://superpetdelivery.com.br")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Cookie, cookie, Cookies, cookies, accept, origin, Cache-Control, X-Requested-With, Cookie")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
@@ -65,7 +65,7 @@ func (server *Server) setupRouter() {
 	router.Use(CORSMiddleware())
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 
-	config.AllowOrigins = []string{"http://superpetdelivery.com.br"}
+	config.AllowOrigins = []string{"https://superpetdelivery.com.br"}
 	config.AllowHeaders = []string{"Authorization", "Cookie"}
 
 	config.AllowCredentials = true
@@ -152,17 +152,6 @@ func (server *Server) setupRouter() {
 
 // Start runs the HTTP server on a specific address.
 func (server *Server) Start(address string) error {
-	// Load certificate and private key from files
-	/* cert, err := tls.LoadX509KeyPair("cert/superpetdelivery.com.br.pem", "cert/superpetdelivery.com.br.key")
-	if err != nil {
-		return err
-	} */
-
-	// Define HTTPS server configuration with the loaded certificate and private key
-	/* tlsConfig := &tls.Config{
-		Certificates: []tls.Certificate{cert},
-	} */
-
 	// Start Gin router with TLS configuration
 	return server.router.RunTLS(address, "cert/superpetdelivery.com.br.pem", "cert/superpetdelivery.com.br.key")
 }

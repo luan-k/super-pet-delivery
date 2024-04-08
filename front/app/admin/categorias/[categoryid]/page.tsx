@@ -22,9 +22,8 @@ export default function EditCategory() {
   const pathname = usePathname();
   var urlParts = pathname.split("/");
   var currentId = urlParts.at(-1);
-  const [currentCategory, setCurrentCategory] = useState<CategoryDetails | null>(
-    null
-  );
+  const [currentCategory, setCurrentCategory] =
+    useState<CategoryDetails | null>(null);
   const [formData, setFormData] = useState<EditCategoryFormRequest>({
     name: "",
     description: "",
@@ -35,7 +34,7 @@ export default function EditCategory() {
       try {
         const token = Cookies.get("access_token");
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/categories/${currentId}`,
+          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/categories/${currentId}`,
           {
             method: "GET",
             headers: {
@@ -46,7 +45,7 @@ export default function EditCategory() {
         );
 
         if (response.ok) {
-          const data:CategoryDetails = await response.json();
+          const data: CategoryDetails = await response.json();
 
           setCurrentCategory(data);
         } else {
@@ -69,7 +68,7 @@ export default function EditCategory() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/categories/${currentId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/categories/${currentId}`,
         {
           method: "PUT",
           credentials: "include",
@@ -102,18 +101,14 @@ export default function EditCategory() {
     }
   }, [currentCategory]);
 
-const handleChange: handleChangeType = (
-    e,
-    setFormData,
-    formData
-) => {
+  const handleChange: handleChangeType = (e, setFormData, formData) => {
     const { name, value } = e.target;
 
     setFormData({
-        ...formData,
-        [name]: value,
+      ...formData,
+      [name]: value,
     });
-};
+  };
 
   const formConfig: formConfigInterface = {
     handleSubmit,

@@ -44,7 +44,7 @@ export default function SingleImageList({
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/${image.id}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images/${image.id}`,
         {
           method: "PUT",
           credentials: "include",
@@ -73,7 +73,7 @@ export default function SingleImageList({
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/${image.id}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images/${image.id}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -102,7 +102,7 @@ export default function SingleImageList({
       <Dialog.Trigger asChild>
         <div key={image.id} className='wk-image-list__item'>
           <img
-            src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
+            src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443${image.image_path}`}
             alt={image.alt}
             className='wk-image-list__image'
           />
@@ -118,7 +118,7 @@ export default function SingleImageList({
           <div className='grid grid-cols-3 gap-8'>
             <div>
               <img
-                src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
+                src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443${image.image_path}`}
                 alt={image.alt}
                 className='wk-image-list__image wk-image-list__image--max-height'
               />
@@ -155,7 +155,7 @@ export default function SingleImageList({
                 </label>
                 <div className='flex text-lg gap-4'>
                   <a
-                    href={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
+                    href={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443${image.image_path}`}
                     download>
                     Baixar arquivo
                   </a>

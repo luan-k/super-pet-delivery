@@ -101,7 +101,7 @@ export default function EditSale() {
       try {
         const token = Cookies.get("access_token");
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales/${currentId}`,
+          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/sales/${currentId}`,
           {
             method: "GET",
             headers: {
@@ -135,7 +135,7 @@ export default function EditSale() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales/${currentId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/sales/${currentId}`,
         {
           method: "PUT",
           credentials: "include",

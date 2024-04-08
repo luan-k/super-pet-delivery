@@ -99,7 +99,7 @@ export default function EditProduct() {
       try {
         const token = Cookies.get("access_token");
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/products/${currentId}`,
+          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/products/${currentId}`,
           {
             method: "GET",
             headers: {
@@ -138,7 +138,7 @@ export default function EditProduct() {
 
   const updateImageOrder = async () => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/by_product/${currentId}`,
+      `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images/by_product/${currentId}`,
       {
         method: "PUT",
         credentials: "include",
@@ -158,7 +158,7 @@ export default function EditProduct() {
   const fetchAssociatedCategories = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/categories/by_product/${currentId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/categories/by_product/${currentId}`,
         {
           method: "GET",
           headers: {
@@ -189,7 +189,7 @@ export default function EditProduct() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/products/${currentId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/products/${currentId}`,
         {
           method: "PUT",
           credentials: "include",

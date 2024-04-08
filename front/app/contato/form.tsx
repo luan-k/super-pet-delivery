@@ -33,7 +33,7 @@ export default function Form() {
     // Here you can handle your form submission.
     // For example, send form data to a server:
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/contact`,
+      `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/contact`,
       {
         method: "POST",
         headers: {

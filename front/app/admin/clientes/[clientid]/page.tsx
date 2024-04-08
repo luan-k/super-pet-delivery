@@ -63,7 +63,7 @@ export default function EditClient() {
       try {
         const token = Cookies.get("access_token");
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients/${currentId}`,
+          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/clients/${currentId}`,
           {
             method: "GET",
             headers: {
@@ -97,7 +97,7 @@ export default function EditClient() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients/${currentId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/clients/${currentId}`,
         {
           method: "PUT",
           credentials: "include",

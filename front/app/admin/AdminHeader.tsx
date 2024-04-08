@@ -30,7 +30,7 @@ export default function IsAuthenticated() {
         headers.append("Authorization", `Bearer ${token}`);
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/tokens/renew_access`,
+          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/tokens/renew_access`,
           {
             method: "POST",
             credentials: "include",
@@ -69,7 +69,7 @@ export default function IsAuthenticated() {
       const headers = new Headers();
       headers.append("Authorization", `Bearer ${currentToken}`);
       await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/users/logout`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/users/logout`,
         { method: "POST", credentials: "include", headers: headers }
       );
       sessionStorage.setItem("previousUrl", window.location.href);

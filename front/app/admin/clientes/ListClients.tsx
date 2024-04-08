@@ -59,7 +59,7 @@ export default function ListClients() {
   ): Promise<void> {
     try {
       const token = Cookies.get("access_token");
-      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients?page_id=${pageId}&page_size=${pageSize}`;
+      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/clients?page_id=${pageId}&page_size=${pageSize}`;
 
       if (sortField && sortDirection) {
         url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
@@ -99,7 +99,7 @@ export default function ListClients() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients/${itemId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/clients/${itemId}`,
         {
           method: "DELETE",
           credentials: "include",

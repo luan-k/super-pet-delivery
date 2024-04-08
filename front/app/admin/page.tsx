@@ -49,7 +49,7 @@ export default function Dashboard() {
   ) => {
     try {
       const token = Cookies.get("access_token");
-      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales?page_id=${pageId}&page_size=${pageSize}`;
+      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/sales?page_id=${pageId}&page_size=${pageSize}`;
 
       if (sortField && sortDirection) {
         url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
@@ -91,7 +91,7 @@ export default function Dashboard() {
   ): Promise<void> {
     try {
       const token = Cookies.get("access_token");
-      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients?page_id=${pageId}&page_size=${pageSize}`;
+      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/clients?page_id=${pageId}&page_size=${pageSize}`;
 
       if (sortField && sortDirection) {
         url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
@@ -130,7 +130,7 @@ export default function Dashboard() {
       const token = Cookies.get("access_token");
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/pdf/`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/pdf/`,
         {
           method: "POST",
           headers: {

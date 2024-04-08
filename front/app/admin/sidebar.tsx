@@ -44,7 +44,6 @@ export default function AdminSidebar({ onStateChange }: AdminSidebarProps) {
   }, [setSidebarState]);
 
   useEffect(() => {
-    
     const token = Cookies.get("access_token");
 
     const getUserRole = async () => {
@@ -52,21 +51,20 @@ export default function AdminSidebar({ onStateChange }: AdminSidebarProps) {
         const headers = new Headers();
         headers.append("Authorization", `Bearer ${token}`);
 
-        const currentUser = localStorage.getItem("username")
-        if(currentUser)
-        {
+        const currentUser = localStorage.getItem("username");
+        if (currentUser) {
           const response = await fetch(
-            `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/current_user`,
+            `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/current_user`,
             {
               method: "GET",
               credentials: "include",
               headers: headers,
             }
           );
-  
+
           if (response.ok) {
-            const data = await response.json()
-            setCurrentUserRole(data.role)
+            const data = await response.json();
+            setCurrentUserRole(data.role);
           } else {
             console.error("Failed to check user role");
           }
@@ -77,7 +75,7 @@ export default function AdminSidebar({ onStateChange }: AdminSidebarProps) {
     };
 
     getUserRole();
-  }, [router, currentUserRole])
+  }, [router, currentUserRole]);
 
   useEffect(() => {
     localStorage.setItem("sidebarState", sidebarState);
@@ -87,14 +85,13 @@ export default function AdminSidebar({ onStateChange }: AdminSidebarProps) {
   const isActive = (href: string) => {
     // Compare the current route with the link's href
     if (href === "/admin") {
-        return currentRoute === href
-            ? "wkode-admin-sidebar__menu-item--active"
-            : "";
-    } 
-    else {
-        return currentRoute.includes(href)
-            ? "wkode-admin-sidebar__menu-item--active"
-            : "";
+      return currentRoute === href
+        ? "wkode-admin-sidebar__menu-item--active"
+        : "";
+    } else {
+      return currentRoute.includes(href)
+        ? "wkode-admin-sidebar__menu-item--active"
+        : "";
     }
   };
 
@@ -147,18 +144,16 @@ export default function AdminSidebar({ onStateChange }: AdminSidebarProps) {
           <GaleriaIcon />
           Galeria
         </Link>
-        {
-          currentUserRole === "Administrator" ? (
-            <Link
-              className={`wkode-admin-sidebar__menu-item ${isActive(
-                "/admin/usuarios"
-              )}`}
-              href={"/admin/usuarios"}>
-              <UsuariosIcon />
-              Usuarios
-            </Link>
-          ): null
-        }
+        {currentUserRole === "Administrator" ? (
+          <Link
+            className={`wkode-admin-sidebar__menu-item ${isActive(
+              "/admin/usuarios"
+            )}`}
+            href={"/admin/usuarios"}>
+            <UsuariosIcon />
+            Usuarios
+          </Link>
+        ) : null}
       </div>
       <button
         onClick={() => {

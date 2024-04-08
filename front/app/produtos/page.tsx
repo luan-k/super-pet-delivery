@@ -75,7 +75,7 @@ export default function Produtos() {
   }: associatedImagesProps) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/by_product/${currentId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images/by_product/${currentId}`,
         {
           method: "GET",
           credentials: "include",
@@ -110,7 +110,7 @@ export default function Produtos() {
       return {
         ...product,
         images:
-          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080` +
+          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443` +
           images[0].image_path,
         alt: images[0].alt,
       };
@@ -128,7 +128,7 @@ export default function Produtos() {
     filter?: string
   ): Promise<void> {
     try {
-      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/products?page_id=${pageId}&page_size=${pageSize}`;
+      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/products?page_id=${pageId}&page_size=${pageSize}`;
 
       if (sortField && sortDirection) {
         url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
@@ -183,7 +183,7 @@ export default function Produtos() {
     pageSize: number
   ): Promise<void> {
     try {
-      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/categories?page_id=${pageId}&page_size=${pageSize}`;
+      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/categories?page_id=${pageId}&page_size=${pageSize}`;
 
       const response = await fetch(url, {
         method: "GET",

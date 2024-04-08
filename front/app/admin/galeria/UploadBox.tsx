@@ -49,7 +49,7 @@ export default function UploadBox() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images`,
         {
           method: "POST",
           credentials: "include",
@@ -140,7 +140,7 @@ export default function UploadBox() {
               <li key={index}>
                 <div>
                   <img
-                    src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${file.url}`}
+                    src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443${file.url}`}
                     alt={file.name}
                   />
                   <div>{file.name}</div>
@@ -150,7 +150,7 @@ export default function UploadBox() {
                     className='wk-btn wk-btn--secondary-outline wk-btn--sm'
                     onClick={() => {
                       navigator.clipboard.writeText(
-                        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${file.url}`
+                        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443${file.url}`
                       );
                       // Create a new array with the same values as buttonTexts, but with 'URL copiada' at the clicked button's index
                       const newButtonTexts = buttonTexts.map((text, i) =>

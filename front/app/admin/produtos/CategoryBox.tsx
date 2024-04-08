@@ -18,7 +18,7 @@ export const submitAssociatedCategories = async (
   initialCheckedItems: number[]
 ) => {
   const token = Cookies.get("access_token");
-  const url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/link_categories/multiple/${productId}`;
+  const url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/link_categories/multiple/${productId}`;
 
   // Determine which categories to associate and disassociate
   const categoriesToAssociate = checkedItems.filter(
@@ -108,7 +108,7 @@ export default function CategoryBox({
     pageSize: number
   ): Promise<void> {
     try {
-      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/categories?page_id=${pageId}&page_size=${pageSize}`;
+      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/categories?page_id=${pageId}&page_size=${pageSize}`;
 
       /*  if (sortField && sortDirection) {
         url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
@@ -148,7 +148,7 @@ export default function CategoryBox({
     event.preventDefault();
     event.stopPropagation();
     try {
-      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/categories`;
+      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/categories`;
       const response = await fetch(url, {
         method: "POST",
         headers: {

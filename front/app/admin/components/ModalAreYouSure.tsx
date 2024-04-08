@@ -40,7 +40,7 @@ export default function ModalAreYouSure({
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales/by_client/${deleteIndex}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/sales/by_client/${deleteIndex}`,
         {
           method: "GET",
           credentials: "include",
@@ -70,7 +70,7 @@ export default function ModalAreYouSure({
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales/delete`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/sales/delete`,
         {
           method: "DELETE",
           credentials: "include",

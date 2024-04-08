@@ -20,7 +20,7 @@ export default function Admin() {
         headers.append("Authorization", `Bearer ${token}`);
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/users?page_id=${pageId}&page_size=${pageSize}`,
+          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/users?page_id=${pageId}&page_size=${pageSize}`,
           {
             method: "GET",
             credentials: "include",

@@ -20,7 +20,7 @@ export default function SearchClient(
     try {
       const token = Cookies.get("access_token");
       let url =
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients?page_id=${pageId}&page_size=${pageSize}` +
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/clients?page_id=${pageId}&page_size=${pageSize}` +
         (sortField && sortDirection
           ? `&sort_field=${sortField}&sort_direction=${sortDirection}`
           : "");

@@ -26,7 +26,7 @@ export const getAssociatedSliderImages = async ({
 }: associatedImagesProps) => {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/slider_images?page_id=1&page_size=10`,
+      `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/slider_images?page_id=1&page_size=10`,
       {
         method: "GET",
         credentials: "include",
@@ -51,7 +51,7 @@ export const getAssociatedSliderImages = async ({
         const images = await Promise.all(
           data.SliderImages.map(async (item: any) => {
             const imageResponse = await fetch(
-              `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/${item.image_id}`,
+              `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images/${item.image_id}`,
               {
                 method: "GET",
                 credentials: "include",
@@ -92,7 +92,7 @@ export default function SliderWidget() {
   const token = Cookies.get("access_token");
   const updateImageOrder = async (updatedItems: any[]) => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/slider_images/update_by_image_id`,
+      `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/slider_images/update_by_image_id`,
       {
         method: "POST",
         credentials: "include",
@@ -190,7 +190,7 @@ export default function SliderWidget() {
                             className='wk-image-list__item wk-image-list__item--box'
                             onClick={() => setSelectedResultIndex(index)}>
                             <img
-                              src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
+                              src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443${image.image_path}`}
                               alt={image.alt}
                               draggable='false'
                               className='wk-image-list__image'

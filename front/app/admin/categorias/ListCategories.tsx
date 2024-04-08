@@ -53,7 +53,7 @@ export default function ListCategories() {
   ): Promise<void> {
     try {
       const token = Cookies.get("access_token");
-      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/categories?page_id=${pageId}&page_size=${pageSize}`;
+      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/categories?page_id=${pageId}&page_size=${pageSize}`;
 
       if (sortField && sortDirection) {
         url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
@@ -99,7 +99,7 @@ export default function ListCategories() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/categories/${itemId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/categories/${itemId}`,
         {
           method: "DELETE",
           credentials: "include",

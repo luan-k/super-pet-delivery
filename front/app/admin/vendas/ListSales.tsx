@@ -99,7 +99,7 @@ export default function ListSales({ className }: ListSalesProps) {
       }
     } else {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales/all`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/sales/all`,
         {
           method: "GET",
           headers: {
@@ -124,7 +124,7 @@ export default function ListSales({ className }: ListSalesProps) {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales/by_date`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/sales/by_date`,
         {
           method: "POST",
           headers: {
@@ -170,7 +170,7 @@ export default function ListSales({ className }: ListSalesProps) {
   ) => {
     try {
       const token = Cookies.get("access_token");
-      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales?page_id=${pageId}&page_size=${pageSize}`;
+      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/sales?page_id=${pageId}&page_size=${pageSize}`;
 
       if (sortField && sortDirection) {
         url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
@@ -212,7 +212,7 @@ export default function ListSales({ className }: ListSalesProps) {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales/${itemId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/sales/${itemId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -241,7 +241,7 @@ export default function ListSales({ className }: ListSalesProps) {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/sales/delete`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/sales/delete`,
         {
           method: "DELETE",
           credentials: "include",
@@ -278,7 +278,7 @@ export default function ListSales({ className }: ListSalesProps) {
       const token = Cookies.get("access_token");
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/pdf/`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/pdf/`,
         {
           method: "POST",
           headers: {
@@ -331,7 +331,7 @@ export default function ListSales({ className }: ListSalesProps) {
       const token = Cookies.get("access_token");
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/pdf/`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/pdf/`,
         {
           method: "POST",
           headers: {

@@ -30,7 +30,7 @@ export default function EditImage() {
       try {
         const token = Cookies.get("access_token");
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/${currentId}`,
+          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images/${currentId}`,
           {
             method: "GET",
             headers: {
@@ -66,7 +66,7 @@ export default function EditImage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/${currentId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images/${currentId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -97,7 +97,7 @@ export default function EditImage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/${currentId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images/${currentId}`,
         {
           method: "PUT",
           credentials: "include",
@@ -141,7 +141,7 @@ export default function EditImage() {
         <div className='grid grid-cols-3 gap-8'>
           <div>
             <img
-              src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${currentImage?.image_path}`}
+              src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443${currentImage?.image_path}`}
               alt={currentImage?.alt}
               className='wk-image-list__image'
             />
@@ -178,7 +178,7 @@ export default function EditImage() {
               </label>
               <div className='flex text-lg gap-4'>
                 <a
-                  href={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${currentImage?.image_path}`}
+                  href={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443${currentImage?.image_path}`}
                   download>
                   Baixar arquivo
                 </a>

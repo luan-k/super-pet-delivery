@@ -63,7 +63,7 @@ export default function CreateCategory() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/categories`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/categories`,
         {
           method: "POST",
           credentials: "include",

@@ -32,7 +32,7 @@ const getAssociatedImages = async ({
 
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/by_product/${currentId}`,
+      `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images/by_product/${currentId}`,
       {
         method: "GET",
         credentials: "include",
@@ -290,7 +290,7 @@ export default function ProductForm({
                                 className='wk-image-list__item wk-image-list__item--box'
                                 onClick={() => setSelectedResultIndex(index)}>
                                 <img
-                                  src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
+                                  src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443${image.image_path}`}
                                   alt={image.alt}
                                   draggable='false'
                                   className='wk-image-list__image'

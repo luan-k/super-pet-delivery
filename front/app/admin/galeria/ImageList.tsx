@@ -47,7 +47,7 @@ export async function fetchImages({
 }: FetchImagesProps): Promise<void> {
   try {
     const token = Cookies.get("access_token");
-    let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images?page_id=${pageId}&page_size=${pageSize}`;
+    let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images?page_id=${pageId}&page_size=${pageSize}`;
 
     if (sortField && sortDirection) {
       url += `&sort_field=${sortField}&sort_direction=${sortDirection}`;
@@ -145,7 +145,7 @@ export default function ImageList() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images`,
         {
           method: "POST",
           credentials: "include",

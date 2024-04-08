@@ -46,7 +46,7 @@ export default function SingleProduct() {
       try {
         const token = Cookies.get("access_token");
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/product/${
+          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/product/${
             currentUrl ? currentUrl[0] : ""
           }`,
           {
@@ -93,7 +93,7 @@ export default function SingleProduct() {
   }: associatedImagesProps) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/by_product/${currentId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images/by_product/${currentId}`,
         {
           method: "GET",
           credentials: "include",
@@ -151,7 +151,7 @@ export default function SingleProduct() {
                 {images.map((image, index) => (
                   <div key={index}>
                     <img
-                      src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
+                      src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443${image.image_path}`}
                       alt='product'
                       className='w-full'
                     />
@@ -173,7 +173,7 @@ export default function SingleProduct() {
                 {images.map((image, index) => (
                   <div key={index}>
                     <img
-                      src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
+                      src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443${image.image_path}`}
                       alt='product'
                       className='w-full'
                     />

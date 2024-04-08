@@ -66,7 +66,7 @@ export default function CreateClient() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/clients`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/clients`,
         {
           method: "POST",
           credentials: "include",

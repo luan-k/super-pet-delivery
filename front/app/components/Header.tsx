@@ -34,7 +34,7 @@ export default function Header() {
     search?: string
   ): Promise<void> {
     try {
-      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/products?page_id=${pageId}&page_size=${pageSize}`;
+      let url = `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/products?page_id=${pageId}&page_size=${pageSize}`;
 
       if (search) {
         let searchValue = search.replace(/\./g, "<dot>");
@@ -79,7 +79,7 @@ export default function Header() {
   }: associatedImagesProps) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/by_product/${currentId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images/by_product/${currentId}`,
         {
           method: "GET",
           credentials: "include",
@@ -114,7 +114,7 @@ export default function Header() {
       return {
         ...product,
         images:
-          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080` +
+          `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443` +
           images[0].image_path,
         alt: images[0].alt,
       };

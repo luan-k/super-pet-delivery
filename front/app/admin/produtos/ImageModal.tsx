@@ -79,7 +79,7 @@ export const submitSliderImages = async ({
   if (imagesToAssociate.length > 0) {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/slider_images`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/slider_images`,
         {
           method: "POST",
           credentials: "include",
@@ -108,7 +108,7 @@ export const submitSliderImages = async ({
   if (imagesToDisassociate.length > 0) {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/slider_images/delete_by_image_id`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/slider_images/delete_by_image_id`,
         {
           method: "POST",
           credentials: "include",
@@ -152,7 +152,7 @@ export const submitAssociatedImages = async ({
   if (!currentId || isNaN(Number(currentId))) {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images-multiple`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images-multiple`,
         {
           method: "POST",
           credentials: "include",
@@ -187,7 +187,7 @@ export const submitAssociatedImages = async ({
   if (imagesToAssociate.length > 0) {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/link_images/multiple/${currentId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/link_images/multiple/${currentId}`,
         {
           method: "POST",
           credentials: "include",
@@ -222,7 +222,7 @@ export const submitAssociatedImages = async ({
   if (imagesToDisassociate.length > 0) {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/link_images/multiple/${currentId}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/link_images/multiple/${currentId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -351,7 +351,7 @@ export default function ImageModal({
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images`,
         {
           method: "POST",
           credentials: "include",
@@ -434,7 +434,7 @@ export default function ImageModal({
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/${id}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images/${id}`,
         {
           method: "PUT",
           credentials: "include",
@@ -501,7 +501,7 @@ export default function ImageModal({
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/images/${id}`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/images/${id}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -590,7 +590,7 @@ export default function ImageModal({
                         key={image.id}
                         className='wk-image-list__item relative'>
                         <img
-                          src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${image.image_path}`}
+                          src={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443${image.image_path}`}
                           alt={image.alt}
                           className={`wk-image-list__image ${
                             checkedItems &&
@@ -668,7 +668,7 @@ export default function ImageModal({
                       </label>
                       <div className='flex text-lg gap-4'>
                         <a
-                          href={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080${selectedImage.image_path}`}
+                          href={`${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443${selectedImage.image_path}`}
                           download>
                           Baixar arquivo
                         </a>

@@ -136,7 +136,7 @@ export default function CreateProduct() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8080/products`,
+        `${process.env.NEXT_PUBLIC_SUPERPET_DELIVERY_URL}:8443/products`,
         {
           method: "POST",
           credentials: "include",
