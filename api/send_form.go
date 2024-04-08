@@ -129,7 +129,7 @@ func (server *Server) HandleForm(ctx *gin.Context) {
 	`,
 		formData.Name, formData.Email, formData.Phone, formData.Message)
 
-	to := []string{"luankds@gmail.com"} // replace with your email address
+	to := []string{"andrepet.adm@gmail.com"}
 	err = emailSender.SendEmail(subject, content, to, nil, nil, nil)
 	if err != nil {
 		fmt.Println("Error sending email:", err)
