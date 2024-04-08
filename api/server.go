@@ -1,10 +1,8 @@
 package api
 
 import (
-	"crypto/tls"
 	"fmt"
 	"log"
-	"net/http"
 	db "super-pet-delivery/db/sqlc"
 	"super-pet-delivery/token"
 	"super-pet-delivery/util"
@@ -155,28 +153,18 @@ func (server *Server) setupRouter() {
 // Start runs the HTTP server on a specific address.
 func (server *Server) Start(address string) error {
 	// Load certificate and private key from files
-	cert, err := tls.LoadX509KeyPair("cert/superpetdelivery.com.br.pem", "cert/superpetdelivery.com.br.key")
+	/* cert, err := tls.LoadX509KeyPair("cert/superpetdelivery.com.br.pem", "cert/superpetdelivery.com.br.key")
 	if err != nil {
 		return err
-	}
+	} */
 
 	// Define HTTPS server configuration with the loaded certificate and private key
-	s := &http.Server{
-		Addr: ":443",
-		TLSConfig: &tls.Config{
-			Certificates: []tls.Certificate{cert},
-		},
-	}
+	/* tlsConfig := &tls.Config{
+		Certificates: []tls.Certificate{cert},
+	} */
 
-	// Start HTTPS server
-	go func() {
-		if err := s.ListenAndServeTLS("", ""); err != nil {
-			log.Fatalf("Failed to start HTTPS server: %v", err)
-		}
-	}()
-
-	// Start Gin router
-	return server.router.Run(address)
+	// Start Gin router with TLS configuration
+	return server.router.RunTLS(address, "cert/superpetdelivery.com.br.pem", "cert/superpetdelivery.com.br.key")
 }
 
 func errorResponse(err error) gin.H {
