@@ -474,7 +474,7 @@ func convertHTMLToPDF(filePath, imgPath, pdfPath string) error {
 }
 
 /* curl \
---request POST 'http://pdf-generator:3000/forms/chromium/convert/html' \
+--request POST 'http://gotenberg:3000/forms/chromium/convert/html' \
 --form 'files=@"api/pdf/index.html"' \
 --form 'files=@"api/pdf/img.png"' \
 -o test.pdf */
