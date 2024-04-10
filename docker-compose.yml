@@ -17,7 +17,7 @@ services:
         limits:
           memory: 300m
   gotenberg:
-    container_name: pdf-generator
+    container_name: gotenberg
     image: gotenberg/gotenberg:7
     deploy:
       resources:
