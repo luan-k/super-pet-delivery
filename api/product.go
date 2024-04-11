@@ -140,7 +140,10 @@ func (server *Server) getProductByURL(ctx *gin.Context) {
 		return
 	}
 
-	product, err := server.store.GetProductByURL(ctx, req.URL)
+	// Re-encode the URL parameter
+	encodedURL := url.QueryEscape(req.URL)
+
+	product, err := server.store.GetProductByURL(ctx, encodedURL)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
