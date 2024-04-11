@@ -11,6 +11,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import React from "react";
+import { FaWhatsapp } from "react-icons/fa";
 
 export default function SingleProduct() {
   const pathname = usePathname();
@@ -126,6 +127,10 @@ export default function SingleProduct() {
     }
   }, [currentProduct]);
 
+  const message = `Ola, gostaria de fazer o pedido do produto ${currentProduct?.name}`;
+  const encodedMessage = encodeURIComponent(message);
+  const whatsappUrl = `https://api.whatsapp.com/send?phone=554899805164&text=${encodedMessage}`;
+
   return (
     <div className='single-product pt-48 pb-80'>
       <div className='container'>
@@ -208,6 +213,14 @@ export default function SingleProduct() {
                   ) : null}
                 </h3>
               </div>
+
+              <a
+                href={whatsappUrl}
+                target='_blank'
+                className='mb-6 wk-btn wk-btn--md flex w-fit !bg-[#009944] hover:!bg-[#00652d] hover:!border-[#00652d] !border-[#009944] justify-start items-start  gap-2'>
+                <FaWhatsapp size={24} />
+                <span>Pedir Agora</span>
+              </a>
 
               <p className='text-2xl text-black'>
                 {currentProduct?.description.split("\n").map((line, i) => (
