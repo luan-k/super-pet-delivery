@@ -37,7 +37,7 @@ func sanitizeName(name string) string {
 	// Convert to lowercase
 	sanitized = strings.ToLower(sanitized)
 	// URL encode to handle special characters
-	sanitized = url.PathEscape(sanitized)
+	sanitized = url.QueryEscape(sanitized)
 	return sanitized
 }
 
