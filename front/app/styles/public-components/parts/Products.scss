@@ -134,6 +134,7 @@
         background-image: none !important;
         border-color: none !important;
         height: 0 !important;
+        visibility: hidden;
         width: 0 !important;
 
         & + label {

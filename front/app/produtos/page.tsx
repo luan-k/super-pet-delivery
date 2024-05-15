@@ -165,6 +165,7 @@ export default function Produtos() {
             data.products.map(getProductWithImages)
           );
           setListProductResponse(productsWithImages);
+          setTotalItems(data.total);
         } else {
           setListProductResponse([]);
           console.log("No products found");
@@ -195,8 +196,6 @@ export default function Produtos() {
       if (response.ok) {
         const data: ListCategoryResponse = await response.json();
         setListCategory(data.categories);
-
-        setTotalItems(data.total);
       } else {
         console.error("Failed to fetch categories");
       }
